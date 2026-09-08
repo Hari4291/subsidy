@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-navy mb-0"><i class="fa-solid fa-folder-open text-primary me-2"></i> My Submitted Subsidy Applications</h3>
+        <a th:href="@{/schemes}" class="btn btn-primary fw-bold shadow-sm"><i class="fa-solid fa-plus me-1"></i> Apply for Scheme</a>
+    </div>
+
+    <div class="card gov-card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Application No</th>
+                            <th>Scheme Name</th>
+                            <th>Requested Amount</th>
+                            <th>Score</th>
+                            <th>Current Stage</th>
+                            <th>Status</th>
+                            <th>Submission Date</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(applications)}">
+                            <td colspan="8" class="text-center text-muted py-4">No applications submitted yet.</td>
+                        </tr>
+                        <tr th:each="app : ${applications}">
+                            <td class="fw-bold text-navy" th:text="${app.applicationNumber}">APP-123456</td>
+                            <td th:text="${app.scheme.name}">Scheme Name</td>
+                            <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹50,000</td>
+                            <td><span class="badge bg-info text-dark" th:text="${app.eligibilityScore} + '/100'">85/100</span></td>
+                            <td><span class="badge bg-secondary" th:text="${app.currentStage}">FIELD_VERIFICATION</span></td>
+                            <td>
+                                <span th:if="${app.status == 'APPROVED'}" class="badge bg-success">APPROVED</span>
+                                <span th:if="${app.status == 'PENDING'}" class="badge bg-warning text-dark">PENDING</span>
+                                <span th:if="${app.status == 'REJECTED'}" class="badge bg-danger">REJECTED</span>
+                            </td>
+                            <td th:text="${#temporals.format(app.createdAt, 'dd-MMM-yyyy HH:mm')}">02-Sep-2026</td>
+                            <td><a th:href="@{'/beneficiary/applications/' + ${app.id}}" class="btn btn-sm btn-navy text-white">Track Progress</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

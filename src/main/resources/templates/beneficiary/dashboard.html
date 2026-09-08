@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <!-- WELCOME & IDENTITY BANNER -->
+    <div class="card gov-card shadow-sm border-0 mb-4 bg-navy text-white">
+        <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h4 class="fw-bold mb-1">
+                    <i class="fa-solid fa-landmark-flag text-warning me-2"></i> Beneficiary Portal Dashboard
+                </h4>
+                <p class="mb-0 text-light opacity-90">
+                    Welcome back, <span class="fw-bold text-white" th:text="${beneficiary.user.fullName}">Citizen</span>
+                    <span class="mx-2">|</span>
+                    Identity Status:
+                    <span th:if="${beneficiary.identityStatus == 'VERIFIED'}" class="badge bg-success"><i class="fa-solid fa-shield-check me-1"></i> VERIFIED</span>
+                    <span th:if="${beneficiary.identityStatus == 'PENDING'}" class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i> PENDING</span>
+                    <span th:if="${beneficiary.identityStatus == 'REJECTED'}" class="badge bg-danger"><i class="fa-solid fa-circle-xmark me-1"></i> REJECTED</span>
+                </p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-light text-navy px-3 py-2 fw-bold">
+                    <i class="fa-solid fa-location-dot text-danger me-1"></i> <span th:text="${beneficiary.district} + ', ' + ${beneficiary.state}">Kakinada, Andhra Pradesh</span>
+                </span>
+                <form th:action="@{/logout}" method="post" class="d-inline ms-2">
+                    <button type="submit" class="btn btn-danger fw-bold btn-sm px-3 shadow-sm">
+                        <i class="fa-solid fa-right-from-bracket me-1"></i> Logout
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- QUICK ACTIONS -->
+    <div class="mb-4">
+        <h5 class="fw-bold text-navy mb-3"><i class="fa-solid fa-bolt text-warning me-2"></i> Quick Actions</h5>
+        <div class="row g-3">
+            <div class="col-6 col-md-4 col-lg-2">
+                <a th:href="@{/schemes}" class="text-decoration-none">
+                    <div class="card gov-card text-center p-3 h-100 shadow-sm border-0 hover-lift">
+                        <i class="fa-solid fa-layer-group fs-2 text-primary mb-2"></i>
+                        <span class="fw-bold text-navy small">Browse Schemes</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a th:href="@{/beneficiary/check-eligibility}" class="text-decoration-none">
+                    <div class="card gov-card text-center p-3 h-100 shadow-sm border-0 hover-lift">
+                        <i class="fa-solid fa-calculator fs-2 text-success mb-2"></i>
+                        <span class="fw-bold text-navy small">Check Eligibility</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a th:href="@{/beneficiary/applications}" class="text-decoration-none">
+                    <div class="card gov-card text-center p-3 h-100 shadow-sm border-0 hover-lift">
+                        <i class="fa-solid fa-file-lines fs-2 text-warning mb-2"></i>
+                        <span class="fw-bold text-navy small">My Applications</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a th:href="@{/beneficiary/disbursements}" class="text-decoration-none">
+                    <div class="card gov-card text-center p-3 h-100 shadow-sm border-0 hover-lift">
+                        <i class="fa-solid fa-hand-holding-dollar fs-2 text-info mb-2"></i>
+                        <span class="fw-bold text-navy small">Disbursements</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a th:href="@{/beneficiary/profile}" class="text-decoration-none">
+                    <div class="card gov-card text-center p-3 h-100 shadow-sm border-0 hover-lift">
+                        <i class="fa-solid fa-user fs-2 text-secondary mb-2"></i>
+                        <span class="fw-bold text-navy small">My Profile</span>
+                    </div>
+                </a>
+            </div>
+            <div class="col-6 col-md-4 col-lg-2">
+                <a th:href="@{/beneficiary/notifications}" class="text-decoration-none">
+                    <div class="card gov-card text-center p-3 h-100 shadow-sm border-0 hover-lift">
+                        <i class="fa-solid fa-bell fs-2 text-danger mb-2"></i>
+                        <span class="fw-bold text-navy small">Notifications</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- STATISTICS CARDS GRID (4 CARDS) -->
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card gov-card p-3 h-100 border-0 shadow-sm">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small fw-bold uppercase d-block mb-1">Total Applications</span>
+                        <h2 class="fw-bold text-navy mb-0" th:text="${totalApps}">0</h2>
+                        <small class="text-muted">All submissions</small>
+                    </div>
+                    <div class="p-3 bg-primary bg-opacity-10 rounded-circle text-primary">
+                        <i class="fa-solid fa-folder-open fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card gov-card p-3 h-100 border-0 shadow-sm">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small fw-bold uppercase d-block mb-1">Approved Grants</span>
+                        <h2 class="fw-bold text-success mb-0" th:text="${approvedApps}">0</h2>
+                        <small class="text-muted">Sanctioned applications</small>
+                    </div>
+                    <div class="p-3 bg-success bg-opacity-10 rounded-circle text-success">
+                        <i class="fa-solid fa-circle-check fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card gov-card p-3 h-100 border-0 shadow-sm">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small fw-bold uppercase d-block mb-1">Pending Approvals</span>
+                        <h2 class="fw-bold text-warning mb-0" th:text="${pendingApps}">0</h2>
+                        <small class="text-muted">Under officer verification</small>
+                    </div>
+                    <div class="p-3 bg-warning bg-opacity-10 rounded-circle text-warning">
+                        <i class="fa-solid fa-hourglass-half fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-3">
+            <div class="card gov-card p-3 h-100 border-0 shadow-sm">
+                <div class="d-flex align-items-center justify-content-between">
+                    <div>
+                        <span class="text-muted small fw-bold uppercase d-block mb-1">Total Grant Received</span>
+                        <h2 class="fw-bold text-primary mb-0" th:text="'₹' + ${#numbers.formatDecimal(totalReceived, 0, 'COMMA', 0, 'POINT')}">₹0</h2>
+                        <small class="text-muted">Sanctioned fund amount</small>
+                    </div>
+                    <div class="p-3 bg-info bg-opacity-10 rounded-circle text-info">
+                        <i class="fa-solid fa-indian-rupee-sign fs-3"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION STATUS TIMELINE SECTION -->
+    <div th:if="${latestApplication != null}" class="card gov-card border-0 shadow-sm mb-4">
+        <div class="card-header bg-navy text-white py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="fa-solid fa-diagram-project text-warning me-2"></i> Application Status Timeline</h5>
+            <span class="badge bg-light text-navy fw-bold" th:text="${latestApplication.applicationNumber}">APP-1001</span>
+        </div>
+        <div class="card-body p-4">
+            <div class="mb-3">
+                <h6 class="fw-bold text-navy mb-1" th:text="${latestApplication.scheme.name}">Scheme Name</h6>
+                <small class="text-muted me-3">Requested Grant: <strong class="text-success" th:text="'₹' + ${#numbers.formatDecimal(latestApplication.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</strong></small>
+                <small class="text-muted me-3">Eligibility Score: <strong class="text-primary" th:text="${latestApplication.eligibilityScore} + '%'">0%</strong></small>
+                <small class="text-muted">Submitted Date: <strong th:text="${#temporals.format(latestApplication.createdAt, 'dd-MMM-yyyy')}">01-Jan-2026</strong></small>
+            </div>
+
+            <!-- Stage Stepper Timeline -->
+            <div class="row g-2 text-center my-3 py-2 bg-light rounded border">
+                <div class="col-4 col-md-2">
+                    <div class="p-2 rounded bg-success text-white">
+                        <i class="fa-solid fa-circle-check fs-5 d-block mb-1"></i>
+                        <span class="small fw-bold d-block">1. Submitted</span>
+                    </div>
+                </div>
+                <div class="col-4 col-md-2">
+                    <div class="p-2 rounded bg-success text-white">
+                        <i class="fa-solid fa-circle-check fs-5 d-block mb-1"></i>
+                        <span class="small fw-bold d-block">2. Score Evaluated</span>
+                    </div>
+                </div>
+                <div class="col-4 col-md-2">
+                    <div th:class="'p-2 rounded ' + (${latestApplication.currentStage == 'FIELD_VERIFICATION' ? 'bg-warning text-dark fw-bold' : (latestApplication.currentStage == 'DISTRICT_REVIEW' || latestApplication.currentStage == 'FINANCE_APPROVAL' || latestApplication.currentStage == 'DISBURSEMENT' || latestApplication.currentStage == 'COMPLETED' ? 'bg-success text-white' : 'bg-secondary text-white opacity-75')})">
+                        <i th:class="'fs-5 d-block mb-1 fa-solid ' + (${latestApplication.currentStage == 'FIELD_VERIFICATION' ? 'fa-spinner fa-spin' : (latestApplication.currentStage == 'DISTRICT_REVIEW' || latestApplication.currentStage == 'FINANCE_APPROVAL' || latestApplication.currentStage == 'DISBURSEMENT' || latestApplication.currentStage == 'COMPLETED' ? 'fa-circle-check' : 'fa-clock')})"></i>
+                        <span class="small fw-bold d-block">3. Field Verify</span>
+                    </div>
+                </div>
+                <div class="col-4 col-md-2 mt-2 mt-md-0">
+                    <div th:class="'p-2 rounded ' + (${latestApplication.currentStage == 'DISTRICT_REVIEW' ? 'bg-warning text-dark fw-bold' : (latestApplication.currentStage == 'FINANCE_APPROVAL' || latestApplication.currentStage == 'DISBURSEMENT' || latestApplication.currentStage == 'COMPLETED' ? 'bg-success text-white' : 'bg-secondary text-white opacity-75')})">
+                        <i th:class="'fs-5 d-block mb-1 fa-solid ' + (${latestApplication.currentStage == 'DISTRICT_REVIEW' ? 'fa-spinner fa-spin' : (latestApplication.currentStage == 'FINANCE_APPROVAL' || latestApplication.currentStage == 'DISBURSEMENT' || latestApplication.currentStage == 'COMPLETED' ? 'fa-circle-check' : 'fa-clock')})"></i>
+                        <span class="small fw-bold d-block">4. District Review</span>
+                    </div>
+                </div>
+                <div class="col-4 col-md-2 mt-2 mt-md-0">
+                    <div th:class="'p-2 rounded ' + (${latestApplication.currentStage == 'FINANCE_APPROVAL' ? 'bg-warning text-dark fw-bold' : (latestApplication.currentStage == 'DISBURSEMENT' || latestApplication.currentStage == 'COMPLETED' ? 'bg-success text-white' : 'bg-secondary text-white opacity-75')})">
+                        <i th:class="'fs-5 d-block mb-1 fa-solid ' + (${latestApplication.currentStage == 'FINANCE_APPROVAL' ? 'fa-spinner fa-spin' : (latestApplication.currentStage == 'DISBURSEMENT' || latestApplication.currentStage == 'COMPLETED' ? 'fa-circle-check' : 'fa-clock')})"></i>
+                        <span class="small fw-bold d-block">5. Finance Sanction</span>
+                    </div>
+                </div>
+                <div class="col-4 col-md-2 mt-2 mt-md-0">
+                    <div th:class="'p-2 rounded ' + (${latestApplication.currentStage == 'DISBURSEMENT' || latestApplication.currentStage == 'COMPLETED' ? 'bg-success text-white' : 'bg-secondary text-white opacity-75'})">
+                        <i th:class="'fs-5 d-block mb-1 fa-solid ' + (${latestApplication.currentStage == 'DISBURSEMENT' || latestApplication.currentStage == 'COMPLETED' ? 'fa-circle-check' : 'fa-clock'})"></i>
+                        <span class="small fw-bold d-block">6. Disbursement</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Rejection Alert -->
+            <div th:if="${latestApplication.status == 'REJECTED'}" class="alert alert-danger mb-0 mt-3 p-3">
+                <h6 class="fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation me-2"></i> Application Rejected</h6>
+                <p class="mb-0 small" th:text="${latestApplication.rejectionReason}">Reason for rejection will appear here.</p>
+            </div>
+
+            <!-- Re-verification Alert -->
+            <div th:if="${latestApplication.currentStage == 'RE_VERIFICATION'}" class="alert alert-warning mb-0 mt-3 p-3 text-dark">
+                <h6 class="fw-bold mb-1"><i class="fa-solid fa-rotate-left me-2"></i> Re-verification Required</h6>
+                <p class="mb-0 small">The verification officer requested additional document submission or physical inspection.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN TWO-COLUMN CONTENT GRID -->
+    <div class="row g-4">
+
+        <!-- RECENT APPLICATIONS HISTORY (LEFT / LARGE) -->
+        <div class="col-lg-8">
+            <div class="card gov-card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center border-bottom">
+                    <h5 class="fw-bold text-navy mb-0"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i> Recent Applications History</h5>
+                    <a th:href="@{/beneficiary/applications}" class="btn btn-sm btn-outline-primary fw-bold">View All Applications</a>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-3">Application ID</th>
+                                    <th>Scheme Name</th>
+                                    <th>Requested Amount</th>
+                                    <th>Score</th>
+                                    <th>Current Stage</th>
+                                    <th>Status</th>
+                                    <th class="pe-3 text-end">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(applications)}">
+                                    <td colspan="7" class="text-center text-muted py-5">
+                                        <i class="fa-solid fa-folder-open fs-1 text-secondary mb-2 d-block"></i>
+                                        No applications submitted yet. Select a scheme to check eligibility and apply.
+                                    </td>
+                                </tr>
+                                <tr th:each="app : ${applications}">
+                                    <td class="ps-3 fw-bold text-navy" th:text="${app.applicationNumber}">APP-1001</td>
+                                    <td>
+                                        <span class="fw-semibold text-dark" th:text="${app.scheme.name}">Scheme Name</span>
+                                    </td>
+                                    <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹50,000</td>
+                                    <td>
+                                        <span class="badge bg-info text-dark" th:text="${app.eligibilityScore} + '%'">85%</span>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-primary" th:text="${app.currentStage}">FIELD_VERIFICATION</span>
+                                    </td>
+                                    <td>
+                                        <span th:if="${app.status == 'APPROVED'}" class="badge bg-success">APPROVED</span>
+                                        <span th:if="${app.status == 'PENDING'}" class="badge bg-warning text-dark">PENDING</span>
+                                        <span th:if="${app.status == 'REJECTED'}" class="badge bg-danger">REJECTED</span>
+                                    </td>
+                                    <td class="pe-3 text-end">
+                                        <a th:href="@{'/beneficiary/applications/' + ${app.id}}" class="btn btn-sm btn-outline-secondary">View Details</a>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RECOMMENDED SCHEMES (RIGHT / SIDEBAR) -->
+        <div class="col-lg-4">
+            <div class="card gov-card border-0 shadow-sm h-100">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h5 class="fw-bold text-navy mb-0"><i class="fa-solid fa-star text-warning me-2"></i> Recommended Schemes</h5>
+                </div>
+                <div class="card-body p-3">
+                    <div th:each="scheme : ${recommendedSchemes}" class="card mb-3 border border-light-subtle rounded shadow-xs">
+                        <div class="card-body p-3">
+                            <h6 class="fw-bold text-navy mb-1" th:text="${scheme.name}">Scheme Name</h6>
+                            <p class="small text-muted mb-2 line-clamp-2" th:text="${scheme.description}">Scheme description text.</p>
+                            <div class="d-flex justify-content-between align-items-center pt-2 border-top">
+                                <span class="fw-bold text-success small" th:text="'Max ₹' + ${#numbers.formatDecimal(scheme.maxAmount, 0, 'COMMA', 0, 'POINT')}">Max ₹1,00,000</span>
+                                <a th:href="@{'/beneficiary/check-eligibility?schemeId=' + ${scheme.id}}" class="btn btn-sm btn-outline-primary fw-bold">Check Eligibility</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-navy mb-0"><i class="fa-solid fa-hand-holding-dollar text-success me-2"></i> My Grant Disbursements</h3>
+    </div>
+
+    <div class="card gov-card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div th:if="${#lists.isEmpty(disbursements)}" class="text-center py-4">
+                <i class="fa-solid fa-circle-info fa-3x text-muted mb-3"></i>
+                <h5 class="text-secondary fw-bold">No active disbursements found</h5>
+                <p class="text-muted mb-0">Disbursement records will appear here once your submitted scheme applications pass Treasury approval.</p>
+            </div>
+
+            <div th:if="${!#lists.isEmpty(disbursements)}" class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Disbursement ID</th>
+                            <th>Application #</th>
+                            <th>Scheme Name</th>
+                            <th>Total Approved</th>
+                            <th>Disbursed Amount</th>
+                            <th>Remaining Balance</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="d : ${disbursements}">
+                            <td class="fw-bold" th:text="'DISB-' + ${d.id}">DISB-1</td>
+                            <td class="fw-bold text-navy" th:text="${d.application.applicationNumber}">APP-1001</td>
+                            <td th:text="${d.application.scheme.name}">PM Krishi Vikas Scheme</td>
+                            <td class="fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(d.approvedAmount, 0, 'COMMA', 0, 'POINT')}">₹50,000</td>
+                            <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(d.disbursedAmount, 0, 'COMMA', 0, 'POINT')}">₹25,000</td>
+                            <td class="fw-bold text-primary" th:text="'₹' + ${#numbers.formatDecimal(d.approvedAmount - d.disbursedAmount, 0, 'COMMA', 0, 'POINT')}">₹25,000</td>
+                            <td><span class="badge bg-success" th:text="${d.disbursementStatus}">RELEASED</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card gov-card shadow-sm border-0">
+                <div th:class="'card-header text-white py-3 ' + (${result.eligible ? 'bg-success' : 'bg-danger'})">
+                    <h4 class="mb-0 fw-bold">
+                        <i th:class="'me-2 fa-solid ' + (${result.eligible ? 'fa-circle-check' : 'fa-circle-xmark'})"></i>
+                        Eligibility Status: <span th:text="${result.eligible ? 'ELIGIBLE' : 'NOT ELIGIBLE'}">ELIGIBLE</span>
+                    </h4>
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- Score Overview Header -->
+                    <div class="row align-items-center mb-4 p-4 rounded bg-light border">
+                        <div class="col-md-4 text-center border-end">
+                            <span class="text-muted small fw-bold d-block text-uppercase">Eligibility Score</span>
+                            <h1 th:class="'fw-bold display-4 mb-0 ' + (${result.eligible ? 'text-success' : 'text-danger'})" th:text="${result.totalScore} + '/100'">82/100</h1>
+                        </div>
+                        <div class="col-md-4 text-center border-end">
+                            <span class="text-muted small fw-bold d-block text-uppercase">Minimum Required</span>
+                            <h1 class="fw-bold display-4 text-navy mb-0" th:text="${scheme.minQualifyingScore} + '/100'">60/100</h1>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <span class="text-muted small fw-bold d-block text-uppercase">Status</span>
+                            <span th:if="${result.eligible}" class="badge bg-success fs-5 px-3 py-2 mt-2">ELIGIBLE</span>
+                            <span th:if="${!result.eligible}" class="badge bg-danger fs-5 px-3 py-2 mt-2">NOT ELIGIBLE</span>
+                        </div>
+                    </div>
+
+                    <div class="text-center mb-4">
+                        <h5 class="fw-bold text-navy" th:text="${result.schemeName}">Scheme Name</h5>
+                        <p class="text-muted mb-0" th:text="${result.statusMessage}">Status message</p>
+                    </div>
+
+                    <!-- Criterion-Wise Breakdown Table -->
+                    <h5 class="fw-bold text-navy mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i> Criterion-Wise Breakdown</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Criterion</th>
+                                    <th>Result</th>
+                                    <th>Weight</th>
+                                    <th class="text-end">Earned Score</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="c : ${result.criterionResults}">
+                                    <td>
+                                        <div class="fw-bold text-navy" th:text="${c.description != null ? c.description : c.criterionName}">Criterion Name</div>
+                                        <small class="text-muted font-monospace" th:text="${c.criterionName}">CRITERION_CODE</small>
+                                    </td>
+                                    <td>
+                                        <span th:if="${c.passed}" class="badge bg-success"><i class="fa-solid fa-check me-1"></i> PASS</span>
+                                        <span th:if="${!c.passed}" class="badge bg-danger"><i class="fa-solid fa-xmark me-1"></i> FAIL</span>
+                                    </td>
+                                    <td class="fw-semibold" th:text="${c.weightPoints} + '%'">20%</td>
+                                    <td class="text-end fw-bold fs-6" th:classappend="${c.passed ? 'text-success' : 'text-danger'}" th:text="${c.earnedPoints}">20</td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light fw-bold">
+                                <tr>
+                                    <td colspan="2" class="text-navy">TOTAL CALCULATED ELIGIBILITY SCORE:</td>
+                                    <td class="text-muted">100%</td>
+                                    <td class="text-end fs-5" th:classappend="${result.eligible ? 'text-success' : 'text-danger'}" th:text="${result.totalScore} + ' / 100'">82 / 100</td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="d-flex justify-content-between align-items-center border-top pt-4">
+                        <a th:href="@{/beneficiary/check-eligibility}" class="btn btn-outline-secondary">
+                            <i class="fa-solid fa-arrow-left me-1"></i> Check Another Scheme
+                        </a>
+                        
+                        <a th:if="${result.eligible}" th:href="@{'/beneficiary/apply?schemeId=' + ${result.schemeId}}" class="btn btn-success btn-lg fw-bold px-4 shadow">
+                            <i class="fa-solid fa-paper-plane me-2"></i> APPLY NOW FOR GRANT
+                        </a>
+
+                        <button th:if="${!result.eligible}" class="btn btn-secondary btn-lg fw-bold" disabled>
+                            Ineligible to Apply
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

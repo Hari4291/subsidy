@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-navy mb-1"><i class="fa-solid fa-clipboard-check text-primary me-2"></i> Field Verification &amp; Document Review</h3>
+            <p class="text-muted small mb-0">Application Number: <strong th:text="${app.applicationNumber}">APP-123456</strong></p>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Error processing verification</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${successMessage}">Success</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <form th:action="@{/officer/verify}" th:object="${actionDto}" method="post">
+        <input type="hidden" th:field="*{applicationId}">
+        <input type="hidden" name="role" value="FIELD_OFFICER">
+
+        <!-- ══════════════════════════════════════════
+             1. APPLICATION DETAILS
+             ══════════════════════════════════════════ -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-user me-2"></i> Application &amp; Applicant Details
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Application Number</small>
+                        <span class="fw-bold text-navy" th:text="${app.applicationNumber}">APP-123456</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Applied Scheme</small>
+                        <span class="fw-bold text-primary" th:text="${scheme.name}">Scheme Name</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Application Date</small>
+                        <span th:text="${app.createdAt != null ? #temporals.format(app.createdAt, 'dd-MM-yyyy HH:mm') : 'N/A'}">01-01-2025 10:00</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Current Stage</small>
+                        <span class="badge bg-warning text-dark" th:text="${app.currentStage}">FIELD_VERIFICATION</span>
+                    </div>
+
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Full Name</small>
+                        <span class="fw-bold text-dark" th:text="${beneficiary.user.fullName}">Beneficiary Name</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Mobile Number</small>
+                        <span th:text="${beneficiary.user.mobileNumber}">9988776655</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Email Address</small>
+                        <span th:text="${beneficiary.user.email}">email@example.com</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Category</small>
+                        <span class="badge bg-secondary" th:text="${beneficiary.category}">OBC</span>
+                    </div>
+
+                    <div class="col-md-2">
+                        <small class="text-muted d-block fw-bold">Eligibility Score</small>
+                        <div class="d-flex align-items-center gap-2">
+                            <h5 class="fw-bold text-primary mb-0" th:text="${app.eligibilityScore} + '/100'">85/100</h5>
+                            <span th:if="${app.eligibilityScore != null and app.eligibilityScore >= 60}" class="badge bg-success">ELIGIBLE</span>
+                            <span th:if="${app.eligibilityScore != null and app.eligibilityScore < 60}" class="badge bg-warning text-dark">NEEDS REVIEW</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Requested Amount</small>
+                        <h5 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹50,000</h5>
+                    </div>
+                    <div class="col-md-7">
+                        <small class="text-muted d-block fw-bold">Full Residential Address</small>
+                        <span th:text="${beneficiary.address} + ', ' + ${beneficiary.district} + ', ' + ${beneficiary.state} + ' - ' + ${beneficiary.pincode}">Address</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             2. BENEFICIARY SUBMITTED ELIGIBILITY DETAILS
+             ══════════════════════════════════════════ -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-list-check me-2"></i> Beneficiary Submitted Eligibility Details
+                <small class="fw-normal ms-2 text-white-50">(Scheme: <span th:text="${scheme.name}">Scheme</span>)</small>
+            </div>
+            <div class="card-body p-4">
+
+                <!-- Answers available -->
+                <div th:if="${eligibilityAnswers != null and !#lists.isEmpty(eligibilityAnswers)}">
+                    <div th:each="ans, iStat : ${eligibilityAnswers}" class="mb-3 pb-3 border-bottom">
+                        <div class="row align-items-start">
+                            <div class="col-md-1 text-center">
+                                <span class="badge bg-navy rounded-circle" th:text="${iStat.count}">1</span>
+                            </div>
+                            <div class="col-md-7">
+                                <small class="text-muted fw-bold d-block">Question</small>
+                                <span class="fw-semibold text-dark" th:text="${ans.questionTextSnapshot}">Question text</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted fw-bold d-block">Beneficiary's Answer</small>
+                                <span class="badge bg-light text-dark border fw-bold fs-6 px-3 py-2"
+                                      th:text="${ans.submittedAnswer != null and !#strings.isEmpty(ans.submittedAnswer) ? ans.submittedAnswer : '—'}">Answer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No answers recorded -->
+                <div th:if="${eligibilityAnswers == null or #lists.isEmpty(eligibilityAnswers)}" class="alert alert-secondary mb-0">
+                    <i class="fa-solid fa-circle-info me-2"></i>
+                    No eligibility answer records found for this application. This may occur for applications submitted before the answer capture feature was enabled.
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             3. UPLOADED DOCUMENTS & VERIFICATION
+             ══════════════════════════════════════════ -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-file-pdf me-2"></i> Uploaded Documents &amp; Verification
+                <small class="fw-normal ms-2 text-white-50">(Application-specific documents only)</small>
+            </div>
+            <div class="card-body p-4">
+
+                <!-- Uploaded documents (dynamic) -->
+                <div th:if="${applicationDocs != null and !#lists.isEmpty(applicationDocs)}">
+                    <div th:each="doc, dStat : ${applicationDocs}" th:if="${'ACTIVE'.equals(doc.status)}" class="mb-4 p-3 bg-light rounded border">
+                        <div class="row align-items-start g-3">
+
+                            <!-- Document Info -->
+                            <div class="col-md-4">
+                                <h6 class="fw-bold text-navy mb-1">
+                                    <i class="fa-solid fa-file me-2 text-primary"></i>
+                                    <span th:text="${dStat.count} + '. ' + ${doc.documentType}">1. AADHAAR</span>
+                                </h6>
+                                <p class="small mb-1"><strong>Filename:</strong> <span th:text="${doc.fileName}">file.pdf</span></p>
+                                <p class="small mb-1"><strong>Uploaded:</strong>
+                                    <span th:text="${doc.uploadedDate != null ? #temporals.format(doc.uploadedDate, 'dd-MM-yyyy HH:mm') : 'N/A'}">01-01-2025</span>
+                                </p>
+                                <span class="badge mb-2"
+                                      th:classappend="${doc.verificationStatus == 'VERIFIED' ? 'bg-success' : (doc.verificationStatus == 'INVALID' ? 'bg-danger' : (doc.verificationStatus == 'RE_VERIFICATION_REQUIRED' ? 'bg-warning text-dark' : 'bg-secondary'))}"
+                                      th:text="${doc.verificationStatus}">PENDING</span>
+
+                                <div class="mt-2 d-flex gap-2">
+                                    <a th:href="@{'/field-officer/documents/' + ${doc.id} + '/view'}"
+                                       target="_blank" class="btn btn-sm btn-navy fw-bold">
+                                        <i class="fa-solid fa-eye me-1"></i> View
+                                    </a>
+                                    <a th:href="@{'/field-officer/documents/' + ${doc.id} + '/view'}"
+                                       download class="btn btn-sm btn-outline-secondary fw-bold">
+                                        <i class="fa-solid fa-download me-1"></i> Download
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Verification Decision -->
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold small text-navy mb-2">
+                                    Verification Decision for: <em th:text="${doc.documentType}">Document Type</em>
+                                </label>
+                                <div class="mb-2">
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio"
+                                               th:name="'documentVerificationStatuses[' + ${doc.id} + ']'"
+                                               th:id="'docVerified_' + ${doc.id}"
+                                               value="VERIFIED"
+                                               th:checked="${actionDto.documentVerificationStatuses != null and actionDto.documentVerificationStatuses.get(doc.id) == 'VERIFIED'}">
+                                        <label class="form-check-label fw-bold text-success small"
+                                               th:for="'docVerified_' + ${doc.id}">Verified</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio"
+                                               th:name="'documentVerificationStatuses[' + ${doc.id} + ']'"
+                                               th:id="'docInvalid_' + ${doc.id}"
+                                               value="INVALID"
+                                               th:checked="${actionDto.documentVerificationStatuses != null and actionDto.documentVerificationStatuses.get(doc.id) == 'INVALID'}">
+                                        <label class="form-check-label fw-bold text-danger small"
+                                               th:for="'docInvalid_' + ${doc.id}">Invalid / Wrong Document</label>
+                                    </div>
+                                    <div class="form-check form-check-inline">
+                                        <input class="form-check-input" type="radio"
+                                               th:name="'documentVerificationStatuses[' + ${doc.id} + ']'"
+                                               th:id="'docReverify_' + ${doc.id}"
+                                               value="RE_VERIFICATION_REQUIRED"
+                                               th:checked="${actionDto.documentVerificationStatuses != null and actionDto.documentVerificationStatuses.get(doc.id) == 'RE_VERIFICATION_REQUIRED'}">
+                                        <label class="form-check-label fw-bold text-warning text-dark small"
+                                               th:for="'docReverify_' + ${doc.id}">Unclear / Re-upload Required</label>
+                                    </div>
+                                </div>
+                                <div>
+                                    <input type="text"
+                                           th:name="'documentVerificationRemarks[' + ${doc.id} + ']'"
+                                           th:id="'docRemarks_' + ${doc.id}"
+                                           class="form-control form-control-sm"
+                                           th:placeholder="'Remarks for ' + ${doc.documentType} + '...'"
+                                           th:value="${actionDto.documentVerificationRemarks != null ? actionDto.documentVerificationRemarks.get(doc.id) : ''}">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No documents uploaded -->
+                <div th:if="${applicationDocs == null or #lists.isEmpty(applicationDocs)}" class="alert alert-warning mb-3">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i>
+                    No documents have been uploaded for this application.
+                </div>
+
+                <!-- Missing required documents -->
+                <div th:if="${requiredDocs != null and !#lists.isEmpty(requiredDocs)}">
+                    <div th:each="reqDoc : ${requiredDocs}"
+                         th:unless="${applicationDocs != null and #lists.contains(applicationDocs.![documentType], reqDoc.documentType)}">
+                        <div class="alert alert-danger mb-2 d-flex align-items-center gap-3 py-2">
+                            <i class="fa-solid fa-circle-xmark fs-5"></i>
+                            <div>
+                                <strong th:text="${reqDoc.documentName}">Required Document</strong>
+                                <span class="badge bg-danger ms-2">NOT UPLOADED</span>
+                                <div th:if="${reqDoc.required}" class="small text-danger">⚠ Required document not submitted by beneficiary.</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             4. FIELD OFFICER GROUND INSPECTION DECISION
+             ══════════════════════════════════════════ -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-user-check me-2"></i> Field Officer Ground Inspection Decision
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <label for="remarks" class="form-label fw-bold">Field Inspection Remarks <span class="text-danger">*</span></label>
+                    <textarea id="remarks" th:field="*{remarks}" class="form-control" rows="3"
+                              placeholder="Enter detailed physical ground verification notes and document verification remarks..." required></textarea>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+                    <button type="submit" name="action" value="APPROVE" class="btn btn-success btn-lg fw-bold shadow-sm">
+                        <i class="fa-solid fa-circle-check me-2"></i> Approve Verification
+                    </button>
+                    <button type="submit" name="action" value="REQUEST_RE_VERIFICATION" class="btn btn-warning text-dark btn-lg fw-bold shadow-sm">
+                        <i class="fa-solid fa-rotate-left me-2"></i> Request Re-verification
+                    </button>
+                    <button type="submit" name="action" value="REJECT" class="btn btn-danger btn-lg fw-bold shadow-sm">
+                        <i class="fa-solid fa-circle-xmark me-2"></i> Reject Application
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

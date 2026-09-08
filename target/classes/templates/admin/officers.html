@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{admin/fragments/header :: admin-header}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-navy mb-0"><i class="fa-solid fa-user-shield text-primary me-2"></i> Manage Portal Officers (Users / Roles)</h3>
+        <a href="#createOfficerForm" class="btn btn-navy fw-bold text-white"><i class="fa-solid fa-user-plus me-1"></i> Add New Officer</a>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${param.success}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> Officer created successfully with official credentials!
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Officer creation error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Officers Table -->
+    <div class="card gov-card shadow-sm border-0 mb-5">
+        <div class="card-header bg-navy text-white fw-bold py-3">
+            <i class="fa-solid fa-users-gear me-2"></i> Active Portal Officers
+        </div>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Officer ID</th>
+                            <th>Officer Name</th>
+                            <th>Email Address</th>
+                            <th>Mobile</th>
+                            <th>Role / Designation</th>
+                            <th>Jurisdiction State</th>
+                            <th>District</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="off : ${officers}">
+                            <td class="fw-bold" th:text="'OFF-' + ${off.id}">OFF-1</td>
+                            <td class="fw-bold text-navy" th:text="${off.fullName}">Ravi Kumar</td>
+                            <td th:text="${off.email}">field.officer@gmail.com</td>
+                            <td th:text="${off.mobileNumber}">8123456789</td>
+                            <td>
+                                <span th:if="${off.officerType == 'FIELD_OFFICER'}" class="badge bg-info text-dark fw-bold">Field Officer</span>
+                                <span th:if="${off.officerType == 'DISTRICT_OFFICER'}" class="badge bg-warning text-dark fw-bold">District Officer</span>
+                                <span th:if="${off.officerType == 'FINANCE_APPROVER'}" class="badge bg-success fw-bold">Finance Approver</span>
+                            </td>
+                            <td th:text="${off.state}">Andhra Pradesh</td>
+                            <td th:text="${off.district}">Kakinada</td>
+                            <td><span class="badge bg-success" th:text="${off.status}">ACTIVE</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Create Officer Form -->
+    <div id="createOfficerForm" class="card gov-card shadow-sm border-0">
+        <div class="card-header bg-navy text-white fw-bold py-3">
+            <i class="fa-solid fa-user-plus me-2"></i> Provision New Government Officer Account
+        </div>
+        <div class="card-body p-4">
+            <form th:action="@{/admin/officers}" th:object="${officerDto}" method="post">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label for="fullName" class="form-label fw-bold">Full Name <span class="text-danger">*</span></label>
+                        <input type="text" id="fullName" th:field="*{fullName}" class="form-control" placeholder="e.g. Suresh Varma" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="email" class="form-label fw-bold">Official Email <span class="text-danger">*</span></label>
+                        <input type="email" id="email" th:field="*{email}" class="form-control" placeholder="e.g. officer@gov.in" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="mobileNumber" class="form-label fw-bold">Mobile Number <span class="text-danger">*</span></label>
+                        <input type="text" id="mobileNumber" th:field="*{mobileNumber}" class="form-control" placeholder="10 digits e.g. 9876543210" maxlength="10" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="password" class="form-label fw-bold">Temporary Password <span class="text-danger">*</span></label>
+                        <input type="password" id="password" th:field="*{password}" class="form-control" placeholder="••••••••" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="officerType" class="form-label fw-bold">Officer Role <span class="text-danger">*</span></label>
+                        <select id="officerType" th:field="*{officerType}" class="form-select" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="FIELD_OFFICER">Field Officer (Ground Verification)</option>
+                            <option value="DISTRICT_OFFICER">District Officer (Collectorate Review)</option>
+                            <option value="FINANCE_APPROVER">Finance Approver (Treasury Release)</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="state" class="form-label fw-bold">Jurisdiction State <span class="text-danger">*</span></label>
+                        <select id="state" th:field="*{state}" class="form-select" required>
+                            <option value="">-- Select State --</option>
+                            <option th:each="st : ${states}" th:value="${st}" th:text="${st}">Andhra Pradesh</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="district" class="form-label fw-bold">Jurisdiction District <span class="text-danger">*</span></label>
+                        <input type="text" id="district" th:field="*{district}" class="form-control" placeholder="e.g. Kakinada" required>
+                    </div>
+                    <div class="col-12 mt-4">
+                        <button type="submit" class="btn btn-navy btn-lg fw-bold text-white shadow-sm">
+                            <i class="fa-solid fa-user-check me-2"></i> Save Officer Account
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

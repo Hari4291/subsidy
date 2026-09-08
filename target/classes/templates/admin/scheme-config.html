@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{admin/fragments/header :: admin-header}"></div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show p-3 mb-4 shadow-sm" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${successMessage}">Operation successful</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show p-3 mb-4 shadow-sm" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Error occurred</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Header Navigation -->
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <a th:href="@{/admin/schemes}" class="btn btn-outline-secondary btn-sm mb-2">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Scheme List
+            </a>
+            <h3 class="fw-bold text-navy mb-0">
+                <i class="fa-solid fa-sliders text-warning me-2"></i>
+                <span th:text="${isNew != null and isNew ? 'Create New Scheme' : 'Configure Scheme: ' + scheme.name}">Scheme Configuration</span>
+            </h3>
+        </div>
+        <div th:if="${scheme != null}">
+            <span th:if="${scheme.status == 'ACTIVE'}" class="badge bg-success fs-6"><i class="fa-solid fa-circle-check me-1"></i> ACTIVE</span>
+            <span th:if="${scheme.status == 'DRAFT'}" class="badge bg-warning text-dark fs-6"><i class="fa-solid fa-pen-nib me-1"></i> DRAFT</span>
+            <span th:if="${scheme.status == 'INACTIVE'}" class="badge bg-danger fs-6"><i class="fa-solid fa-circle-xmark me-1"></i> INACTIVE</span>
+        </div>
+    </div>
+
+    <!-- 6-Step Wizard Navigation Tabs -->
+    <div class="card gov-card shadow-sm border-0 mb-4" th:if="${scheme != null or (isNew != null and isNew)}">
+        <div class="card-body p-2 bg-light rounded">
+            <ul class="nav nav-pills nav-justified font-monospace text-uppercase small">
+                <li class="nav-item">
+                    <a th:class="${step == 1 ? 'nav-link active bg-navy text-white fw-bold' : 'nav-link text-dark'}"
+                       th:href="${scheme != null ? '/admin/schemes/' + scheme.id + '/config?step=1' : '#'}">
+                        1. Scheme Details
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${scheme == null ? 'disabled' : ''}">
+                    <a th:class="${step == 2 ? 'nav-link active bg-navy text-white fw-bold' : 'nav-link text-dark'}"
+                       th:href="${scheme != null ? '/admin/schemes/' + scheme.id + '/config?step=2' : '#'}">
+                        2. Questions
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${scheme == null ? 'disabled' : ''}">
+                    <a th:class="${step == 3 ? 'nav-link active bg-navy text-white fw-bold' : 'nav-link text-dark'}"
+                       th:href="${scheme != null ? '/admin/schemes/' + scheme.id + '/config?step=3' : '#'}">
+                        3. Criteria &amp; Weights
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${scheme == null ? 'disabled' : ''}">
+                    <a th:class="${step == 4 ? 'nav-link active bg-navy text-white fw-bold' : 'nav-link text-dark'}"
+                       th:href="${scheme != null ? '/admin/schemes/' + scheme.id + '/config?step=4' : '#'}">
+                        4. Required Docs
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${scheme == null ? 'disabled' : ''}">
+                    <a th:class="${step == 5 ? 'nav-link active bg-navy text-white fw-bold' : 'nav-link text-dark'}"
+                       th:href="${scheme != null ? '/admin/schemes/' + scheme.id + '/config?step=5' : '#'}">
+                        5. Milestones
+                    </a>
+                </li>
+                <li class="nav-item" th:classappend="${scheme == null ? 'disabled' : ''}">
+                    <a th:class="${step == 6 ? 'nav-link active bg-navy text-white fw-bold' : 'nav-link text-dark'}"
+                       th:href="${scheme != null ? '/admin/schemes/' + scheme.id + '/config?step=6' : '#'}">
+                        6. Preview &amp; Activate
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- STEP 1: SCHEME DETAILS -->
+    <!-- ========================================================================= -->
+    <div th:if="${step == 1}" class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-navy text-white fw-bold py-3">
+            <i class="fa-solid fa-file-pen me-2 text-warning"></i> Step 1: Basic Scheme Information &amp; Parameters
+        </div>
+        <div class="card-body p-4">
+            <form th:action="@{/admin/schemes/save-basic}" th:object="${schemeDto}" method="post">
+                <input type="hidden" th:field="*{id}" />
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Scheme Name <span class="text-danger">*</span></label>
+                        <input type="text" th:field="*{name}" class="form-control" placeholder="e.g. Higher Education Financial Assistance Scheme" required />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Category <span class="text-danger">*</span></label>
+                        <select th:field="*{category}" class="form-select" required>
+                            <option value="">-- Select Category --</option>
+                            <option th:each="cat : ${categoryOptions}" th:value="${cat}" th:text="${cat}">Education</option>
+                        </select>
+                    </div>
+
+                    <div class="col-12">
+                        <label class="form-label fw-bold">Scheme Description <span class="text-danger">*</span></label>
+                        <textarea th:field="*{description}" class="form-control" rows="3" placeholder="Provide clear summary and purpose of the scheme..." required></textarea>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Maximum Grant Amount (₹) <span class="text-danger">*</span></label>
+                        <input type="number" step="0.01" th:field="*{maxAmount}" class="form-control" placeholder="100000" required />
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Minimum Eligibility Score (0-100) <span class="text-danger">*</span></label>
+                        <input type="number" th:field="*{minQualifyingScore}" class="form-control" min="0" max="100" placeholder="60" required />
+                        <div class="form-text text-muted">Beneficiaries scoring &ge; this value are eligible.</div>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">Status</label>
+                        <select th:field="*{status}" class="form-select">
+                            <option value="DRAFT">DRAFT</option>
+                            <option value="ACTIVE">ACTIVE</option>
+                            <option value="INACTIVE">INACTIVE</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Application Start Date</label>
+                        <input type="date" th:field="*{startDate}" class="form-control" />
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold">Application End Date</label>
+                        <input type="date" th:field="*{endDate}" class="form-control" />
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-end mt-4 pt-3 border-top">
+                    <button type="submit" class="btn btn-navy px-4 font-monospace">
+                        Save &amp; Continue to Questions <i class="fa-solid fa-arrow-right ms-2"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- STEP 2: ELIGIBILITY QUESTIONS -->
+    <!-- ========================================================================= -->
+    <div th:if="${step == 2}" class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-circle-question me-2 text-warning"></i> Step 2: Configure Dynamic Eligibility Questions</span>
+            <span class="badge bg-light text-navy font-monospace" th:text="${#lists.size(criteriaList)} + ' Configured Questions'">0 Questions</span>
+        </div>
+        <div class="card-body p-4">
+            <!-- Question Creation Form -->
+            <div class="card bg-light border-0 mb-4">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-plus-circle me-1"></i> Add / Modify Dynamic Question</h6>
+                    <form th:action="@{'/admin/schemes/' + ${scheme.id} + '/criteria/save'}" th:object="${newCriteriaDto}" method="post">
+                        <input type="hidden" th:field="*{id}" />
+
+                        <div class="row g-3">
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold small">Question Text <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{questionText}" class="form-control form-control-sm" placeholder="e.g. What is your current education level?" required />
+                            </div>
+
+                            <div class="col-md-4">
+                                <label class="form-label fw-bold small">Answer Type <span class="text-danger">*</span></label>
+                                <select th:field="*{answerType}" class="form-select form-select-sm" required>
+                                    <option value="TEXT">TEXT</option>
+                                    <option value="NUMBER">NUMBER</option>
+                                    <option value="DECIMAL">DECIMAL</option>
+                                    <option value="YES_NO">YES_NO</option>
+                                    <option value="SINGLE_SELECT">SINGLE_SELECT</option>
+                                    <option value="MULTI_SELECT">MULTI_SELECT</option>
+                                    <option value="DATE">DATE</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-8">
+                                <label class="form-label fw-bold small">Dropdown Options (Comma-separated for SINGLE_SELECT / MULTI_SELECT)</label>
+                                <input type="text" th:field="*{options}" class="form-control form-control-sm" placeholder="Intermediate / 12th, Diploma, Undergraduate, Postgraduate, PhD, Other" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold small">Display Order</label>
+                                <input type="number" th:field="*{displayOrder}" class="form-control form-control-sm" min="1" value="1" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold small">Required?</label>
+                                <select th:field="*{required}" class="form-select form-select-sm">
+                                    <option value="true">YES</option>
+                                    <option value="false">NO</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-end">
+                            <button type="submit" class="btn btn-warning btn-sm fw-bold text-navy px-3">
+                                <i class="fa-solid fa-save me-1"></i> Save Question
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Existing Questions List -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 45%;">Question Text</th>
+                            <th style="width: 20%;">Answer Type</th>
+                            <th style="width: 15%;">Options</th>
+                            <th style="width: 15%;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c, iterStat : ${criteriaList}">
+                            <td class="fw-bold text-muted" th:text="${c.displayOrder}">1</td>
+                            <td>
+                                <div class="fw-bold text-navy" th:text="${c.questionText}">Question Text</div>
+                                <span th:if="${c.required}" class="badge bg-danger-subtle text-danger border border-danger-subtle small">REQUIRED</span>
+                                <span th:if="${!c.required}" class="badge bg-secondary-subtle text-secondary small">OPTIONAL</span>
+                            </td>
+                            <td>
+                                <span class="badge bg-navy text-white font-monospace" th:text="${c.answerType}">SINGLE_SELECT</span>
+                            </td>
+                            <td class="small text-muted" th:text="${c.options != null ? c.options : '-'}">Options</td>
+                            <td class="text-end">
+                                <form th:action="@{'/admin/schemes/' + ${scheme.id} + '/criteria/' + ${c.id} + '/toggle'}" method="post" class="d-inline">
+                                    <button type="submit" th:class="${c.active ? 'btn btn-sm btn-outline-success' : 'btn btn-sm btn-outline-danger'}">
+                                        <span th:text="${c.active ? 'Enabled' : 'Disabled'}">Enabled</span>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(criteriaList)}">
+                            <td colspan="5" class="text-center py-4 text-muted">No eligibility questions configured yet. Use the form above to add questions.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                <a th:href="@{'/admin/schemes/' + ${scheme.id} + '/config?step=1'}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Details
+                </a>
+                <a th:href="@{'/admin/schemes/' + ${scheme.id} + '/config?step=3'}" class="btn btn-navy font-monospace">
+                    Continue to Criteria &amp; Weights <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- STEP 3: CRITERIA & WEIGHTAGE -->
+    <!-- ========================================================================= -->
+    <div th:if="${step == 3}" class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-scale-balanced me-2 text-warning"></i> Step 3: Eligibility Criteria &amp; Weightage Configuration</span>
+            <div>
+                <span class="me-2 text-white">Total Criteria Weight:</span>
+                <span th:class="${totalWeight == 100 ? 'badge bg-success fs-6 font-monospace' : 'badge bg-danger fs-6 font-monospace'}"
+                      th:text="${totalWeight} + '%'">0%</span>
+            </div>
+        </div>
+        <div class="card-body p-4">
+
+            <!-- Weight Total Banner -->
+            <div th:if="${totalWeight != 100}" class="alert alert-warning p-3 mb-4 border-warning shadow-xs">
+                <i class="fa-solid fa-triangle-exclamation me-2 text-warning fs-5"></i>
+                <strong>Validation Alert:</strong> Active criteria weights currently total <strong><span th:text="${totalWeight}">0</span>%</strong>. Total weight must equal <strong>100%</strong> before scheme activation.
+            </div>
+
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Criterion Name</th>
+                            <th>Related Question</th>
+                            <th>Operator / Condition</th>
+                            <th>Expected Value</th>
+                            <th>Weight %</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${criteriaList}">
+                            <td class="fw-bold text-navy" th:text="${c.criterionName}">Academic Performance</td>
+                            <td class="small" th:text="${c.questionText}">What was your previous academic percentage?</td>
+                            <td>
+                                <span class="badge bg-secondary font-monospace" th:text="${c.operator}">GTE</span>
+                            </td>
+                            <td class="font-monospace fw-bold text-navy" th:text="${c.targetValue}">50</td>
+                            <td class="fw-bold text-primary fs-6" th:text="${c.weightPoints} + '%'">20%</td>
+                            <td>
+                                <span th:if="${c.active}" class="badge bg-success">ACTIVE</span>
+                                <span th:if="${!c.active}" class="badge bg-secondary">INACTIVE</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="table-light fw-bold">
+                        <tr>
+                            <td colspan="4" class="text-end text-navy">TOTAL CONFIGURATION WEIGHTAGE:</td>
+                            <td th:class="${totalWeight == 100 ? 'text-success fs-5' : 'text-danger fs-5'}" th:text="${totalWeight} + '%'">100%</td>
+                            <td>
+                                <span th:if="${totalWeight == 100}" class="badge bg-success"><i class="fa-solid fa-check me-1"></i> VALID (100%)</span>
+                                <span th:if="${totalWeight != 100}" class="badge bg-danger"><i class="fa-solid fa-xmark me-1"></i> INVALID (&ne;100%)</span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                <a th:href="@{'/admin/schemes/' + ${scheme.id} + '/config?step=2'}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Questions
+                </a>
+                <a th:href="@{'/admin/schemes/' + ${scheme.id} + '/config?step=4'}" class="btn btn-navy font-monospace">
+                    Continue to Required Documents <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- STEP 4: REQUIRED DOCUMENTS -->
+    <!-- ========================================================================= -->
+    <div th:if="${step == 4}" class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-folder-open me-2 text-warning"></i> Step 4: Required Supporting Documents Configuration</span>
+            <span class="badge bg-light text-navy font-monospace" th:text="${#lists.size(docList)} + ' Documents'">0 Documents</span>
+        </div>
+        <div class="card-body p-4">
+
+            <!-- Add Document Form -->
+            <div class="card bg-light border-0 mb-4">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-plus-circle me-1"></i> Add Supporting Document Requirement</h6>
+                    <form th:action="@{'/admin/schemes/' + ${scheme.id} + '/documents/save'}" th:object="${newDocDto}" method="post">
+                        <input type="hidden" th:field="*{id}" />
+
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold small">Document Name <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{documentName}" class="form-control form-control-sm" placeholder="e.g. Bonafide / Student Certificate" required />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small">Document Type Identifier</label>
+                                <input type="text" th:field="*{documentType}" class="form-control form-control-sm" placeholder="e.g. BONAFIDE_CERTIFICATE" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold small">Required?</label>
+                                <select th:field="*{required}" class="form-select form-select-sm">
+                                    <option value="true">REQUIRED</option>
+                                    <option value="false">OPTIONAL</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold small">Display Order</label>
+                                <input type="number" th:field="*{displayOrder}" class="form-control form-control-sm" min="1" value="1" />
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-end">
+                            <button type="submit" class="btn btn-warning btn-sm fw-bold text-navy px-3">
+                                <i class="fa-solid fa-save me-1"></i> Save Document Requirement
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Documents Table -->
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 40%;">Document Name</th>
+                            <th style="width: 25%;">Document Type Code</th>
+                            <th style="width: 15%;">Requirement</th>
+                            <th style="width: 15%;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="d : ${docList}">
+                            <td class="fw-bold text-muted" th:text="${d.displayOrder}">1</td>
+                            <td class="fw-bold text-navy" th:text="${d.documentName}">Bonafide Certificate</td>
+                            <td><code th:text="${d.documentType}">BONAFIDE_CERTIFICATE</code></td>
+                            <td>
+                                <span th:if="${d.required}" class="badge bg-danger">REQUIRED</span>
+                                <span th:if="${!d.required}" class="badge bg-secondary">OPTIONAL</span>
+                            </td>
+                            <td class="text-end">
+                                <form th:action="@{'/admin/schemes/' + ${scheme.id} + '/documents/' + ${d.id} + '/toggle'}" method="post" class="d-inline">
+                                    <button type="submit" th:class="${d.active ? 'btn btn-sm btn-outline-success' : 'btn btn-sm btn-outline-danger'}">
+                                        <span th:text="${d.active ? 'Active' : 'Inactive'}">Active</span>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(docList)}">
+                            <td colspan="5" class="text-center py-4 text-muted">No required supporting documents configured. Use the form above to add documents.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                <a th:href="@{'/admin/schemes/' + ${scheme.id} + '/config?step=3'}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Criteria &amp; Weights
+                </a>
+                <a th:href="@{'/admin/schemes/' + ${scheme.id} + '/config?step=5'}" class="btn btn-navy font-monospace">
+                    Continue to Disbursement Milestones <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- STEP 5: DISBURSEMENT MILESTONES -->
+    <!-- ========================================================================= -->
+    <div th:if="${step == 5}" class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-timeline me-2 text-warning"></i> Step 5: Disbursement Milestones Configuration</span>
+            <div>
+                <span class="me-2 text-white">Total Milestone %:</span>
+                <span th:class="${totalMilestonePercentage == 100 ? 'badge bg-success fs-6 font-monospace' : 'badge bg-danger fs-6 font-monospace'}"
+                      th:text="${totalMilestonePercentage} + '%'">0%</span>
+            </div>
+        </div>
+        <div class="card-body p-4">
+
+            <!-- Milestone Total Banner -->
+            <div th:if="${totalMilestonePercentage != 100}" class="alert alert-warning p-3 mb-4 border-warning shadow-xs">
+                <i class="fa-solid fa-triangle-exclamation me-2 text-warning fs-5"></i>
+                <strong>Validation Alert:</strong> Disbursement milestone percentages currently total <strong><span th:text="${totalMilestonePercentage}">0</span>%</strong>. Total percentage must equal <strong>100%</strong> before scheme activation.
+            </div>
+
+            <!-- Add Milestone Form -->
+            <div class="card bg-light border-0 mb-4">
+                <div class="card-body p-3">
+                    <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-plus-circle me-1"></i> Add Disbursement Milestone</h6>
+                    <form th:action="@{'/admin/schemes/' + ${scheme.id} + '/milestones/save'}" th:object="${newMilestoneDto}" method="post">
+                        <input type="hidden" th:field="*{id}" />
+
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <label class="form-label fw-bold small">Milestone Name <span class="text-danger">*</span></label>
+                                <input type="text" th:field="*{milestoneName}" class="form-control form-control-sm" placeholder="e.g. Admission Verification" required />
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-bold small">Disbursement Percentage (%) <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{percentage}" class="form-control form-control-sm" min="1" max="100" placeholder="30" required />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold small">Display Order</label>
+                                <input type="number" th:field="*{displayOrder}" class="form-control form-control-sm" min="1" value="1" />
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label fw-bold small">Active?</label>
+                                <select th:field="*{active}" class="form-select form-select-sm">
+                                    <option value="true">YES</option>
+                                    <option value="false">NO</option>
+                                </select>
+                            </div>
+
+                            <div class="col-12">
+                                <label class="form-label fw-bold small">Description / Trigger Criteria</label>
+                                <input type="text" th:field="*{description}" class="form-control form-control-sm" placeholder="e.g. Tranche released upon student admission proof verification" />
+                            </div>
+                        </div>
+
+                        <div class="mt-3 text-end">
+                            <button type="submit" class="btn btn-warning btn-sm fw-bold text-navy px-3">
+                                <i class="fa-solid fa-save me-1"></i> Save Milestone
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Milestones Table -->
+            <div class="table-responsive mb-3">
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th style="width: 5%;">#</th>
+                            <th style="width: 35%;">Milestone Name</th>
+                            <th style="width: 30%;">Description</th>
+                            <th style="width: 15%;">Tranche %</th>
+                            <th style="width: 15%;" class="text-end">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="m : ${milestoneList}">
+                            <td class="fw-bold text-muted" th:text="${m.displayOrder}">1</td>
+                            <td class="fw-bold text-navy" th:text="${m.milestoneName}">Admission Verification</td>
+                            <td class="small text-muted" th:text="${m.description}">First tranche upon admission verification</td>
+                            <td class="fw-bold text-primary fs-6" th:text="${m.percentage} + '%'">30%</td>
+                            <td class="text-end">
+                                <form th:action="@{'/admin/schemes/' + ${scheme.id} + '/milestones/' + ${m.id} + '/toggle'}" method="post" class="d-inline">
+                                    <button type="submit" th:class="${m.active ? 'btn btn-sm btn-outline-success' : 'btn btn-sm btn-outline-secondary'}">
+                                        <span th:text="${m.active ? 'Active' : 'Inactive'}">Active</span>
+                                    </button>
+                                </form>
+                                <form th:action="@{'/admin/schemes/' + ${scheme.id} + '/milestones/' + ${m.id} + '/delete'}" method="post" class="d-inline ms-1">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" onclick="return confirm('Delete this milestone?')">
+                                        <i class="fa-solid fa-trash"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(milestoneList)}">
+                            <td colspan="5" class="text-center py-4 text-muted">No disbursement milestones configured. Use the form above to add milestones.</td>
+                        </tr>
+                    </tbody>
+                    <tfoot class="table-light fw-bold" th:if="${!#lists.isEmpty(milestoneList)}">
+                        <tr>
+                            <td colspan="3" class="text-end text-navy">TOTAL DISBURSEMENT MILESTONE PERCENTAGE:</td>
+                            <td th:class="${totalMilestonePercentage == 100 ? 'text-success fs-5' : 'text-danger fs-5'}" th:text="${totalMilestonePercentage} + '%'">100%</td>
+                            <td class="text-end">
+                                <span th:if="${totalMilestonePercentage == 100}" class="badge bg-success"><i class="fa-solid fa-check me-1"></i> VALID (100%)</span>
+                                <span th:if="${totalMilestonePercentage != 100}" class="badge bg-danger"><i class="fa-solid fa-xmark me-1"></i> INVALID (&ne;100%)</span>
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                <a th:href="@{'/admin/schemes/' + ${scheme.id} + '/config?step=4'}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Required Documents
+                </a>
+                <a th:href="@{'/admin/schemes/' + ${scheme.id} + '/config?step=6'}" class="btn btn-navy font-monospace">
+                    Continue to Preview &amp; Activate <i class="fa-solid fa-arrow-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- STEP 6: PREVIEW & ACTIVATE -->
+    <!-- ========================================================================= -->
+    <div th:if="${step == 6}" class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-clipboard-check me-2 text-warning"></i> Step 6: Preview Scheme &amp; Activation Check</span>
+            <span th:if="${#lists.isEmpty(activationErrors)}" class="badge bg-success fs-6"><i class="fa-solid fa-check-circle me-1"></i> READY TO ACTIVATE</span>
+            <span th:if="${!#lists.isEmpty(activationErrors)}" class="badge bg-danger fs-6"><i class="fa-solid fa-triangle-exclamation me-1"></i> CONFIGURATION INCOMPLETE</span>
+        </div>
+        <div class="card-body p-4">
+
+            <!-- Activation Validation Errors Banner -->
+            <div th:if="${!#lists.isEmpty(activationErrors)}" class="alert alert-danger p-3 mb-4 border-danger shadow-xs">
+                <h6 class="fw-bold mb-2"><i class="fa-solid fa-circle-exclamation me-2"></i> Activation Blocked — Configuration Errors Found:</h6>
+                <ul class="mb-0 ps-3">
+                    <li th:each="err : ${activationErrors}" th:text="${err}">Error message</li>
+                </ul>
+            </div>
+
+            <!-- Summary Overview Grid -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded border h-100">
+                        <h6 class="fw-bold text-navy border-bottom pb-2 mb-3"><i class="fa-solid fa-circle-info me-2 text-primary"></i> Scheme Overview</h6>
+                        <p class="mb-1"><strong>Name:</strong> <span th:text="${scheme.name}">Name</span></p>
+                        <p class="mb-1"><strong>Category:</strong> <span class="badge bg-secondary" th:text="${scheme.category}">Education</span></p>
+                        <p class="mb-1"><strong>Max Grant Amount:</strong> <span class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(scheme.maxAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</span></p>
+                        <p class="mb-1"><strong>Minimum Score Required:</strong> <span class="fw-bold text-primary" th:text="${scheme.minQualifyingScore} + '%'">60%</span></p>
+                        <p class="mb-0"><strong>Status:</strong> <span th:text="${scheme.status}" class="badge bg-dark">DRAFT</span></p>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="p-3 bg-light rounded border h-100">
+                        <h6 class="fw-bold text-navy border-bottom pb-2 mb-3"><i class="fa-solid fa-list-check me-2 text-primary"></i> Configuration Checks</h6>
+                        <p class="mb-1">
+                            <strong>Total Questions Configured:</strong>
+                            <span class="badge bg-navy" th:text="${#lists.size(criteriaList)}">0</span>
+                        </p>
+                        <p class="mb-1">
+                            <strong>Criteria Weight Total:</strong>
+                            <span th:class="${totalWeight == 100 ? 'badge bg-success' : 'badge bg-danger'}" th:text="${totalWeight} + '% (Required: 100%)'">0%</span>
+                        </p>
+                        <p class="mb-1">
+                            <strong>Required Documents:</strong>
+                            <span class="badge bg-navy" th:text="${#lists.size(docList)}">0</span>
+                        </p>
+                        <p class="mb-0">
+                            <strong>Milestone Percentage Total:</strong>
+                            <span th:class="${totalMilestonePercentage == 100 ? 'badge bg-success' : 'badge bg-danger'}" th:text="${totalMilestonePercentage} + '% (Required: 100%)'">0%</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Activation / Deactivation Action Bar -->
+            <div class="card bg-navy text-white p-4 text-center rounded shadow-xs mb-3">
+                <h5 class="fw-bold mb-2">Publish / Activate Scheme Engine</h5>
+                <p class="small text-white-50 mb-3">Activating this scheme will allow beneficiaries to apply, answer dynamic questions, upload scheme documents, and be automatically scored.</p>
+
+                <form th:action="@{'/admin/schemes/' + ${scheme.id} + '/activate'}" method="post" class="d-inline">
+                    <input type="hidden" name="targetStatus" th:value="${scheme.status == 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'}" />
+                    <button type="submit" th:class="${scheme.status == 'ACTIVE' ? 'btn btn-danger btn-lg px-5 font-monospace fw-bold' : 'btn btn-success btn-lg px-5 font-monospace fw-bold'}"
+                            th:disabled="${!#lists.isEmpty(activationErrors) and scheme.status != 'ACTIVE'}">
+                        <i th:class="${scheme.status == 'ACTIVE' ? 'fa-solid fa-power-off me-2' : 'fa-solid fa-circle-check me-2'}"></i>
+                        <span th:text="${scheme.status == 'ACTIVE' ? 'DEACTIVATE SCHEME' : 'ACTIVATE SCHEME NOW'}">ACTIVATE SCHEME NOW</span>
+                    </button>
+                </form>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4 pt-3 border-top">
+                <a th:href="@{'/admin/schemes/' + ${scheme.id} + '/config?step=5'}" class="btn btn-outline-secondary">
+                    <i class="fa-solid fa-arrow-left me-1"></i> Back to Milestones
+                </a>
+                <a th:href="@{/admin/schemes}" class="btn btn-outline-primary">
+                    Return to Scheme List <i class="fa-solid fa-list ms-1"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

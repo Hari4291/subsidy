@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container-fluid py-4 bg-light">
+    <div class="container">
+        <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
+            <div>
+                <h4 class="mb-1 fw-bold"><i class="fa-solid fa-building-circle-check text-warning me-2"></i> District Collectorate Review Portal</h4>
+                <p class="mb-0 text-light small">Regional Grant Sanction &amp; District Review Desk</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning text-dark font-weight-bold p-2">Role: DISTRICT_OFFICER</span>
+                <form th:action="@{/logout}" method="post" class="d-inline ms-2">
+                    <button type="submit" class="btn btn-danger fw-bold"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</button>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${successMessage}">Application approved and forwarded for Finance Approval.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Error occurred</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${param.verified}" class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> Application district sanction review completed and forwarded to Treasury Finance.
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div class="card gov-card shadow-sm border-0">
+            <div class="card-header gov-card-header bg-light fw-bold py-3">
+                <i class="fa-solid fa-file-circle-check text-primary me-2"></i> Applications Awaiting District Approval
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>App ID</th>
+                                <th>Beneficiary &amp; District</th>
+                                <th>Scheme Name</th>
+                                <th>Sanction Amount</th>
+                                <th>Score</th>
+                                <th>Stage</th>
+                                <th>District Review Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(pendingApplications)}">
+                                <td colspan="7" class="text-center text-muted py-4">No pending applications for district review.</td>
+                            </tr>
+                            <tr th:each="app : ${pendingApplications}">
+                                <td class="fw-bold text-navy" th:text="${app.applicationNumber}">APP-123456</td>
+                                <td>
+                                    <strong th:text="${app.beneficiary != null and app.beneficiary.user != null ? app.beneficiary.user.fullName : 'Beneficiary'}">Beneficiary</strong><br>
+                                    <small class="text-muted" th:text="${app.beneficiary != null ? app.beneficiary.state + ' - ' + app.beneficiary.district : 'N/A'}">Location</small>
+                                </td>
+                                <td th:text="${app.scheme != null ? app.scheme.name : 'N/A'}">Scheme Name</td>
+                                <td class="fw-bold text-success" th:text="${app.requestedAmount != null ? '₹' + #numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT') : 'N/A'}">₹50,000</td>
+                                <td><span class="badge bg-info text-dark" th:text="${app.eligibilityScore != null ? app.eligibilityScore + '/100' : 'N/A'}">85/100</span></td>
+                                <td><span class="badge bg-warning text-dark" th:text="${app.currentStage != null ? app.currentStage : 'DISTRICT_REVIEW'}">DISTRICT_REVIEW</span></td>
+                                <td>
+                                    <a th:href="@{'/district-officer/review/' + ${app.id}}" class="btn btn-sm btn-navy text-white fw-bold">
+                                        <i class="fa-solid fa-gavel me-1"></i> Review &amp; Sanction
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-navy mb-0"><i class="fa-solid fa-list-check text-primary me-2"></i> All Active Government Schemes</h2>
+            <p class="text-muted mb-0">Discover subsidies and welfare grant programs configured for citizens and micro-enterprises</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div th:each="scheme : ${schemes}" class="col-md-6 col-lg-4">
+            <div class="gov-card h-100 d-flex flex-column">
+                <div class="gov-card-header d-flex justify-content-between align-items-center">
+                    <span class="badge bg-success">ACTIVE SCHEME</span>
+                    <span class="small text-muted" th:text="${scheme.eligibleStates}">ALL STATES</span>
+                </div>
+                <div class="p-4 flex-grow-1">
+                    <h5 class="fw-bold text-navy" th:text="${scheme.name}">Scheme Name</h5>
+                    <p class="text-muted small mb-3" th:text="${scheme.description}">Description</p>
+                    
+                    <div class="p-3 bg-light rounded mb-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span class="text-muted">Grant Amount Range:</span>
+                            <span class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(scheme.minAmount, 0, 'COMMA', 0, 'POINT')} + ' - ₹' + ${#numbers.formatDecimal(scheme.maxAmount, 0, 'COMMA', 0, 'POINT')}">₹20,000 - ₹1,00,000</span>
+                        </div>
+                        <div class="d-flex justify-content-between small">
+                            <span class="text-muted">Target Categories:</span>
+                            <span class="fw-semibold" th:text="${scheme.targetCategories}">General, OBC, SC, ST</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="p-3 bg-light border-top d-flex gap-2">
+                    <a th:href="@{'/schemes/' + ${scheme.id}}" class="btn btn-sm btn-outline-secondary flex-grow-1">View Details</a>
+                    <a th:href="@{'/beneficiary/check-eligibility?schemeId=' + ${scheme.id}}" class="btn btn-sm btn-primary flex-grow-1 fw-semibold">Check Eligibility</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

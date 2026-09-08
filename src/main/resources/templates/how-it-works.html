@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-bold text-navy"><i class="fa-solid fa-diagram-project text-primary me-2"></i> Application &amp; Disbursement Process</h2>
+        <p class="text-muted">Transparent 6-Step Direct Benefit Transfer Architecture</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="gov-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary fs-5 me-3">Step 1</span>
+                    <h5 class="fw-bold text-navy mb-0">Beneficiary Enrollment</h5>
+                </div>
+                <p class="text-muted small">Register with your full name, Gmail address, 10-digit mobile number, state/district, and Aadhaar/PAN identity card. Form inputs undergo real-time client &amp; server verification.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="gov-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary fs-5 me-3">Step 2</span>
+                    <h5 class="fw-bold text-navy mb-0">Dynamic Eligibility Scoring</h5>
+                </div>
+                <p class="text-muted small">Select your scheme and answer criteria questions. The common rules engine calculates your eligibility score out of 100 points without hardcoded code constraints.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="gov-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary fs-5 me-3">Step 3</span>
+                    <h5 class="fw-bold text-navy mb-0">Online Application</h5>
+                </div>
+                <p class="text-muted small">If eligible (score &ge; 60/100), click "Apply Now" to submit your grant request. An official tracking ID e.g. APP-2026-XXXXX is instantly generated.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="gov-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary fs-5 me-3">Step 4</span>
+                    <h5 class="fw-bold text-navy mb-0">Field Officer Inspection</h5>
+                    </div>
+                <p class="text-muted small">Authorized Field Verification Officers conduct ground inspections and document scrutiny. They can approve, request re-verification, or reject with reason.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="gov-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary fs-5 me-3">Step 5</span>
+                    <h5 class="fw-bold text-navy mb-0">District Collectorate Review</h5>
+                </div>
+                <p class="text-muted small">District Officers review application details, field officer remarks, and regional budget allocations before sanctioning the grant request.</p>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="gov-card p-4 h-100">
+                <div class="d-flex align-items-center mb-3">
+                    <span class="badge bg-primary fs-5 me-3">Step 6</span>
+                    <h5 class="fw-bold text-navy mb-0">Staged Milestone Release</h5>
+                </div>
+                <p class="text-muted small">Finance Approvers authorize fund release. Grants are disbursed in scheduled milestone installments (e.g. 30% - 40% - 30%) with compliance tracking.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

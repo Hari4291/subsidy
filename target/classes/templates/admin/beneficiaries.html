@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{admin/fragments/header :: admin-header}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-navy mb-0"><i class="fa-solid fa-users text-primary me-2"></i> Registered Beneficiaries</h3>
+    </div>
+
+    <div class="card gov-card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Full Name</th>
+                            <th>Email Address</th>
+                            <th>Mobile</th>
+                            <th>Category</th>
+                            <th>Location</th>
+                            <th>Identity Type / Number</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="b : ${beneficiaries}">
+                            <td class="fw-bold" th:text="'BEN-' + ${b.id}">BEN-1</td>
+                            <td class="fw-bold text-navy" th:text="${b.user.fullName}">Hari Pabbuleti</td>
+                            <td th:text="${b.user.email}">hari.pabbu@gmail.com</td>
+                            <td th:text="${b.user.mobileNumber}">9988776655</td>
+                            <td><span class="badge bg-secondary" th:text="${b.category}">OBC</span></td>
+                            <td th:text="${b.district} + ', ' + ${b.state}">Kakinada, Andhra Pradesh</td>
+                            <td th:text="${b.identityType} + ': ' + ${b.identityNumber}">Aadhaar: 123456789012</td>
+                            <td><span class="badge bg-success" th:text="${b.identityStatus}">VERIFIED</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

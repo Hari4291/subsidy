@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6 text-center">
+            <div class="card gov-card shadow-sm p-4 p-md-5">
+                <i class="fa-solid fa-triangle-exclamation fa-4x text-danger mb-3"></i>
+                <h3 class="fw-bold text-navy mb-2" th:text="${errorTitle != null ? errorTitle : 'System Error'}">System Error</h3>
+                <p class="text-muted mb-4" th:text="${errorMessage != null ? errorMessage : 'An unexpected error occurred while processing your portal request.'}">Error details</p>
+                <div>
+                    <a th:href="@{/}" class="btn btn-navy fw-bold px-4 text-white"><i class="fa-solid fa-house me-2"></i> Return to Homepage</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

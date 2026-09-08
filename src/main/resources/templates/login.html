@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <div class="card gov-card shadow-sm border-0">
+                <div class="card-header gov-card-header bg-navy text-white text-center py-3">
+                    <h4 class="mb-0 fw-bold"><i class="fa-solid fa-shield-halved me-2 text-warning"></i> Portal Authentication</h4>
+                    <small class="text-light">Official Government Single Sign-On Service</small>
+                </div>
+                <div class="card-body p-4">
+
+                    <!-- Alert Banners -->
+                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}">Invalid credentials</div>
+                    <div th:if="${infoMessage}" class="alert alert-info" role="alert" th:text="${infoMessage}">Logged out</div>
+                    <div th:if="${param.logout != null and infoMessage == null}" class="alert alert-info" role="alert">You have been logged out successfully.</div>
+                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">Registration successful</div>
+
+                    <form th:action="@{/login}" method="post">
+                        <div class="mb-3">
+                            <label for="email" class="form-label fw-bold">Gmail / Official Email ID</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                                <input type="email" id="email" name="email" class="form-control" placeholder="name@gmail.com" required autofocus>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label fw-bold">Password</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                            </div>
+                        </div>
+
+                        <div class="d-grid mb-3">
+                            <button type="submit" class="btn btn-navy btn-lg fw-bold text-white"><i class="fa-solid fa-right-to-bracket me-2"></i> Sign In to Portal</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-3 pt-3 border-top">
+                        <p class="small text-muted mb-0">Don't have a beneficiary account? <a th:href="@{/register}" class="fw-bold text-primary">Register Here</a></p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

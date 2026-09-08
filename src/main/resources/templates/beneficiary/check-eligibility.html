@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+
+
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <div class="card gov-card shadow-sm border-0">
+                
+                <div class="card-header bg-navy text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="fa-solid fa-calculator me-2 text-warning"></i> Dynamic Scheme Eligibility Engine</h4>
+                    <small class="text-light opacity-90">Select a target scheme to dynamically load its database-configured criteria and required documents</small>
+                </div>
+
+                <div class="card-body p-4 p-md-5">
+
+                    <div th:if="${errorMessage}" class="alert alert-danger mb-4 fw-bold">
+                        <i class="fa-solid fa-circle-exclamation me-2"></i> <span th:text="${errorMessage}">Error Message</span>
+                    </div>
+
+                    <form th:action="@{/beneficiary/check-eligibility}" th:object="${requestDto}" method="post" enctype="multipart/form-data" id="eligibilityForm">
+                        
+                        <!-- 1. SCHEME SELECTION -->
+                        <div class="card mb-4 border-primary border-2 shadow-xs">
+                            <div class="card-body p-4">
+                                <label for="schemeId" class="form-label fw-bold text-navy fs-5">1. Select Target Grant / Subsidy Scheme <span class="text-danger">*</span></label>
+                                <select id="schemeId" th:field="*{schemeId}" class="form-select form-select-lg fw-bold text-navy" onchange="onSchemeChange(this.value)" required>
+                                    <option value="">-- Select Active Scheme --</option>
+                                    <option th:each="s : ${schemes}" 
+                                            th:value="${s.id}" 
+                                            th:selected="${selectedScheme != null and selectedScheme.id == s.id}"
+                                            th:text="${s.name} + ' (Max Grant: ₹' + ${#numbers.formatDecimal(s.maxAmount, 0, 'COMMA', 0, 'POINT')} + ')'">Scheme Name</option>
+                                </select>
+                                <small class="text-muted mt-1 d-block"><i class="fa-solid fa-info-circle text-primary me-1"></i> Dynamic parameters and document requirements automatically load based on your selected subsidy.</small>
+                            </div>
+                        </div>
+
+                        <!-- 2. VERIFIED PROFILE DATA (AUTO-FETCHED) -->
+                        <div class="card mb-4 border-0 bg-light shadow-xs">
+                            <div class="card-body p-4">
+                                <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-id-card-clip text-primary me-2"></i> 2. Verified Profile Data (Auto-Fetched)</h6>
+                                <div class="row g-3 small">
+                                    <div class="col-md-4"><strong>Applicant Name:</strong> <span class="d-block text-dark fw-bold" th:text="${beneficiary.user.fullName}">Applicant Name</span></div>
+                                    <div class="col-md-4"><strong>Age / Gender:</strong> <span class="d-block text-dark fw-bold" th:text="${beneficiary.age} + ' Yrs | ' + ${beneficiary.gender}">Age / Gender</span></div>
+                                    <div class="col-md-4"><strong>Social Category:</strong> <span class="d-block text-dark fw-bold" th:text="${beneficiary.category}">Category</span></div>
+                                    <div class="col-md-6"><strong>State &amp; District:</strong> <span class="d-block text-dark fw-bold" th:text="${beneficiary.district} + ', ' + ${beneficiary.state}">District, State</span></div>
+                                    <div class="col-md-6"><strong>Identity Verification Status:</strong> <span class="badge bg-success mt-1 d-inline-block" th:text="${beneficiary.identityStatus}">VERIFIED</span></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 3. SCHEME-SPECIFIC QUESTIONNAIRE CONTAINER -->
+                        <div class="card mb-4 border-0 shadow-xs">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold text-navy border-bottom pb-2 mb-3">
+                                    <i class="fa-solid fa-clipboard-question text-warning me-2"></i> 3. Scheme-Specific Parameters &amp; Criteria
+                                </h5>
+
+                                <div th:if="${#lists.isEmpty(criteria)}" class="alert alert-info py-3 shadow-xs">
+                                    <i class="fa-solid fa-info-circle me-2"></i> No eligibility criteria have been configured for this scheme yet.
+                                </div>
+
+                                <div th:if="${!#lists.isEmpty(criteria)}" class="row g-3">
+                                    <div th:each="criterion, stat : ${criteria}" class="col-12 mb-3">
+                                        <div class="p-3 bg-white border rounded shadow-xs">
+                                            
+                                            <!-- YES_NO / BOOLEAN -->
+                                            <div th:if="${criterion.answerType == 'YES_NO' or criterion.answerType == 'BOOLEAN' or criterion.criterionType == 'BOOLEAN'}">
+                                                <label class="form-label fw-bold text-navy mb-2" th:for="'criterion_' + ${criterion.id}">
+                                                    <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
+                                                    <span th:if="${criterion.required}" class="text-danger">*</span>
+                                                </label>
+                                                <select th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-select fw-semibold" th:required="${criterion.required}">
+                                                    <option value="YES">Yes</option>
+                                                    <option value="NO">No</option>
+                                                </select>
+                                                <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                            </div>
+
+                                            <!-- NUMBER / DECIMAL / NUMERIC -->
+                                            <div th:if="${criterion.answerType == 'NUMBER' or criterion.answerType == 'DECIMAL' or criterion.answerType == 'NUMERIC' or (criterion.criterionType == 'NUMERIC' and criterion.answerType == null)}">
+                                                <label class="form-label fw-bold text-navy mb-2" th:for="'criterion_' + ${criterion.id}">
+                                                    <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
+                                                    <span th:if="${criterion.required}" class="text-danger">*</span>
+                                                </label>
+                                                <input type="number" step="any" th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-control fw-semibold" placeholder="Enter numerical value..." th:required="${criterion.required}">
+                                                <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                            </div>
+
+                                            <!-- SINGLE_SELECT / CATEGORICAL -->
+                                            <div th:if="${criterion.answerType == 'SINGLE_SELECT' or criterion.answerType == 'CATEGORICAL' or criterion.answerType == 'DROPDOWN' or (criterion.criterionType == 'CATEGORICAL' and criterion.answerType == null)}">
+                                                <label class="form-label fw-bold text-navy mb-2" th:for="'criterion_' + ${criterion.id}">
+                                                    <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
+                                                    <span th:if="${criterion.required}" class="text-danger">*</span>
+                                                </label>
+                                                <select th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-select fw-semibold" th:required="${criterion.required}">
+                                                    <option value="">-- Select Option --</option>
+                                                    <option th:each="opt : ${#strings.arraySplit(criterion.options != null ? criterion.options : 'General', ',')}" 
+                                                            th:value="${#strings.trim(opt)}" 
+                                                            th:text="${#strings.trim(opt)}">Option</option>
+                                                </select>
+                                                <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                            </div>
+
+                                            <!-- MULTI_SELECT -->
+                                            <div th:if="${criterion.answerType == 'MULTI_SELECT'}">
+                                                <label class="form-label fw-bold text-navy mb-2" th:for="'criterion_' + ${criterion.id}">
+                                                    <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
+                                                    <span th:if="${criterion.required}" class="text-danger">*</span>
+                                                </label>
+                                                <select th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-select fw-semibold" multiple th:required="${criterion.required}">
+                                                    <option th:each="opt : ${#strings.arraySplit(criterion.options != null ? criterion.options : 'General', ',')}" 
+                                                            th:value="${#strings.trim(opt)}" 
+                                                            th:text="${#strings.trim(opt)}">Option</option>
+                                                </select>
+                                                <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                            </div>
+
+                                            <!-- DATE -->
+                                            <div th:if="${criterion.answerType == 'DATE'}">
+                                                <label class="form-label fw-bold text-navy mb-2" th:for="'criterion_' + ${criterion.id}">
+                                                    <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
+                                                    <span th:if="${criterion.required}" class="text-danger">*</span>
+                                                </label>
+                                                <input type="date" th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-control fw-semibold" th:required="${criterion.required}">
+                                                <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                            </div>
+
+                                            <!-- TEXT / DEFAULT -->
+                                            <div th:if="${criterion.answerType == 'TEXT' or (criterion.answerType == null and (criterion.criterionType == 'TEXT' or criterion.criterionType == null))}">
+                                                <label class="form-label fw-bold text-navy mb-2" th:for="'criterion_' + ${criterion.id}">
+                                                    <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
+                                                    <span th:if="${criterion.required}" class="text-danger">*</span>
+                                                </label>
+                                                <input type="text" th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-control fw-semibold" placeholder="Enter response..." th:required="${criterion.required}">
+                                                <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 4. REQUIRED SUPPORTING DOCUMENTS SECTION -->
+                        <div class="card mb-4 border-0 shadow-xs">
+                            <div class="card-body p-4">
+                                <h5 class="fw-bold text-navy border-bottom pb-2 mb-3">
+                                    <i class="fa-solid fa-file-arrow-up text-success me-2"></i> 4. Required Supporting Documents
+                                </h5>
+
+                                <div th:if="${#lists.isEmpty(requiredDocuments)}" class="alert alert-warning py-3 shadow-xs">
+                                    <i class="fa-solid fa-triangle-exclamation me-2"></i> No supporting documents have been configured for this scheme yet.
+                                </div>
+
+                                <div th:if="${!#lists.isEmpty(requiredDocuments)}" class="row g-3">
+                                    <div th:each="doc, stat : ${requiredDocuments}" class="col-md-6 mb-3">
+                                        <div class="p-3 bg-white border rounded shadow-xs h-100">
+                                            <label th:for="'docFile_' + ${doc.id}" class="form-label fw-bold text-navy">
+                                                <span th:text="${stat.count} + '. ' + ${doc.documentName}">Document Name</span>
+                                                <span th:if="${doc.required}" class="text-danger">*</span>
+                                            </label>
+                                            <input type="file" 
+                                                   th:id="'docFile_' + ${doc.id}" 
+                                                   th:name="'docFile_' + ${doc.id}" 
+                                                   th:class="'form-control ' + (${documentErrors != null and documentErrors.containsKey(doc.id)} ? 'is-invalid' : '')" 
+                                                   th:required="${doc.required}">
+                                            <small class="text-muted d-block mt-1">
+                                                Accepted formats: <span class="fw-semibold" th:text="${doc.allowedFileTypes}">PDF, JPG, JPEG, PNG</span> 
+                                                (Max size: <span class="fw-semibold" th:text="${doc.maxFileSizeMb}">5</span> MB)
+                                            </small>
+                                            <div th:if="${documentErrors != null and documentErrors.containsKey(doc.id)}" 
+                                                 class="invalid-feedback d-block fw-bold mt-1" 
+                                                 th:text="${documentErrors.get(doc.id)}">
+                                                Document error
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 5. DECLARATION -->
+                        <div class="card mb-4 border-0 bg-light p-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="declareTerms" required checked>
+                                <label class="form-check-label small fw-semibold text-navy" for="declareTerms">
+                                    I confirm that the information and documents provided are true and valid. I authorize automated eligibility score evaluation.
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- 6. SUBMIT BUTTON -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-navy btn-lg fw-bold text-white shadow">
+                                <i class="fa-solid fa-square-poll-vertical me-2"></i> Evaluate Eligibility Score
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script>
+    function onSchemeChange(schemeId) {
+        if (schemeId) {
+            window.location.href = '/beneficiary/check-eligibility?schemeId=' + schemeId;
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <!-- Header Card -->
+    <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
+        <div>
+            <h4 class="mb-1 fw-bold"><i class="fa-solid fa-hand-holding-dollar text-warning me-2"></i> Staged Milestone Disbursement Schedule</h4>
+            <p class="mb-0 text-light small" th:text="'Application ID: ' + ${application.applicationNumber} + ' | Scheme: ' + ${application.scheme != null ? application.scheme.name : 'N/A'}">Application Details</p>
+        </div>
+        <div>
+            <a th:if="${isFinanceApprover}" th:href="@{/finance/dashboard}" class="btn btn-outline-light fw-bold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Finance Dashboard
+            </a>
+            <a th:if="${isAdmin && !isFinanceApprover}" th:href="@{/admin/dashboard}" class="btn btn-outline-light fw-bold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to Admin Dashboard
+            </a>
+            <a th:if="${isBeneficiary && !isFinanceApprover && !isAdmin}" th:href="@{/beneficiary/applications}" class="btn btn-outline-light fw-bold">
+                <i class="fa-solid fa-arrow-left me-1"></i> Back to My Applications
+            </a>
+        </div>
+    </div>
+
+    <!-- Alert Message -->
+    <div th:if="${param.released}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> Milestone grant installment released successfully into beneficiary bank record.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Application Summary Card -->
+    <div class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light fw-bold py-3 text-navy">
+            <i class="fa-solid fa-info-circle me-2 text-primary"></i> Application &amp; Sanction Overview
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3">
+                <div class="col-md-3">
+                    <small class="text-muted d-block fw-bold mb-1">Application Number</small>
+                    <h6 class="fw-bold text-navy mb-0" th:text="${application.applicationNumber}">APP-1001</h6>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted d-block fw-bold mb-1">Beneficiary Name</small>
+                    <h6 class="fw-bold text-navy mb-0" th:text="${application.beneficiary != null && application.beneficiary.user != null ? application.beneficiary.user.fullName : 'N/A'}">Beneficiary</h6>
+                    <small class="text-muted" th:text="${application.beneficiary != null ? (application.beneficiary.identityType + ': ' + application.beneficiary.identityNumber) : 'N/A'}">Aadhaar</small>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted d-block fw-bold mb-1">Scheme Name</small>
+                    <h6 class="fw-bold text-navy mb-0" th:text="${application.scheme != null ? application.scheme.name : 'N/A'}">Scheme Name</h6>
+                </div>
+                <div class="col-md-3">
+                    <small class="text-muted d-block fw-bold mb-1">Total Grant Sanctioned</small>
+                    <h5 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(totalSanctioned, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disbursement & Milestone Schedule Card -->
+    <div class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-list-check text-warning me-2"></i> Staged Milestone Disbursement Schedule</span>
+            <span th:if="${disbursement != null}" class="badge bg-success" th:text="'Status: ' + ${disbursement.status}">IN_PROGRESS</span>
+        </div>
+        <div class="card-body p-4">
+            <div th:if="${disbursement != null}">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded border">
+                            <small class="text-muted d-block fw-bold">Sanctioned Amount</small>
+                            <h6 class="fw-bold text-navy mb-0" th:text="'₹' + ${#numbers.formatDecimal(totalSanctioned, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded border">
+                            <small class="text-muted d-block fw-bold">Disbursed Amount</small>
+                            <h6 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(totalDisbursed, 0, 'COMMA', 0, 'POINT')}">₹0</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="p-3 bg-light rounded border">
+                            <small class="text-muted d-block fw-bold">Remaining Balance</small>
+                            <h6 class="fw-bold text-primary mb-0" th:text="'₹' + ${#numbers.formatDecimal(remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <div th:if="${milestones != null and !#lists.isEmpty(milestones)}" class="table-responsive">
+                    <table class="table table-bordered align-middle border">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>#</th>
+                                <th>Milestone Name</th>
+                                <th>Percentage</th>
+                                <th>Sanction Amount</th>
+                                <th>Due Date</th>
+                                <th>Status</th>
+                                <th>Released Amount</th>
+                                <th th:if="${isFinanceApprover}">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="m, iterStat : ${milestones}">
+                                <td th:text="${iterStat.count}">1</td>
+                                <td class="fw-bold text-navy" th:text="${m.milestoneName}">Milestone 1</td>
+                                <td th:text="${m.percentage != null ? m.percentage + '%' : '0%'}">30%</td>
+                                <td class="fw-bold text-success" th:text="${m.milestoneAmount != null ? '₹' + #numbers.formatDecimal(m.milestoneAmount, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹30,000</td>
+                                <td th:text="${m.dueDate != null ? m.dueDate : 'Pending'}">15-Sep-2026</td>
+                                <td>
+                                    <span th:if="${m.completionStatus == 'COMPLETED'}" class="badge bg-success"><i class="fa-solid fa-check me-1"></i> RELEASED</span>
+                                    <span th:if="${m.completionStatus != 'COMPLETED'}" class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i> PENDING RELEASE</span>
+                                </td>
+                                <td class="fw-bold text-success" th:text="${m.releasedAmount != null ? '₹' + #numbers.formatDecimal(m.releasedAmount, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹0</td>
+                                <td th:if="${isFinanceApprover}">
+                                    <form th:if="${m.completionStatus != 'COMPLETED'}" th:action="@{/finance/release-milestone}" method="post" class="d-inline">
+                                        <input type="hidden" name="milestoneId" th:value="${m.id}">
+                                        <input type="hidden" name="applicationId" th:value="${application.id}">
+                                        <button type="submit" class="btn btn-sm btn-success fw-bold">
+                                            <i class="fa-solid fa-money-bill-transfer me-1"></i> Release Grant
+                                        </button>
+                                    </form>
+                                    <span th:if="${m.completionStatus == 'COMPLETED'}" class="text-muted small fw-bold">
+                                        <i class="fa-solid fa-check-double text-success me-1"></i> Disbursed
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div th:if="${disbursement == null || milestones == null || #lists.isEmpty(milestones)}" class="alert alert-info p-4 text-center rounded border shadow-sm">
+                <i class="fa-solid fa-circle-info fa-2x text-primary mb-2"></i>
+                <h5 class="fw-bold text-navy">No Milestone Schedule Configured</h5>
+                <p class="mb-0 text-muted">No milestone schedule has been configured for this application yet.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation Footer -->
+    <div class="d-flex justify-content-between align-items-center">
+        <a th:if="${isFinanceApprover}" th:href="@{/finance/dashboard}" class="btn btn-outline-secondary fw-bold">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Finance Dashboard
+        </a>
+        <a th:if="${isAdmin && !isFinanceApprover}" th:href="@{/admin/dashboard}" class="btn btn-outline-secondary fw-bold">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Admin Dashboard
+        </a>
+        <a th:if="${isBeneficiary && !isFinanceApprover && !isAdmin}" th:href="@{/beneficiary/applications}" class="btn btn-outline-secondary fw-bold">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to My Applications
+        </a>
+        <button onclick="window.print()" class="btn btn-navy text-white fw-bold shadow-sm">
+            <i class="fa-solid fa-print me-1"></i> Print Schedule
+        </button>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

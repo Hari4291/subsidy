@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-9">
+            <h2 class="fw-bold text-navy mb-4"><i class="fa-solid fa-circle-question text-primary me-2"></i> Citizen Helpdesk &amp; Frequently Asked Questions</h2>
+
+            <div class="accordion shadow-sm" id="helpAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button fw-bold text-navy" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            Q1: What email domains are accepted for beneficiary registration?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body text-muted">
+                            To ensure communication security and account verification, the portal accepts valid <strong>@gmail.com</strong> email addresses exclusively. Other domain addresses will be rejected during registration validation.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold text-navy" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            Q2: How is my mobile number formatted and validated?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body text-muted">
+                            The portal displays the national code prefix <strong>+91</strong>. You must enter exactly 10 digits starting with 6, 7, 8, or 9. The database stores the clean 10-digit number without country prefix.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold text-navy" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            Q3: What are the allowed characters for residential address?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body text-muted">
+                            Addresses must be 10 to 200 characters in length. Only alphanumeric characters (A-Z, a-z, 0-9), spaces, forward slash (/), and hyphen (-) are accepted. Special characters such as @, $, %, &amp;, *, _, +, !, commas, and periods are stripped immediately on typing.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed fw-bold text-navy" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            Q4: How does staged milestone fund disbursement work?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                        <div class="accordion-body text-muted">
+                            Once your application is approved by the Finance Approver, grants are split into staged milestones (e.g. 30% Milestone 1, 40% Milestone 2, 30% Milestone 3). Milestone funds are released upon verified completion of compliance benchmarks.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

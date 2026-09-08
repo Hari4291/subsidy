@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Breadcrumbs -->
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">Beneficiary Registration</li>
+                </ol>
+            </nav>
+
+            <div class="card gov-card shadow-sm border-0">
+                <div class="card-header gov-card-header bg-navy text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="fa-solid fa-user-plus me-2 text-warning"></i> Beneficiary Portal Registration</h4>
+                    <small class="text-light">Enter official personal, location, and identity credentials for portal enrollment</small>
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <!-- System Alert Message -->
+                    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Registration error occurred</span>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+
+                    <form id="registrationForm" th:action="@{/register}" th:object="${registrationDto}" method="post" novalidate>
+                        
+                        <!-- Section 1: Personal Credentials -->
+                        <h5 class="fw-bold text-navy border-bottom pb-2 mb-4"><i class="fa-solid fa-id-card text-primary me-2"></i> 1. Personal Credentials</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="fullName" class="form-label fw-bold">Full Name <span class="text-danger">*</span></label>
+                                <input type="text" id="fullName" th:field="*{fullName}" class="form-control" placeholder="e.g. Hari Pabbuleti" required>
+                                <span id="fullNameError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}" class="feedback-error"></span>
+                                <small class="form-text text-muted">3-50 letters and spaces only. No numbers or symbols allowed.</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="email" class="form-label fw-bold">Gmail Address <span class="text-danger">*</span></label>
+                                <input type="email" id="email" th:field="*{email}" class="form-control" placeholder="e.g. name@gmail.com" required>
+                                <span id="emailError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="feedback-error"></span>
+                                <small class="form-text text-muted">Only valid @gmail.com email addresses are permitted.</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="mobileNumber" class="form-label fw-bold">Mobile Number <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <span class="input-group-text fw-bold bg-light">+91</span>
+                                    <input type="text" id="mobileNumber" th:field="*{mobileNumber}" class="form-control" placeholder="10 digit number e.g. 9876543210" maxlength="10" required>
+                                </div>
+                                <span id="mobileNumberError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('mobileNumber')}" th:errors="*{mobileNumber}" class="feedback-error"></span>
+                                <small class="form-text text-muted">Must be exactly 10 digits starting with 6, 7, 8, or 9.</small>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="age" class="form-label fw-bold">Age (Years) <span class="text-danger">*</span></label>
+                                <input type="number" id="age" th:field="*{age}" class="form-control" min="0" max="120" placeholder="0-120" required>
+                                <span id="ageError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('age')}" th:errors="*{age}" class="feedback-error"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label for="gender" class="form-label fw-bold">Gender <span class="text-danger">*</span></label>
+                                <select id="gender" th:field="*{gender}" class="form-select" required>
+                                    <option value="">-- Select Gender --</option>
+                                    <option value="Male">Male</option>
+                                    <option value="Female">Female</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span th:if="${#fields.hasErrors('gender')}" th:errors="*{gender}" class="feedback-error"></span>
+                            </div>
+                        </div>
+
+                        <!-- Section 2: Security Password -->
+                        <h5 class="fw-bold text-navy border-bottom pb-2 mb-4"><i class="fa-solid fa-lock text-primary me-2"></i> 2. Account Password</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label for="password" class="form-label fw-bold">Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="password" id="password" th:field="*{password}" class="form-control" placeholder="••••••••" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="togglePassword" title="Toggle Password Visibility">
+                                        <i class="fa-solid fa-eye" id="togglePasswordIcon"></i>
+                                    </button>
+                                </div>
+                                <div id="passwordStrength"></div>
+                                <span id="passwordError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="feedback-error"></span>
+                                <small class="form-text text-muted">Min 8 chars with 1 uppercase, 1 lowercase, 1 digit, and 1 special char (@$!%*?&).</small>
+                            </div>
+
+                            <div class="col-md-6">
+                                <label for="confirmPassword" class="form-label fw-bold">Confirm Password <span class="text-danger">*</span></label>
+                                <div class="input-group">
+                                    <input type="password" id="confirmPassword" th:field="*{confirmPassword}" class="form-control" placeholder="••••••••" required>
+                                    <button class="btn btn-outline-secondary" type="button" id="toggleConfirmPassword" title="Toggle Confirm Password Visibility">
+                                        <i class="fa-solid fa-eye" id="toggleConfirmPasswordIcon"></i>
+                                    </button>
+                                </div>
+                                <span id="confirmPasswordError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('confirmPassword')}" th:errors="*{confirmPassword}" class="feedback-error"></span>
+                            </div>
+                        </div>
+
+                        <!-- Section 3: Social & Residential Location -->
+                        <h5 class="fw-bold text-navy border-bottom pb-2 mb-4"><i class="fa-solid fa-map-location-dot text-primary me-2"></i> 3. Category &amp; Location</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="category" class="form-label fw-bold">Social Category <span class="text-danger">*</span></label>
+                                <select id="category" th:field="*{category}" class="form-select" required>
+                                    <option value="">-- Select Category --</option>
+                                    <option value="General">General</option>
+                                    <option value="OBC">OBC (Other Backward Classes)</option>
+                                    <option value="SC">SC (Scheduled Caste)</option>
+                                    <option value="ST">ST (Scheduled Tribe)</option>
+                                    <option value="Minority">Minority Community</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <span th:if="${#fields.hasErrors('category')}" th:errors="*{category}" class="feedback-error"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="state" class="form-label fw-bold">State <span class="text-danger">*</span></label>
+                                <select id="state" th:field="*{state}" class="form-select" required>
+                                    <option value="">-- Select State --</option>
+                                    <option th:each="st : ${states}" th:value="${st}" th:text="${st}">Andhra Pradesh</option>
+                                </select>
+                                <span th:if="${#fields.hasErrors('state')}" th:errors="*{state}" class="feedback-error"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="district" class="form-label fw-bold">District <span class="text-danger">*</span></label>
+                                <select id="district" th:field="*{district}" class="form-select" required disabled>
+                                    <option value="">-- Select District --</option>
+                                </select>
+                                <span id="districtError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('district')}" th:errors="*{district}" class="feedback-error"></span>
+                            </div>
+
+                            <div class="col-md-8">
+                                <label for="address" class="form-label fw-bold">Residential Address <span class="text-danger">*</span></label>
+                                <input type="text" id="address" th:field="*{address}" class="form-control" placeholder="12/4 Main Road, Gandhi Nagar" maxlength="200" required>
+                                <span id="addressError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="feedback-error"></span>
+                                <small class="form-text text-muted">10-200 chars. Letters, numbers, spaces, /, - allowed. Special chars like @, $, %, &, *, _ are disallowed.</small>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="pincode" class="form-label fw-bold">Pincode <span class="text-danger">*</span></label>
+                                <input type="text" id="pincode" th:field="*{pincode}" class="form-control" placeholder="e.g. 533001" maxlength="6" required>
+                                <span id="pincodeError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('pincode')}" th:errors="*{pincode}" class="feedback-error"></span>
+                            </div>
+                        </div>
+
+                        <!-- Section 4: National Identity Credentials -->
+                        <h5 class="fw-bold text-navy border-bottom pb-2 mb-4"><i class="fa-solid fa-address-card text-primary me-2"></i> 4. Government Identity</h5>
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <label for="identityType" class="form-label fw-bold">Identity Document Type <span class="text-danger">*</span></label>
+                                <select id="identityType" th:field="*{identityType}" class="form-select" required>
+                                    <option value="">-- Select Document --</option>
+                                    <option value="Aadhaar">Aadhaar Card (12 Digits)</option>
+                                    <option value="PAN">PAN Card (ABCDE1234F)</option>
+                                </select>
+                                <span th:if="${#fields.hasErrors('identityType')}" th:errors="*{identityType}" class="feedback-error"></span>
+                            </div>
+
+                            <div class="col-md-8">
+                                <label for="identityNumber" class="form-label fw-bold">Identity Document Number <span class="text-danger">*</span></label>
+                                <input type="text" id="identityNumber" th:field="*{identityNumber}" class="form-control text-uppercase" placeholder="Enter Aadhaar (12 digits) or PAN (e.g. ABCDE1234F)" required>
+                                <span id="identityNumberError" class="feedback-error"></span>
+                                <span th:if="${#fields.hasErrors('identityNumber')}" th:errors="*{identityNumber}" class="feedback-error"></span>
+                            </div>
+                        </div>
+
+                        <!-- Section 5: Terms Agreement & Submission -->
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="termsAgreed" th:field="*{termsAgreed}" required>
+                            <label class="form-check-label small" for="termsAgreed">
+                                I hereby declare that all information supplied above is accurate and complete under government verification standards.
+                            </label>
+                            <span th:if="${#fields.hasErrors('termsAgreed')}" th:errors="*{termsAgreed}" class="feedback-error"></span>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" id="submitBtn" class="btn btn-navy btn-lg fw-bold text-white shadow-sm" disabled>
+                                <i class="fa-solid fa-user-check me-2"></i> Register Beneficiary Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+<!-- Real-time JS Validation Script -->
+<script th:src="@{/js/registration-validation.js}"></script>
+</body>
+</html>

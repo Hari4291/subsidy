@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-navy mb-0"><i class="fa-solid fa-bell text-warning me-2"></i> Portal Notifications &amp; Alerts</h3>
+    </div>
+
+    <div class="card gov-card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="list-group list-group-flush">
+                <div class="list-group-item py-3">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 fw-bold text-navy"><i class="fa-solid fa-circle-check text-success me-2"></i> Identity Verification Verified</h6>
+                        <small class="text-muted">System Alert</small>
+                    </div>
+                    <p class="mb-1 text-secondary">Your Aadhaar identity documentation has been successfully verified under government standards.</p>
+                </div>
+                <div class="list-group-item py-3">
+                    <div class="d-flex w-100 justify-content-between">
+                        <h6 class="mb-1 fw-bold text-navy"><i class="fa-solid fa-info-circle text-primary me-2"></i> Portal Enrollment Confirmed</h6>
+                        <small class="text-muted">Account Alert</small>
+                    </div>
+                    <p class="mb-1 text-secondary">Welcome to Digital Subsidy &amp; Grant Administration Portal. You may apply for active schemes anytime.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

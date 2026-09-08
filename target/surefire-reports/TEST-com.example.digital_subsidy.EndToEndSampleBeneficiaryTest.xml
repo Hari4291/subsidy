@@ -1,0 +1,3851 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="3.085" tests="13" errors="0" skipped="0" failures="0" flakes="0">
+  <properties>
+    <property name="java.specification.version" value="21"/>
+    <property name="sun.cpu.isalist" value="amd64"/>
+    <property name="sun.jnu.encoding" value="Cp1252"/>
+    <property name="java.class.path" value="C:\Users\pabbu\Desktop\digital subsidy\target\test-classes;C:\Users\pabbu\Desktop\digital subsidy\target\classes;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-web\4.1.1\spring-boot-starter-web-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-jackson\4.1.1\spring-boot-starter-jackson-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-jackson\4.1.1\spring-boot-jackson-4.1.1.jar;C:\Users\pabbu\.m2\repository\tools\jackson\core\jackson-databind\3.1.5\jackson-databind-3.1.5.jar;C:\Users\pabbu\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.21\jackson-annotations-2.21.jar;C:\Users\pabbu\.m2\repository\tools\jackson\core\jackson-core\3.1.5\jackson-core-3.1.5.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\4.1.1\spring-boot-starter-tomcat-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat-runtime\4.1.1\spring-boot-starter-tomcat-runtime-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-web-server\4.1.1\spring-boot-web-server-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\11.0.24\tomcat-embed-core-11.0.24.jar;C:\Users\pabbu\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\11.0.24\tomcat-embed-websocket-11.0.24.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-tomcat\4.1.1\spring-boot-tomcat-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-http-converter\4.1.1\spring-boot-http-converter-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-web\7.0.9\spring-web-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-webmvc\4.1.1\spring-boot-webmvc-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-servlet\4.1.1\spring-boot-servlet-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-webmvc\7.0.9\spring-webmvc-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-thymeleaf\4.1.1\spring-boot-starter-thymeleaf-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter\4.1.1\spring-boot-starter-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-logging\4.1.1\spring-boot-starter-logging-4.1.1.jar;C:\Users\pabbu\.m2\repository\ch\qos\logback\logback-classic\1.5.38\logback-classic-1.5.38.jar;C:\Users\pabbu\.m2\repository\ch\qos\logback\logback-core\1.5.38\logback-core-1.5.38.jar;C:\Users\pabbu\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.25.5\log4j-to-slf4j-2.25.5.jar;C:\Users\pabbu\.m2\repository\org\apache\logging\log4j\log4j-api\2.25.5\log4j-api-2.25.5.jar;C:\Users\pabbu\.m2\repository\org\slf4j\jul-to-slf4j\2.0.18\jul-to-slf4j-2.0.18.jar;C:\Users\pabbu\.m2\repository\jakarta\annotation\jakarta.annotation-api\3.0.0\jakarta.annotation-api-3.0.0.jar;C:\Users\pabbu\.m2\repository\org\yaml\snakeyaml\2.6\snakeyaml-2.6.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-thymeleaf\4.1.1\spring-boot-thymeleaf-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\thymeleaf\extras\thymeleaf-extras-springsecurity6\3.1.5.RELEASE\thymeleaf-extras-springsecurity6-3.1.5.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\thymeleaf\thymeleaf-spring6\3.1.5.RELEASE\thymeleaf-spring6-3.1.5.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\thymeleaf\thymeleaf\3.1.5.RELEASE\thymeleaf-3.1.5.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\attoparser\attoparser\2.0.7.RELEASE\attoparser-2.0.7.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\unbescape\unbescape\1.1.6.RELEASE\unbescape-1.1.6.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\slf4j\slf4j-api\2.0.18\slf4j-api-2.0.18.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\4.1.1\spring-boot-starter-data-jpa-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\4.1.1\spring-boot-starter-jdbc-4.1.1.jar;C:\Users\pabbu\.m2\repository\com\zaxxer\HikariCP\7.0.2\HikariCP-7.0.2.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-data-jpa\4.1.1\spring-boot-data-jpa-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-data-commons\4.1.1\spring-boot-data-commons-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-persistence\4.1.1\spring-boot-persistence-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\data\spring-data-commons\4.1.1\spring-data-commons-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-hibernate\4.1.1\spring-boot-hibernate-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-jpa\4.1.1\spring-boot-jpa-4.1.1.jar;C:\Users\pabbu\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.2.0\jakarta.persistence-api-3.2.0.jar;C:\Users\pabbu\.m2\repository\org\hibernate\orm\hibernate-core\7.4.5.Final\hibernate-core-7.4.5.Final.jar;C:\Users\pabbu\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\pabbu\.m2\repository\org\hibernate\models\hibernate-models\1.1.1\hibernate-models-1.1.1.jar;C:\Users\pabbu\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.9\jaxb-runtime-4.0.9.jar;C:\Users\pabbu\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.9\jaxb-core-4.0.9.jar;C:\Users\pabbu\.m2\repository\org\eclipse\angus\angus-activation\2.0.3\angus-activation-2.0.3.jar;C:\Users\pabbu\.m2\repository\org\glassfish\jaxb\txw2\4.0.9\txw2-4.0.9.jar;C:\Users\pabbu\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\pabbu\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-orm\7.0.9\spring-orm-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\data\spring-data-jpa\4.1.1\spring-data-jpa-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-tx\7.0.9\spring-tx-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\antlr\antlr4-runtime\4.13.2\antlr4-runtime-4.13.2.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-aspects\7.0.9\spring-aspects-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\aspectj\aspectjweaver\1.9.25.1\aspectjweaver-1.9.25.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-jdbc\4.1.1\spring-boot-jdbc-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-sql\4.1.1\spring-boot-sql-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-transaction\4.1.1\spring-boot-transaction-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-jdbc\7.0.9\spring-jdbc-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-security\4.1.1\spring-boot-starter-security-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-security\4.1.1\spring-boot-security-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-config\7.1.1\spring-security-config-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-aop\7.0.9\spring-aop-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-beans\7.0.9\spring-beans-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-validation\4.1.1\spring-boot-starter-validation-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-validation\4.1.1\spring-boot-validation-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\11.0.24\tomcat-embed-el-11.0.24.jar;C:\Users\pabbu\.m2\repository\org\hibernate\validator\hibernate-validator\9.1.3.Final\hibernate-validator-9.1.3.Final.jar;C:\Users\pabbu\.m2\repository\jakarta\validation\jakarta.validation-api\3.1.1\jakarta.validation-api-3.1.1.jar;C:\Users\pabbu\.m2\repository\org\jboss\logging\jboss-logging\3.6.3.Final\jboss-logging-3.6.3.Final.jar;C:\Users\pabbu\.m2\repository\com\fasterxml\classmate\1.7.3\classmate-1.7.3.jar;C:\Users\pabbu\.m2\repository\com\mysql\mysql-connector-j\9.7.0\mysql-connector-j-9.7.0.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-devtools\4.1.1\spring-boot-devtools-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot\4.1.1\spring-boot-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-context\7.0.9\spring-context-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\4.1.1\spring-boot-autoconfigure-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-test\4.1.1\spring-boot-starter-test-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-test\4.1.1\spring-boot-test-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\4.1.1\spring-boot-test-autoconfigure-4.1.1.jar;C:\Users\pabbu\.m2\repository\com\jayway\jsonpath\json-path\2.10.0\json-path-2.10.0.jar;C:\Users\pabbu\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.5\jakarta.xml.bind-api-4.0.5.jar;C:\Users\pabbu\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.4\jakarta.activation-api-2.1.4.jar;C:\Users\pabbu\.m2\repository\net\minidev\json-smart\2.6.0\json-smart-2.6.0.jar;C:\Users\pabbu\.m2\repository\net\minidev\accessors-smart\2.6.0\accessors-smart-2.6.0.jar;C:\Users\pabbu\.m2\repository\org\ow2\asm\asm\9.7.1\asm-9.7.1.jar;C:\Users\pabbu\.m2\repository\org\assertj\assertj-core\3.27.7\assertj-core-3.27.7.jar;C:\Users\pabbu\.m2\repository\net\bytebuddy\byte-buddy\1.18.11\byte-buddy-1.18.11.jar;C:\Users\pabbu\.m2\repository\org\awaitility\awaitility\4.3.0\awaitility-4.3.0.jar;C:\Users\pabbu\.m2\repository\org\hamcrest\hamcrest\3.0\hamcrest-3.0.jar;C:\Users\pabbu\.m2\repository\org\junit\jupiter\junit-jupiter\6.0.3\junit-jupiter-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\junit\jupiter\junit-jupiter-api\6.0.3\junit-jupiter-api-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\pabbu\.m2\repository\org\junit\platform\junit-platform-commons\6.0.3\junit-platform-commons-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\pabbu\.m2\repository\org\junit\jupiter\junit-jupiter-params\6.0.3\junit-jupiter-params-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\junit\jupiter\junit-jupiter-engine\6.0.3\junit-jupiter-engine-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\junit\platform\junit-platform-engine\6.0.3\junit-platform-engine-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\mockito\mockito-core\5.23.0\mockito-core-5.23.0.jar;C:\Users\pabbu\.m2\repository\net\bytebuddy\byte-buddy-agent\1.18.11\byte-buddy-agent-1.18.11.jar;C:\Users\pabbu\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\pabbu\.m2\repository\org\mockito\mockito-junit-jupiter\5.23.0\mockito-junit-jupiter-5.23.0.jar;C:\Users\pabbu\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\pabbu\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-core\7.0.9\spring-core-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\jspecify\jspecify\1.0.1\jspecify-1.0.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-test\7.0.9\spring-test-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\xmlunit\xmlunit-core\2.11.0\xmlunit-core-2.11.0.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-test\7.1.1\spring-security-test-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-core\7.1.1\spring-security-core-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-crypto\7.1.1\spring-security-crypto-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-expression\7.0.9\spring-expression-7.0.9.jar;C:\Users\pabbu\.m2\repository\io\micrometer\micrometer-observation\1.17.1\micrometer-observation-1.17.1.jar;C:\Users\pabbu\.m2\repository\io\micrometer\micrometer-commons\1.17.1\micrometer-commons-1.17.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-web\7.1.1\spring-security-web-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\apache\pdfbox\pdfbox\3.0.2\pdfbox-3.0.2.jar;C:\Users\pabbu\.m2\repository\org\apache\pdfbox\pdfbox-io\3.0.2\pdfbox-io-3.0.2.jar;C:\Users\pabbu\.m2\repository\org\apache\pdfbox\fontbox\3.0.2\fontbox-3.0.2.jar;C:\Users\pabbu\.m2\repository\commons-logging\commons-logging\1.3.6\commons-logging-1.3.6.jar;"/>
+    <property name="java.vm.vendor" value="Eclipse Adoptium"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="user.variant" value=""/>
+    <property name="java.vendor.url" value="https://adoptium.net/"/>
+    <property name="user.timezone" value="Asia/Calcutta"/>
+    <property name="org.jboss.logging.provider" value="slf4j"/>
+    <property name="os.name" value="Windows 11"/>
+    <property name="java.vm.specification.version" value="21"/>
+    <property name="APPLICATION_NAME" value="digital_subsidy"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="user.country" value="IN"/>
+    <property name="sun.boot.library.path" value="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot\bin"/>
+    <property name="sun.java.command" value="C:\Users\pabbu\AppData\Local\Temp\surefire11603174999008766613\surefirebooter-20260909023603275_3.jar C:\Users\pabbu\AppData\Local\Temp\surefire11603174999008766613 2026-09-09T02-36-02_944-jvmRun1 surefire-20260909023603275_1tmp surefire_0-20260909023603275_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="C:\Users\pabbu\Desktop\digital subsidy\target\test-classes;C:\Users\pabbu\Desktop\digital subsidy\target\classes;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-web\4.1.1\spring-boot-starter-web-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-jackson\4.1.1\spring-boot-starter-jackson-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-jackson\4.1.1\spring-boot-jackson-4.1.1.jar;C:\Users\pabbu\.m2\repository\tools\jackson\core\jackson-databind\3.1.5\jackson-databind-3.1.5.jar;C:\Users\pabbu\.m2\repository\com\fasterxml\jackson\core\jackson-annotations\2.21\jackson-annotations-2.21.jar;C:\Users\pabbu\.m2\repository\tools\jackson\core\jackson-core\3.1.5\jackson-core-3.1.5.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat\4.1.1\spring-boot-starter-tomcat-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-tomcat-runtime\4.1.1\spring-boot-starter-tomcat-runtime-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-web-server\4.1.1\spring-boot-web-server-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\apache\tomcat\embed\tomcat-embed-core\11.0.24\tomcat-embed-core-11.0.24.jar;C:\Users\pabbu\.m2\repository\org\apache\tomcat\embed\tomcat-embed-websocket\11.0.24\tomcat-embed-websocket-11.0.24.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-tomcat\4.1.1\spring-boot-tomcat-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-http-converter\4.1.1\spring-boot-http-converter-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-web\7.0.9\spring-web-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-webmvc\4.1.1\spring-boot-webmvc-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-servlet\4.1.1\spring-boot-servlet-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-webmvc\7.0.9\spring-webmvc-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-thymeleaf\4.1.1\spring-boot-starter-thymeleaf-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter\4.1.1\spring-boot-starter-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-logging\4.1.1\spring-boot-starter-logging-4.1.1.jar;C:\Users\pabbu\.m2\repository\ch\qos\logback\logback-classic\1.5.38\logback-classic-1.5.38.jar;C:\Users\pabbu\.m2\repository\ch\qos\logback\logback-core\1.5.38\logback-core-1.5.38.jar;C:\Users\pabbu\.m2\repository\org\apache\logging\log4j\log4j-to-slf4j\2.25.5\log4j-to-slf4j-2.25.5.jar;C:\Users\pabbu\.m2\repository\org\apache\logging\log4j\log4j-api\2.25.5\log4j-api-2.25.5.jar;C:\Users\pabbu\.m2\repository\org\slf4j\jul-to-slf4j\2.0.18\jul-to-slf4j-2.0.18.jar;C:\Users\pabbu\.m2\repository\jakarta\annotation\jakarta.annotation-api\3.0.0\jakarta.annotation-api-3.0.0.jar;C:\Users\pabbu\.m2\repository\org\yaml\snakeyaml\2.6\snakeyaml-2.6.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-thymeleaf\4.1.1\spring-boot-thymeleaf-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\thymeleaf\extras\thymeleaf-extras-springsecurity6\3.1.5.RELEASE\thymeleaf-extras-springsecurity6-3.1.5.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\thymeleaf\thymeleaf-spring6\3.1.5.RELEASE\thymeleaf-spring6-3.1.5.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\thymeleaf\thymeleaf\3.1.5.RELEASE\thymeleaf-3.1.5.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\attoparser\attoparser\2.0.7.RELEASE\attoparser-2.0.7.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\unbescape\unbescape\1.1.6.RELEASE\unbescape-1.1.6.RELEASE.jar;C:\Users\pabbu\.m2\repository\org\slf4j\slf4j-api\2.0.18\slf4j-api-2.0.18.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-data-jpa\4.1.1\spring-boot-starter-data-jpa-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-jdbc\4.1.1\spring-boot-starter-jdbc-4.1.1.jar;C:\Users\pabbu\.m2\repository\com\zaxxer\HikariCP\7.0.2\HikariCP-7.0.2.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-data-jpa\4.1.1\spring-boot-data-jpa-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-data-commons\4.1.1\spring-boot-data-commons-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-persistence\4.1.1\spring-boot-persistence-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\data\spring-data-commons\4.1.1\spring-data-commons-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-hibernate\4.1.1\spring-boot-hibernate-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-jpa\4.1.1\spring-boot-jpa-4.1.1.jar;C:\Users\pabbu\.m2\repository\jakarta\persistence\jakarta.persistence-api\3.2.0\jakarta.persistence-api-3.2.0.jar;C:\Users\pabbu\.m2\repository\org\hibernate\orm\hibernate-core\7.4.5.Final\hibernate-core-7.4.5.Final.jar;C:\Users\pabbu\.m2\repository\jakarta\transaction\jakarta.transaction-api\2.0.1\jakarta.transaction-api-2.0.1.jar;C:\Users\pabbu\.m2\repository\org\hibernate\models\hibernate-models\1.1.1\hibernate-models-1.1.1.jar;C:\Users\pabbu\.m2\repository\org\glassfish\jaxb\jaxb-runtime\4.0.9\jaxb-runtime-4.0.9.jar;C:\Users\pabbu\.m2\repository\org\glassfish\jaxb\jaxb-core\4.0.9\jaxb-core-4.0.9.jar;C:\Users\pabbu\.m2\repository\org\eclipse\angus\angus-activation\2.0.3\angus-activation-2.0.3.jar;C:\Users\pabbu\.m2\repository\org\glassfish\jaxb\txw2\4.0.9\txw2-4.0.9.jar;C:\Users\pabbu\.m2\repository\com\sun\istack\istack-commons-runtime\4.1.2\istack-commons-runtime-4.1.2.jar;C:\Users\pabbu\.m2\repository\jakarta\inject\jakarta.inject-api\2.0.1\jakarta.inject-api-2.0.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-orm\7.0.9\spring-orm-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\data\spring-data-jpa\4.1.1\spring-data-jpa-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-tx\7.0.9\spring-tx-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\antlr\antlr4-runtime\4.13.2\antlr4-runtime-4.13.2.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-aspects\7.0.9\spring-aspects-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\aspectj\aspectjweaver\1.9.25.1\aspectjweaver-1.9.25.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-jdbc\4.1.1\spring-boot-jdbc-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-sql\4.1.1\spring-boot-sql-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-transaction\4.1.1\spring-boot-transaction-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-jdbc\7.0.9\spring-jdbc-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-security\4.1.1\spring-boot-starter-security-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-security\4.1.1\spring-boot-security-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-config\7.1.1\spring-security-config-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-aop\7.0.9\spring-aop-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-beans\7.0.9\spring-beans-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-validation\4.1.1\spring-boot-starter-validation-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-validation\4.1.1\spring-boot-validation-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\apache\tomcat\embed\tomcat-embed-el\11.0.24\tomcat-embed-el-11.0.24.jar;C:\Users\pabbu\.m2\repository\org\hibernate\validator\hibernate-validator\9.1.3.Final\hibernate-validator-9.1.3.Final.jar;C:\Users\pabbu\.m2\repository\jakarta\validation\jakarta.validation-api\3.1.1\jakarta.validation-api-3.1.1.jar;C:\Users\pabbu\.m2\repository\org\jboss\logging\jboss-logging\3.6.3.Final\jboss-logging-3.6.3.Final.jar;C:\Users\pabbu\.m2\repository\com\fasterxml\classmate\1.7.3\classmate-1.7.3.jar;C:\Users\pabbu\.m2\repository\com\mysql\mysql-connector-j\9.7.0\mysql-connector-j-9.7.0.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-devtools\4.1.1\spring-boot-devtools-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot\4.1.1\spring-boot-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-context\7.0.9\spring-context-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-autoconfigure\4.1.1\spring-boot-autoconfigure-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-starter-test\4.1.1\spring-boot-starter-test-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-test\4.1.1\spring-boot-test-4.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\boot\spring-boot-test-autoconfigure\4.1.1\spring-boot-test-autoconfigure-4.1.1.jar;C:\Users\pabbu\.m2\repository\com\jayway\jsonpath\json-path\2.10.0\json-path-2.10.0.jar;C:\Users\pabbu\.m2\repository\jakarta\xml\bind\jakarta.xml.bind-api\4.0.5\jakarta.xml.bind-api-4.0.5.jar;C:\Users\pabbu\.m2\repository\jakarta\activation\jakarta.activation-api\2.1.4\jakarta.activation-api-2.1.4.jar;C:\Users\pabbu\.m2\repository\net\minidev\json-smart\2.6.0\json-smart-2.6.0.jar;C:\Users\pabbu\.m2\repository\net\minidev\accessors-smart\2.6.0\accessors-smart-2.6.0.jar;C:\Users\pabbu\.m2\repository\org\ow2\asm\asm\9.7.1\asm-9.7.1.jar;C:\Users\pabbu\.m2\repository\org\assertj\assertj-core\3.27.7\assertj-core-3.27.7.jar;C:\Users\pabbu\.m2\repository\net\bytebuddy\byte-buddy\1.18.11\byte-buddy-1.18.11.jar;C:\Users\pabbu\.m2\repository\org\awaitility\awaitility\4.3.0\awaitility-4.3.0.jar;C:\Users\pabbu\.m2\repository\org\hamcrest\hamcrest\3.0\hamcrest-3.0.jar;C:\Users\pabbu\.m2\repository\org\junit\jupiter\junit-jupiter\6.0.3\junit-jupiter-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\junit\jupiter\junit-jupiter-api\6.0.3\junit-jupiter-api-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\pabbu\.m2\repository\org\junit\platform\junit-platform-commons\6.0.3\junit-platform-commons-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\pabbu\.m2\repository\org\junit\jupiter\junit-jupiter-params\6.0.3\junit-jupiter-params-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\junit\jupiter\junit-jupiter-engine\6.0.3\junit-jupiter-engine-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\junit\platform\junit-platform-engine\6.0.3\junit-platform-engine-6.0.3.jar;C:\Users\pabbu\.m2\repository\org\mockito\mockito-core\5.23.0\mockito-core-5.23.0.jar;C:\Users\pabbu\.m2\repository\net\bytebuddy\byte-buddy-agent\1.18.11\byte-buddy-agent-1.18.11.jar;C:\Users\pabbu\.m2\repository\org\objenesis\objenesis\3.3\objenesis-3.3.jar;C:\Users\pabbu\.m2\repository\org\mockito\mockito-junit-jupiter\5.23.0\mockito-junit-jupiter-5.23.0.jar;C:\Users\pabbu\.m2\repository\org\skyscreamer\jsonassert\1.5.3\jsonassert-1.5.3.jar;C:\Users\pabbu\.m2\repository\com\vaadin\external\google\android-json\0.0.20131108.vaadin1\android-json-0.0.20131108.vaadin1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-core\7.0.9\spring-core-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\jspecify\jspecify\1.0.1\jspecify-1.0.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-test\7.0.9\spring-test-7.0.9.jar;C:\Users\pabbu\.m2\repository\org\xmlunit\xmlunit-core\2.11.0\xmlunit-core-2.11.0.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-test\7.1.1\spring-security-test-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-core\7.1.1\spring-security-core-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-crypto\7.1.1\spring-security-crypto-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\spring-expression\7.0.9\spring-expression-7.0.9.jar;C:\Users\pabbu\.m2\repository\io\micrometer\micrometer-observation\1.17.1\micrometer-observation-1.17.1.jar;C:\Users\pabbu\.m2\repository\io\micrometer\micrometer-commons\1.17.1\micrometer-commons-1.17.1.jar;C:\Users\pabbu\.m2\repository\org\springframework\security\spring-security-web\7.1.1\spring-security-web-7.1.1.jar;C:\Users\pabbu\.m2\repository\org\apache\pdfbox\pdfbox\3.0.2\pdfbox-3.0.2.jar;C:\Users\pabbu\.m2\repository\org\apache\pdfbox\pdfbox-io\3.0.2\pdfbox-io-3.0.2.jar;C:\Users\pabbu\.m2\repository\org\apache\pdfbox\fontbox\3.0.2\fontbox-3.0.2.jar;C:\Users\pabbu\.m2\repository\commons-logging\commons-logging\1.3.6\commons-logging-1.3.6.jar;"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="C:\Users\pabbu"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2026-04-21"/>
+    <property name="java.home" value="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot"/>
+    <property name="file.separator" value="\"/>
+    <property name="basedir" value="C:\Users\pabbu\Desktop\digital subsidy"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="FILE_LOG_CHARSET" value="UTF-8"/>
+    <property name="java.awt.headless" value="true"/>
+    <property name="surefire.real.class.path" value="C:\Users\pabbu\AppData\Local\Temp\surefire11603174999008766613\surefirebooter-20260909023603275_3.jar"/>
+    <property name="user.script" value=""/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="21.0.11+10-LTS"/>
+    <property name="user.name" value="pabbu"/>
+    <property name="stdout.encoding" value="Cp1252"/>
+    <property name="path.separator" value=";"/>
+    <property name="os.version" value="10.0"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Temurin-21.0.11+10"/>
+    <property name="localRepository" value="C:\Users\pabbu\.m2\repository"/>
+    <property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/>
+    <property name="java.io.tmpdir" value="C:\Users\pabbu\AppData\Local\Temp\"/>
+    <property name="com.zaxxer.hikari.pool_number" value="1"/>
+    <property name="java.version" value="21.0.11"/>
+    <property name="user.dir" value="C:\Users\pabbu\Desktop\digital subsidy"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="PID" value="11984"/>
+    <property name="sun.os.patch.level" value=""/>
+    <property name="CONSOLE_LOG_CHARSET" value="UTF-8"/>
+    <property name="native.encoding" value="Cp1252"/>
+    <property name="java.library.path" value="C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot\bin;C:\Windows\Sun\Java\bin;C:\Windows\system32;C:\Windows;C:/Users/pabbu/.gemini/antigravity-ide/bin;C:\Program Files\Eclipse Adoptium\jdk-21.0.11.10-hotspot\bin;C:\Program Files (x86)\Common Files\Oracle\Java\java8path;C:\Program Files (x86)\Common Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0\;C:\Windows\System32\OpenSSH\;C:\flutter\bin;C:\Program Files\Git\cmd;C:\Program Files\MySQL\MySQL Server 8.0\bin;C:\Program Files\nodejs\;C:\Program Files\dotnet\;C:\Program Files\MySQL\MySQL Shell 8.0\bin\;C:\Users\pabbu\AppData\Local\Programs\Python\Python313\Scripts\;C:\Users\pabbu\AppData\Local\Programs\Python\Python313\;C:\Users\pabbu\AppData\Local\Microsoft\WindowsApps;C:\Users\pabbu\AppData\Local\Programs\Microsoft VS Code\bin;C:\flutter;C:\Users\pabbu\AppData\Roaming\npm;C:\Users\pabbu\AppData\Local\Programs\Antigravity\bin;C:\Users\pabbu\AppData\Local\Programs\Antigravity IDE\bin;C:\Users\pabbu\AppData\Local\Programs\cursor\resources\app\bin;."/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="stderr.encoding" value="Cp1252"/>
+    <property name="java.vendor" value="Eclipse Adoptium"/>
+    <property name="java.vm.version" value="21.0.11+10-LTS"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="65.0"/>
+    <property name="LOGGED_APPLICATION_NAME" value="[digital_subsidy] "/>
+  </properties>
+  <testcase name="testOfficerCreationAndDatabasePersistence" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.951">
+    <system-out><![CDATA[2026-09-09T02:36:17.968+05:30  INFO 11984 --- [digital_subsidy] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.example.digital_subsidy.EndToEndSampleBeneficiaryTest]: EndToEndSampleBeneficiaryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-09T02:36:17.970+05:30  INFO 11984 --- [digital_subsidy] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.example.digital_subsidy.DigitalSubsidyApplication for test class com.example.digital_subsidy.EndToEndSampleBeneficiaryTest
+2026-09-09T02:36:17.971+05:30  INFO 11984 --- [digital_subsidy] [           main] t.c.s.AnnotationConfigContextLoaderUtils : Could not detect default configuration classes for test class [com.example.digital_subsidy.EndToEndSampleBeneficiaryTest]: EndToEndSampleBeneficiaryTest does not declare any static, non-private, non-final, nested classes annotated with @Configuration.
+2026-09-09T02:36:17.972+05:30  INFO 11984 --- [digital_subsidy] [           main] .b.t.c.SpringBootTestContextBootstrapper : Found @SpringBootConfiguration com.example.digital_subsidy.DigitalSubsidyApplication for test class com.example.digital_subsidy.EndToEndSampleBeneficiaryTest
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        o1_0.officer_id 
+    from
+        officers o1_0 
+    where
+        o1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        o1_0.officer_id 
+    from
+        officers o1_0 
+    where
+        o1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        officers
+        (created_date, district, email, full_name, mobile_number, officer_type, state, status, updated_date, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        o1_0.officer_id,
+        o1_0.created_date,
+        o1_0.district,
+        o1_0.email,
+        o1_0.full_name,
+        o1_0.mobile_number,
+        o1_0.officer_type,
+        o1_0.state,
+        o1_0.status,
+        o1_0.updated_date,
+        o1_0.user_id 
+    from
+        officers o1_0 
+    join
+        users u1_0 
+            on u1_0.id=o1_0.user_id 
+    where
+        u1_0.email=?
+]]></system-out>
+  </testcase>
+  <testcase name="testDynamicSchemeSpecificEligibilityEvaluation" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.123">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget 
+    from
+        schemes s1_0 
+    where
+        s1_0.status=?
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+]]></system-out>
+  </testcase>
+  <testcase name="testSeparateDocumentUploadsAndPersistence" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.127">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        d1_0.id,
+        d1_0.application_id,
+        d1_0.beneficiary_id,
+        d1_0.content_type,
+        d1_0.document_type,
+        d1_0.file_name,
+        d1_0.file_path,
+        d1_0.file_size,
+        d1_0.status,
+        d1_0.uploaded_date,
+        d1_0.verification_remarks,
+        d1_0.verification_status,
+        d1_0.verified_at,
+        d1_0.verified_by 
+    from
+        documents d1_0 
+    where
+        d1_0.beneficiary_id=?
+]]></system-out>
+  </testcase>
+  <testcase name="testApplicationDetailsControllerMethodNullSafe" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.141">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget 
+    from
+        schemes s1_0 
+    where
+        s1_0.status=?
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+Hibernate: 
+    insert 
+    into
+        applications
+        (application_number, beneficiary_id, created_at, current_stage, eligibility_score, rejection_reason, requested_amount, scheme_id, status, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        eligibility_scores
+        (application_id, is_eligible, evaluated_at, passed_criteria_json, total_score) 
+    values
+        (?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        d1_0.id,
+        d1_0.application_id,
+        d1_0.beneficiary_id,
+        d1_0.content_type,
+        d1_0.document_type,
+        d1_0.file_name,
+        d1_0.file_path,
+        d1_0.file_size,
+        d1_0.status,
+        d1_0.uploaded_date,
+        d1_0.verification_remarks,
+        d1_0.verification_status,
+        d1_0.verified_at,
+        d1_0.verified_by 
+    from
+        documents d1_0 
+    where
+        d1_0.beneficiary_id=?
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        distinct d1_0.id,
+        d1_0.application_id,
+        d1_0.approved_by_user_id,
+        d1_0.created_at,
+        d1_0.disbursed_amount,
+        m1_0.disbursement_id,
+        m1_0.id,
+        m1_0.completion_status,
+        m1_0.compliance_status,
+        m1_0.description,
+        m1_0.due_date,
+        m1_0.milestone_amount,
+        m1_0.milestone_name,
+        m1_0.percentage,
+        m1_0.release_date,
+        m1_0.released_amount,
+        d1_0.status,
+        d1_0.total_sanctioned_amount 
+    from
+        disbursements d1_0 
+    left join
+        milestones m1_0 
+            on d1_0.id=m1_0.disbursement_id 
+    where
+        d1_0.application_id=?
+]]></system-out>
+  </testcase>
+  <testcase name="testStateDistrictMismatchRejection" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.028">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+]]></system-out>
+  </testcase>
+  <testcase name="testRegionMasterCountsAllFourStates" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.137">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        distinct r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.active=true 
+    order by
+        r1_0.state_name
+]]></system-out>
+  </testcase>
+  <testcase name="testDocumentValidationRulesAndTypeCheck" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.008"/>
+  <testcase name="testRegistrationAllFourStates" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.458">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+]]></system-out>
+  </testcase>
+  <testcase name="testIDORProtectionCrossBeneficiaryAccessForbidden" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.239">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget 
+    from
+        schemes s1_0 
+    where
+        s1_0.status=?
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+Hibernate: 
+    insert 
+    into
+        applications
+        (application_number, beneficiary_id, created_at, current_stage, eligibility_score, rejection_reason, requested_amount, scheme_id, status, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        eligibility_scores
+        (application_id, is_eligible, evaluated_at, passed_criteria_json, total_score) 
+    values
+        (?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        d1_0.id,
+        d1_0.application_id,
+        d1_0.beneficiary_id,
+        d1_0.content_type,
+        d1_0.document_type,
+        d1_0.file_name,
+        d1_0.file_path,
+        d1_0.file_size,
+        d1_0.status,
+        d1_0.uploaded_date,
+        d1_0.verification_remarks,
+        d1_0.verification_status,
+        d1_0.verified_at,
+        d1_0.verified_by 
+    from
+        documents d1_0 
+    where
+        d1_0.beneficiary_id=?
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+]]></system-out>
+  </testcase>
+  <testcase name="testEligibilityControllerValidDocumentSubmission" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.156">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget 
+    from
+        schemes s1_0 
+    where
+        s1_0.status=?
+Hibernate: 
+    select
+        rd1_0.id,
+        rd1_0.is_active,
+        rd1_0.allowed_file_types,
+        rd1_0.display_order,
+        rd1_0.document_name,
+        rd1_0.document_type,
+        rd1_0.max_file_size_mb,
+        rd1_0.is_required,
+        rd1_0.scheme_id 
+    from
+        required_documents rd1_0 
+    where
+        rd1_0.scheme_id=? 
+        and rd1_0.is_active=true 
+    order by
+        rd1_0.display_order
+2026-09-09T02:36:20.326+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : === ELIGIBILITY CHECK REQUEST START ===
+Hibernate: 
+    select
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id 
+    from
+        beneficiaries b1_0 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    where
+        u1_0.email=?
+2026-09-09T02:36:20.331+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : Resolved Beneficiary ID: 622 for user: ctrl.user1788901581835@gmail.com
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget 
+    from
+        schemes s1_0 
+    where
+        s1_0.status=?
+2026-09-09T02:36:20.335+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : Target Scheme ID: 1
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=? 
+        and ec1_0.is_active=true 
+    order by
+        ec1_0.display_order
+Hibernate: 
+    select
+        rd1_0.id,
+        rd1_0.is_active,
+        rd1_0.allowed_file_types,
+        rd1_0.display_order,
+        rd1_0.document_name,
+        rd1_0.document_type,
+        rd1_0.max_file_size_mb,
+        rd1_0.is_required,
+        rd1_0.scheme_id 
+    from
+        required_documents rd1_0 
+    where
+        rd1_0.scheme_id=? 
+        and rd1_0.is_active=true 
+    order by
+        rd1_0.display_order
+2026-09-09T02:36:20.344+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : Saving document: land_ownership.pdf for type: LAND_OWNERSHIP
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-09-09T02:36:20.349+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : Saving document: income_certificate.pdf for type: INCOME_CERTIFICATE
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-09-09T02:36:20.352+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : Saving document: aadhaar.pdf for type: AADHAAR
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-09-09T02:36:20.356+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : Saving document: bank_passbook.pdf for type: BANK_PASSBOOK
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-09-09T02:36:20.360+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : Evaluating eligibility score for Scheme ID: 1
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+2026-09-09T02:36:20.364+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : Eligibility score calculated: 100% (Eligible: true)
+2026-09-09T02:36:20.364+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.controller.EligibilityController   : === ELIGIBILITY CHECK REQUEST END SUCCESS ===
+]]></system-out>
+  </testcase>
+  <testcase name="testSampleBeneficiaryAcceptanceWorkflow" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.404">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget 
+    from
+        schemes s1_0 
+    where
+        s1_0.status=?
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+Hibernate: 
+    insert 
+    into
+        applications
+        (application_number, beneficiary_id, created_at, current_stage, eligibility_score, rejection_reason, requested_amount, scheme_id, status, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        eligibility_scores
+        (application_id, is_eligible, evaluated_at, passed_criteria_json, total_score) 
+    values
+        (?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        d1_0.id,
+        d1_0.application_id,
+        d1_0.beneficiary_id,
+        d1_0.content_type,
+        d1_0.document_type,
+        d1_0.file_name,
+        d1_0.file_path,
+        d1_0.file_size,
+        d1_0.status,
+        d1_0.uploaded_date,
+        d1_0.verification_remarks,
+        d1_0.verification_status,
+        d1_0.verified_at,
+        d1_0.verified_by 
+    from
+        documents d1_0 
+    where
+        d1_0.beneficiary_id=?
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        es1_0.id,
+        es1_0.application_id,
+        es1_0.is_eligible,
+        es1_0.evaluated_at,
+        es1_0.passed_criteria_json,
+        es1_0.total_score 
+    from
+        eligibility_scores es1_0
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    select
+        a1_0.id,
+        a1_0.application_number,
+        a1_0.beneficiary_id,
+        b1_0.id,
+        b1_0.address,
+        b1_0.age,
+        b1_0.category,
+        b1_0.created_at,
+        b1_0.district,
+        b1_0.gender,
+        b1_0.identity_number,
+        b1_0.identity_status,
+        b1_0.identity_type,
+        b1_0.pincode,
+        b1_0.state,
+        b1_0.user_id,
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password,
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name,
+        a1_0.created_at,
+        a1_0.current_stage,
+        a1_0.eligibility_score,
+        a1_0.rejection_reason,
+        a1_0.requested_amount,
+        a1_0.scheme_id,
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget,
+        a1_0.status,
+        a1_0.updated_at 
+    from
+        applications a1_0 
+    join
+        beneficiaries b1_0 
+            on b1_0.id=a1_0.beneficiary_id 
+    join
+        users u1_0 
+            on u1_0.id=b1_0.user_id 
+    left join
+        user_roles r1_0 
+            on u1_0.id=r1_0.user_id 
+    left join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    join
+        schemes s1_0 
+            on s1_0.id=a1_0.scheme_id 
+    where
+        a1_0.id=?
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        documents
+        (application_id, beneficiary_id, content_type, document_type, file_name, file_path, file_size, status, uploaded_date, verification_remarks, verification_status, verified_at, verified_by) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name 
+    from
+        user_roles r1_0 
+    join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    where
+        r1_0.user_id=?
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        rd1_0.id,
+        rd1_0.is_active,
+        rd1_0.allowed_file_types,
+        rd1_0.display_order,
+        rd1_0.document_name,
+        rd1_0.document_type,
+        rd1_0.max_file_size_mb,
+        rd1_0.is_required,
+        rd1_0.scheme_id 
+    from
+        required_documents rd1_0 
+    where
+        rd1_0.scheme_id=? 
+        and rd1_0.is_active=true 
+    order by
+        rd1_0.display_order
+Hibernate: 
+    update
+        documents 
+    set
+        application_id=?,
+        beneficiary_id=?,
+        content_type=?,
+        document_type=?,
+        file_name=?,
+        file_path=?,
+        file_size=?,
+        status=?,
+        uploaded_date=?,
+        verification_remarks=?,
+        verification_status=?,
+        verified_at=?,
+        verified_by=? 
+    where
+        id=?
+Hibernate: 
+    update
+        documents 
+    set
+        application_id=?,
+        beneficiary_id=?,
+        content_type=?,
+        document_type=?,
+        file_name=?,
+        file_path=?,
+        file_size=?,
+        status=?,
+        uploaded_date=?,
+        verification_remarks=?,
+        verification_status=?,
+        verified_at=?,
+        verified_by=? 
+    where
+        id=?
+Hibernate: 
+    update
+        documents 
+    set
+        application_id=?,
+        beneficiary_id=?,
+        content_type=?,
+        document_type=?,
+        file_name=?,
+        file_path=?,
+        file_size=?,
+        status=?,
+        uploaded_date=?,
+        verification_remarks=?,
+        verification_status=?,
+        verified_at=?,
+        verified_by=? 
+    where
+        id=?
+Hibernate: 
+    update
+        documents 
+    set
+        application_id=?,
+        beneficiary_id=?,
+        content_type=?,
+        document_type=?,
+        file_name=?,
+        file_path=?,
+        file_size=?,
+        status=?,
+        uploaded_date=?,
+        verification_remarks=?,
+        verification_status=?,
+        verified_at=?,
+        verified_by=? 
+    where
+        id=?
+Hibernate: 
+    insert 
+    into
+        user_roles
+        (user_id, role_id) 
+    values
+        (?, ?)
+Hibernate: 
+    select
+        d1_0.id,
+        d1_0.application_id,
+        d1_0.beneficiary_id,
+        d1_0.content_type,
+        d1_0.document_type,
+        d1_0.file_name,
+        d1_0.file_path,
+        d1_0.file_size,
+        d1_0.status,
+        d1_0.uploaded_date,
+        d1_0.verification_remarks,
+        d1_0.verification_status,
+        d1_0.verified_at,
+        d1_0.verified_by 
+    from
+        documents d1_0 
+    where
+        d1_0.application_id=?
+Hibernate: 
+    insert 
+    into
+        verifications
+        (application_id, officer_role, officer_user_id, remarks, status, verified_at) 
+    values
+        (?, ?, ?, ?, ?, ?)
+2026-09-09T02:36:20.659+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.service.VerificationService        : [VERIFICATION] App ID: 272 | App Number: APP-580564 | Officer: field.officer@gmail.com | Role: ROLE_FIELD_OFFICER | Action: APPROVE | New Stage: DISTRICT_REVIEW | New Status: PENDING
+2026-09-09T02:36:20.660+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.service.VerificationService        : [VERIFICATION SAVED] App ID: 272 | Persisted Stage: DISTRICT_REVIEW | Persisted Status: PENDING
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name 
+    from
+        user_roles r1_0 
+    join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    where
+        r1_0.user_id=?
+Hibernate: 
+    select
+        rd1_0.id,
+        rd1_0.is_active,
+        rd1_0.allowed_file_types,
+        rd1_0.display_order,
+        rd1_0.document_name,
+        rd1_0.document_type,
+        rd1_0.max_file_size_mb,
+        rd1_0.is_required,
+        rd1_0.scheme_id 
+    from
+        required_documents rd1_0 
+    where
+        rd1_0.scheme_id=? 
+        and rd1_0.is_active=true 
+    order by
+        rd1_0.display_order
+Hibernate: 
+    select
+        d1_0.id,
+        d1_0.application_id,
+        d1_0.beneficiary_id,
+        d1_0.content_type,
+        d1_0.document_type,
+        d1_0.file_name,
+        d1_0.file_path,
+        d1_0.file_size,
+        d1_0.status,
+        d1_0.uploaded_date,
+        d1_0.verification_remarks,
+        d1_0.verification_status,
+        d1_0.verified_at,
+        d1_0.verified_by 
+    from
+        documents d1_0 
+    where
+        d1_0.application_id=?
+Hibernate: 
+    insert 
+    into
+        verifications
+        (application_id, officer_role, officer_user_id, remarks, status, verified_at) 
+    values
+        (?, ?, ?, ?, ?, ?)
+2026-09-09T02:36:20.683+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.service.VerificationService        : [VERIFICATION] App ID: 272 | App Number: APP-580564 | Officer: district.officer@gmail.com | Role: ROLE_DISTRICT_OFFICER | Action: APPROVE | New Stage: FINANCE_APPROVAL | New Status: PENDING
+2026-09-09T02:36:20.684+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.service.VerificationService        : [VERIFICATION SAVED] App ID: 272 | Persisted Stage: FINANCE_APPROVAL | Persisted Status: PENDING
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name 
+    from
+        user_roles r1_0 
+    join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    where
+        r1_0.user_id=?
+Hibernate: 
+    insert 
+    into
+        verifications
+        (application_id, officer_role, officer_user_id, remarks, status, verified_at) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        disbursements
+        (application_id, approved_by_user_id, created_at, disbursed_amount, status, total_sanctioned_amount) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        dm1_0.id,
+        dm1_0.is_active,
+        dm1_0.description,
+        dm1_0.display_order,
+        dm1_0.milestone_name,
+        dm1_0.percentage,
+        dm1_0.scheme_id 
+    from
+        scheme_disbursement_milestones dm1_0 
+    where
+        dm1_0.scheme_id=? 
+        and dm1_0.is_active=true 
+    order by
+        dm1_0.display_order
+Hibernate: 
+    insert 
+    into
+        milestones
+        (completion_status, compliance_status, description, disbursement_id, due_date, milestone_amount, milestone_name, percentage, release_date, released_amount) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        milestones
+        (completion_status, compliance_status, description, disbursement_id, due_date, milestone_amount, milestone_name, percentage, release_date, released_amount) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        milestones
+        (completion_status, compliance_status, description, disbursement_id, due_date, milestone_amount, milestone_name, percentage, release_date, released_amount) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+2026-09-09T02:36:20.713+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.service.VerificationService        : [VERIFICATION] App ID: 272 | App Number: APP-580564 | Officer: finance.approver@gmail.com | Role: ROLE_FINANCE_APPROVER | Action: APPROVE | New Stage: DISBURSEMENT | New Status: APPROVED
+2026-09-09T02:36:20.713+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.service.VerificationService        : [VERIFICATION SAVED] App ID: 272 | Persisted Stage: DISBURSEMENT | Persisted Status: APPROVED
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    update
+        applications 
+    set
+        application_number=?,
+        beneficiary_id=?,
+        current_stage=?,
+        eligibility_score=?,
+        rejection_reason=?,
+        requested_amount=?,
+        scheme_id=?,
+        status=?,
+        updated_at=? 
+    where
+        id=?
+Hibernate: 
+    select
+        distinct d1_0.id,
+        d1_0.application_id,
+        d1_0.approved_by_user_id,
+        d1_0.created_at,
+        d1_0.disbursed_amount,
+        m1_0.disbursement_id,
+        m1_0.id,
+        m1_0.completion_status,
+        m1_0.compliance_status,
+        m1_0.description,
+        m1_0.due_date,
+        m1_0.milestone_amount,
+        m1_0.milestone_name,
+        m1_0.percentage,
+        m1_0.release_date,
+        m1_0.released_amount,
+        d1_0.status,
+        d1_0.total_sanctioned_amount 
+    from
+        disbursements d1_0 
+    left join
+        milestones m1_0 
+            on d1_0.id=m1_0.disbursement_id 
+    where
+        d1_0.application_id=?
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.completion_status,
+        m1_0.compliance_status,
+        m1_0.description,
+        m1_0.disbursement_id,
+        m1_0.due_date,
+        m1_0.milestone_amount,
+        m1_0.milestone_name,
+        m1_0.percentage,
+        m1_0.release_date,
+        m1_0.released_amount 
+    from
+        milestones m1_0 
+    where
+        m1_0.disbursement_id=? 
+    order by
+        m1_0.id
+Hibernate: 
+    update
+        disbursements 
+    set
+        application_id=?,
+        approved_by_user_id=?,
+        disbursed_amount=?,
+        status=?,
+        total_sanctioned_amount=? 
+    where
+        id=?
+Hibernate: 
+    update
+        milestones 
+    set
+        completion_status=?,
+        compliance_status=?,
+        description=?,
+        disbursement_id=?,
+        due_date=?,
+        milestone_amount=?,
+        milestone_name=?,
+        percentage=?,
+        release_date=?,
+        released_amount=? 
+    where
+        id=?
+Hibernate: 
+    select
+        m1_0.id,
+        m1_0.completion_status,
+        m1_0.compliance_status,
+        m1_0.description,
+        m1_0.disbursement_id,
+        m1_0.due_date,
+        m1_0.milestone_amount,
+        m1_0.milestone_name,
+        m1_0.percentage,
+        m1_0.release_date,
+        m1_0.released_amount 
+    from
+        milestones m1_0 
+    where
+        m1_0.disbursement_id=? 
+    order by
+        m1_0.id
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    update
+        schemes 
+    set
+        category=?,
+        description=?,
+        eligible_states=?,
+        end_date=?,
+        max_amount=?,
+        min_amount=?,
+        min_qualifying_score=?,
+        name=?,
+        remaining_budget=?,
+        start_date=?,
+        status=?,
+        target_categories=?,
+        total_budget=? 
+    where
+        id=?
+Hibernate: 
+    select
+        count(s1_0.id) 
+    from
+        schemes s1_0 
+    where
+        s1_0.status=?
+Hibernate: 
+    select
+        count(*) 
+    from
+        beneficiaries b1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        applications a1_0
+Hibernate: 
+    select
+        count(a1_0.id) 
+    from
+        applications a1_0 
+    where
+        a1_0.status=?
+Hibernate: 
+    select
+        count(a1_0.id) 
+    from
+        applications a1_0 
+    where
+        a1_0.status=?
+Hibernate: 
+    select
+        count(a1_0.id) 
+    from
+        applications a1_0 
+    where
+        a1_0.status=?
+Hibernate: 
+    select
+        sum(a1_0.requested_amount) 
+    from
+        applications a1_0 
+    where
+        a1_0.status='APPROVED'
+Hibernate: 
+    select
+        sum(d1_0.disbursed_amount) 
+    from
+        disbursements d1_0
+Hibernate: 
+    select
+        count(*) 
+    from
+        audit_logs al1_0
+]]></system-out>
+  </testcase>
+  <testcase name="testSampleBeneficiaryRejectionWorkflow" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.151">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget 
+    from
+        schemes s1_0 
+    where
+        s1_0.status=?
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+Hibernate: 
+    insert 
+    into
+        applications
+        (application_number, beneficiary_id, created_at, current_stage, eligibility_score, rejection_reason, requested_amount, scheme_id, status, updated_at) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        eligibility_scores
+        (application_id, is_eligible, evaluated_at, passed_criteria_json, total_score) 
+    values
+        (?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        d1_0.id,
+        d1_0.application_id,
+        d1_0.beneficiary_id,
+        d1_0.content_type,
+        d1_0.document_type,
+        d1_0.file_name,
+        d1_0.file_path,
+        d1_0.file_size,
+        d1_0.status,
+        d1_0.uploaded_date,
+        d1_0.verification_remarks,
+        d1_0.verification_status,
+        d1_0.verified_at,
+        d1_0.verified_by 
+    from
+        documents d1_0 
+    where
+        d1_0.beneficiary_id=?
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        u1_0.id,
+        u1_0.created_at,
+        u1_0.email,
+        u1_0.enabled,
+        u1_0.full_name,
+        u1_0.mobile_number,
+        u1_0.password 
+    from
+        users u1_0 
+    where
+        u1_0.email=?
+Hibernate: 
+    select
+        r1_0.user_id,
+        r1_1.id,
+        r1_1.name 
+    from
+        user_roles r1_0 
+    join
+        roles r1_1 
+            on r1_1.id=r1_0.role_id 
+    where
+        r1_0.user_id=?
+Hibernate: 
+    insert 
+    into
+        verifications
+        (application_id, officer_role, officer_user_id, remarks, status, verified_at) 
+    values
+        (?, ?, ?, ?, ?, ?)
+2026-09-09T02:36:20.918+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.service.VerificationService        : [VERIFICATION] App ID: 273 | App Number: APP-580900 | Officer: field.officer@gmail.com | Role: ROLE_FIELD_OFFICER | Action: REJECT | New Stage: REJECTED | New Status: REJECTED
+2026-09-09T02:36:20.918+05:30  INFO 11984 --- [digital_subsidy] [           main] c.e.d.service.VerificationService        : [VERIFICATION SAVED] App ID: 273 | Persisted Stage: REJECTED | Persisted Status: REJECTED
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+]]></system-out>
+  </testcase>
+  <testcase name="testBelowThresholdIneligibleEvaluation" classname="com.example.digital_subsidy.EndToEndSampleBeneficiaryTest" time="0.12">
+    <system-out><![CDATA[Hibernate: 
+    select
+        r1_0.id,
+        r1_0.active,
+        r1_0.district_name,
+        r1_0.state_name 
+    from
+        regions r1_0 
+    where
+        r1_0.state_name=? 
+        and r1_0.active=true 
+    order by
+        r1_0.district_name
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.email=? 
+    limit
+        ?
+Hibernate: 
+    select
+        u1_0.id 
+    from
+        users u1_0 
+    where
+        u1_0.mobile_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        b1_0.id 
+    from
+        beneficiaries b1_0 
+    where
+        b1_0.identity_number=? 
+    limit
+        ?
+Hibernate: 
+    select
+        r1_0.id,
+        r1_0.name 
+    from
+        roles r1_0 
+    where
+        r1_0.name=?
+Hibernate: 
+    insert 
+    into
+        users
+        (created_at, email, enabled, full_name, mobile_number, password) 
+    values
+        (?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        beneficiaries
+        (address, age, category, created_at, district, gender, identity_number, identity_status, identity_type, pincode, state, user_id) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    insert 
+    into
+        audit_logs
+        (action, entity_id, entity_name, new_value, old_value, remarks, timestamp, user_email, user_role) 
+    values
+        (?, ?, ?, ?, ?, ?, ?, ?, ?)
+Hibernate: 
+    select
+        s1_0.id,
+        s1_0.category,
+        s1_0.created_at,
+        s1_0.description,
+        s1_0.eligible_states,
+        s1_0.end_date,
+        s1_0.max_amount,
+        s1_0.min_amount,
+        s1_0.min_qualifying_score,
+        s1_0.name,
+        s1_0.remaining_budget,
+        s1_0.start_date,
+        s1_0.status,
+        s1_0.target_categories,
+        s1_0.total_budget 
+    from
+        schemes s1_0 
+    where
+        s1_0.status=?
+Hibernate: 
+    select
+        ec1_0.id,
+        ec1_0.is_active,
+        ec1_0.answer_type,
+        ec1_0.criterion_name,
+        ec1_0.criterion_type,
+        ec1_0.description,
+        ec1_0.display_order,
+        ec1_0.operator,
+        ec1_0.options,
+        ec1_0.question_text,
+        ec1_0.is_required,
+        ec1_0.scheme_id,
+        ec1_0.target_value,
+        ec1_0.weight_points 
+    from
+        eligibility_criteria ec1_0 
+    where
+        ec1_0.scheme_id=?
+]]></system-out>
+  </testcase>
+</testsuite>

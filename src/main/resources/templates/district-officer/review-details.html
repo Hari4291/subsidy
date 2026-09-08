@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-navy mb-1"><i class="fa-solid fa-gavel text-warning me-2"></i> District Collectorate Review &amp; Sanction</h3>
+            <p class="text-muted small mb-0">Application Number: <strong th:text="${app != null and app.applicationNumber != null ? app.applicationNumber : 'N/A'}">APP-123456</strong></p>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Error processing review</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <form th:action="@{/officer/verify}" th:object="${actionDto}" method="post">
+        <input type="hidden" th:field="*{applicationId}">
+        <input type="hidden" name="role" value="DISTRICT_OFFICER">
+
+        <!-- 1. Applicant Details -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-user me-2"></i> Applicant Details
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Application ID</small>
+                        <span class="fw-bold text-navy" th:text="${app != null ? app.applicationNumber : 'N/A'}">APP-123456</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Beneficiary Name</small>
+                        <span class="fw-bold text-dark" th:text="${beneficiary != null and beneficiary.user != null ? beneficiary.user.fullName : 'N/A'}">Name</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Email Address</small>
+                        <span th:text="${beneficiary != null and beneficiary.user != null ? beneficiary.user.email : 'N/A'}">email@example.com</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Mobile Number</small>
+                        <span th:text="${beneficiary != null and beneficiary.user != null ? beneficiary.user.mobileNumber : 'N/A'}">9988776655</span>
+                    </div>
+                    <div class="col-md-2">
+                        <small class="text-muted d-block fw-bold">Age</small>
+                        <span th:text="${beneficiary != null and beneficiary.age != null ? beneficiary.age + ' Yrs' : 'N/A'}">32 Yrs</span>
+                    </div>
+                    <div class="col-md-2">
+                        <small class="text-muted d-block fw-bold">Gender</small>
+                        <span th:text="${beneficiary != null and beneficiary.gender != null ? beneficiary.gender : 'N/A'}">Male</span>
+                    </div>
+                    <div class="col-md-2">
+                        <small class="text-muted d-block fw-bold">Category</small>
+                        <span class="badge bg-secondary" th:text="${beneficiary != null ? beneficiary.category : 'N/A'}">OBC</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">State</small>
+                        <span th:text="${beneficiary != null ? beneficiary.state : 'N/A'}">Andhra Pradesh</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">District</small>
+                        <span class="badge bg-info text-dark" th:text="${beneficiary != null ? beneficiary.district : 'N/A'}">Kakinada</span>
+                    </div>
+                    <div class="col-md-8">
+                        <small class="text-muted d-block fw-bold">Residential Address</small>
+                        <span th:text="${beneficiary != null ? beneficiary.address : 'N/A'}">Address line</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Scheme & Financial Details -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-layer-group me-2"></i> Scheme &amp; Financial Details
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3 align-items-center">
+                    <div class="col-md-4">
+                        <small class="text-muted d-block fw-bold">Applied Scheme Name</small>
+                        <h5 class="fw-bold text-navy mb-0" th:text="${scheme != null ? scheme.name : 'N/A'}">Scheme Name</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Requested Grant Amount</small>
+                        <h5 class="fw-bold text-success mb-0"
+                            th:text="${app != null and app.requestedAmount != null ? '₹' + #numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT') : 'N/A'}">₹50,000</h5>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Calculated Eligibility Score</small>
+                        <h4 class="fw-bold text-primary mb-0"
+                            th:text="${app != null and app.eligibilityScore != null ? app.eligibilityScore + '/100' : 'Not available'}">85/100</h4>
+                    </div>
+                    <div class="col-md-2">
+                        <small class="text-muted d-block fw-bold">Eligibility Status</small>
+                        <span th:if="${app != null and app.eligibilityScore != null and app.eligibilityScore >= 60}" class="badge bg-success fs-6">ELIGIBLE</span>
+                        <span th:if="${app != null and app.eligibilityScore != null and app.eligibilityScore < 60}" class="badge bg-warning text-dark fs-6">INELIGIBLE</span>
+                        <span th:if="${app == null or app.eligibilityScore == null}" class="badge bg-secondary fs-6">N/A</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Beneficiary Submitted Eligibility Details -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-list-check me-2"></i> Beneficiary Submitted Eligibility Details
+                <small class="fw-normal ms-2 text-white-50">(Scheme: <span th:text="${scheme != null ? scheme.name : 'N/A'}">Scheme</span>)</small>
+            </div>
+            <div class="card-body p-4">
+                <div th:if="${eligibilityAnswers != null and !#lists.isEmpty(eligibilityAnswers)}">
+                    <div th:each="ans, iStat : ${eligibilityAnswers}" class="mb-3 pb-3 border-bottom">
+                        <div class="row align-items-start">
+                            <div class="col-md-1 text-center">
+                                <span class="badge bg-navy rounded-circle" th:text="${iStat.count}">1</span>
+                            </div>
+                            <div class="col-md-7">
+                                <small class="text-muted fw-bold d-block">Question</small>
+                                <span class="fw-semibold text-dark" th:text="${ans.questionTextSnapshot}">Question text</span>
+                            </div>
+                            <div class="col-md-4">
+                                <small class="text-muted fw-bold d-block">Beneficiary's Answer</small>
+                                <span class="badge bg-light text-dark border fw-bold fs-6 px-3 py-2"
+                                      th:text="${ans.submittedAnswer != null and !#strings.isEmpty(ans.submittedAnswer) ? ans.submittedAnswer : '—'}">Answer</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${eligibilityAnswers == null or #lists.isEmpty(eligibilityAnswers)}" class="alert alert-secondary mb-0">
+                    <i class="fa-solid fa-circle-info me-2"></i>
+                    No eligibility answer records found for this application.
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. Field Officer Verification Report -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-clipboard-check me-2"></i> Field Officer Inspection &amp; Document Verification Report
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-3 mb-3 pb-3 border-bottom">
+                    <div class="col-md-4">
+                        <small class="text-muted d-block fw-bold">Verifying Field Officer</small>
+                        <span th:if="${fieldVerification != null and fieldVerification.officerUser != null}"
+                              class="fw-bold text-dark"
+                              th:text="${fieldVerification.officerUser.fullName + ' (' + fieldVerification.officerUser.email + ')'}">Officer Name</span>
+                        <span th:if="${fieldVerification == null}" class="text-muted">Field verification not yet completed.</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Field Verification Status</small>
+                        <span th:if="${fieldVerification != null}"
+                              class="badge bg-success"
+                              th:text="${fieldVerification.status}">APPROVED</span>
+                        <span th:if="${fieldVerification == null}" class="badge bg-secondary">PENDING</span>
+                    </div>
+                    <div class="col-md-3">
+                        <small class="text-muted d-block fw-bold">Verification Timestamp</small>
+                        <span th:if="${fieldVerification != null}"
+                              th:text="${#temporals.format(fieldVerification.verifiedAt, 'dd-MM-yyyy HH:mm')}">Date</span>
+                        <span th:if="${fieldVerification == null}" class="text-muted">N/A</span>
+                    </div>
+                    <div class="col-md-12">
+                        <small class="text-muted d-block fw-bold">Field Officer Remarks &amp; Ground Observations</small>
+                        <p class="p-2 bg-light rounded border text-dark mb-0"
+                           th:text="${fieldVerification != null and fieldVerification.remarks != null ? fieldVerification.remarks : 'No field officer remarks recorded.'}">Remarks</p>
+                    </div>
+                </div>
+
+                <!-- Application Documents (dynamic) -->
+                <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-folder-open me-2"></i> Uploaded Documents &amp; Verification Status</h6>
+                <div th:if="${applicationDocs != null and !#lists.isEmpty(applicationDocs)}">
+                    <div th:each="doc, dStat : ${applicationDocs}" th:if="${'ACTIVE'.equals(doc.status)}"
+                         class="mb-3 p-3 bg-light rounded border d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="fw-bold text-navy mb-1">
+                                <i class="fa-solid fa-file me-2 text-primary"></i>
+                                <span th:text="${dStat.count} + '. ' + ${doc.documentType}">1. AADHAAR</span>
+                            </h6>
+                            <p class="small text-muted mb-0" th:text="${doc.fileName}">document.pdf</p>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge mb-2 d-block"
+                                  th:classappend="${doc.verificationStatus == 'VERIFIED' ? 'bg-success' : (doc.verificationStatus == 'INVALID' ? 'bg-danger' : 'bg-warning text-dark')}"
+                                  th:text="${doc.verificationStatus}">PENDING</span>
+                            <a th:href="@{'/district-officer/documents/' + ${doc.id} + '/view'}"
+                               target="_blank" class="btn btn-sm btn-navy fw-bold">
+                                <i class="fa-solid fa-eye me-1"></i> View Document
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div th:if="${applicationDocs == null or #lists.isEmpty(applicationDocs)}" class="alert alert-warning">
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i> No documents uploaded for this application.
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. District Officer Sanction Decision -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-user-shield me-2"></i> District Officer Sanction Decision
+            </div>
+            <div class="card-body p-4">
+                <div class="mb-3">
+                    <label for="remarks" class="form-label fw-bold">District Collectorate Remarks / Sanction Notes <span class="text-danger">*</span></label>
+                    <textarea id="remarks" th:field="*{remarks}" class="form-control" rows="3"
+                              placeholder="Enter District Officer sanction remarks or rejection reason..." required></textarea>
+                </div>
+
+                <div class="d-flex flex-wrap gap-2 pt-2 border-top">
+                    <button type="submit" name="action" value="APPROVE" class="btn btn-success btn-lg fw-bold shadow-sm">
+                        <i class="fa-solid fa-circle-check me-2"></i> Approve &amp; Sanction
+                    </button>
+                    <button type="submit" name="action" value="REQUEST_RE_VERIFICATION" class="btn btn-warning text-dark btn-lg fw-bold shadow-sm">
+                        <i class="fa-solid fa-rotate-left me-2"></i> Request Re-verification
+                    </button>
+                    <button type="submit" name="action" value="REJECT" class="btn btn-danger btn-lg fw-bold shadow-sm">
+                        <i class="fa-solid fa-circle-xmark me-2"></i> Reject
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

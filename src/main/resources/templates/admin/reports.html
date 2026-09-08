@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{admin/fragments/header :: admin-header}"></div>
+
+    <h3 class="fw-bold text-navy mb-4"><i class="fa-solid fa-chart-pie text-primary me-2"></i> Portal Analytics &amp; Fund Utilization Reports</h3>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-4">
+            <div class="gov-card p-4 text-center">
+                <span class="text-muted small fw-bold">Active Subsidy Programs</span>
+                <h2 class="fw-bold text-navy mb-0" th:text="${stats.activeSchemes}">8</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="gov-card p-4 text-center">
+                <span class="text-muted small fw-bold">Approved Grant Volume</span>
+                <h2 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(stats.totalApprovedGrant, 0, 'COMMA', 0, 'POINT')}">₹4.50 Cr</h2>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="gov-card p-4 text-center">
+                <span class="text-muted small fw-bold">Total Funds Released</span>
+                <h2 class="fw-bold text-primary mb-0" th:text="'₹' + ${#numbers.formatDecimal(stats.totalDisbursed, 0, 'COMMA', 0, 'POINT')}">₹3.25 Cr</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{admin/fragments/header :: admin-header}"></div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card gov-card shadow-sm border-0">
+                <div class="card-header gov-card-header bg-navy text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="fa-solid fa-plus me-2 text-warning"></i> Configure New Subsidy Scheme</h4>
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <form th:action="@{/admin/schemes/save}" th:object="${scheme}" method="post">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Scheme Name <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{name}" class="form-control" placeholder="e.g. PM Green Energy Roof Solar Grant" required>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Scheme Description <span class="text-danger">*</span></label>
+                            <textarea th:field="*{description}" class="form-control" rows="3" placeholder="Enter official scheme objectives and target beneficiary description..." required></textarea>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Minimum Grant Amount (₹) <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{minAmount}" class="form-control" placeholder="10000" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Maximum Grant Amount (₹) <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{maxAmount}" class="form-control" placeholder="100000" required>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Total Regional Allocation Budget (₹) <span class="text-danger">*</span></label>
+                                <input type="number" th:field="*{totalBudget}" class="form-control" placeholder="50000000" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label fw-bold">Status <span class="text-danger">*</span></label>
+                                <select th:field="*{status}" class="form-select" required>
+                                    <option value="ACTIVE">ACTIVE</option>
+                                    <option value="INACTIVE">INACTIVE</option>
+                                    <option value="DRAFT">DRAFT</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Target Categories (Comma-separated) <span class="text-danger">*</span></label>
+                            <input type="text" th:field="*{targetCategories}" class="form-control" placeholder="General,OBC,SC,ST,Minority" required>
+                        </div>
+
+                        <div class="d-flex justify-content-between border-top pt-3">
+                            <a th:href="@{/admin/schemes}" class="btn btn-outline-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-navy text-white fw-bold px-4">Save Scheme Configuration</button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

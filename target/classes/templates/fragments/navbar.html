@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav th:fragment="navbar" class="navbar navbar-expand-lg gov-navbar sticky-top">
+    <div class="container">
+        <a class="navbar-brand fw-bold text-dark me-4" th:href="@{/}">
+            <i class="fa-solid fa-landmark text-primary me-2"></i>GOV PORTAL
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#govNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="govNav">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item"><a class="nav-link" th:href="@{/}"><i class="fa-solid fa-house me-1"></i> Home</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/schemes}"><i class="fa-solid fa-list-check me-1"></i> Schemes</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/how-it-works}"><i class="fa-solid fa-diagram-project me-1"></i> How It Works</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/eligibility}"><i class="fa-solid fa-calculator me-1"></i> Eligibility</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/help}"><i class="fa-solid fa-circle-info me-1"></i> Help</a></li>
+            </ul>
+
+            <div class="d-flex align-items-center gap-2">
+                <!-- Beneficiary Dashboard Return Button (Visible on all beneficiary/portal pages except /beneficiary/dashboard itself) -->
+                <th:block sec:authorize="hasRole('BENEFICIARY')">
+                    <a th:unless="${#execInfo != null and (#execInfo.processedTemplateName == 'beneficiary/dashboard' or #execInfo.processedTemplateName == 'beneficiary/dashboard.html')}"
+                       th:href="@{/beneficiary/dashboard}" 
+                       id="beneficiaryDashboardReturnBtn" 
+                       class="btn btn-warning text-dark fw-bold px-3 shadow-sm me-2">
+                        <i class="fa-solid fa-arrow-left me-1"></i> ← Go to Dashboard
+                    </a>
+                    <script>
+                        (function() {
+                            var p = window.location.pathname.replace(/\/$/, "");
+                            if (p === "/beneficiary/dashboard") {
+                                var btn = document.getElementById("beneficiaryDashboardReturnBtn");
+                                if (btn) btn.style.display = "none";
+                            }
+                        })();
+                    </script>
+                </th:block>
+
+                <!-- Field Officer Dashboard Return Button (Visible on all inner pages except /field-officer/dashboard itself) -->
+                <th:block sec:authorize="hasRole('FIELD_OFFICER')">
+                    <a th:unless="${#execInfo != null and (#execInfo.processedTemplateName == 'field-officer/dashboard' or #execInfo.processedTemplateName == 'field-officer/dashboard.html')}"
+                       th:href="@{/field-officer/dashboard}" 
+                       id="fieldOfficerDashboardReturnBtn" 
+                       class="btn btn-warning text-dark fw-bold px-3 shadow-sm me-2">
+                        <i class="fa-solid fa-arrow-left me-1"></i> ← Go to Dashboard
+                    </a>
+                    <script>
+                        (function() {
+                            var p = window.location.pathname.replace(/\/$/, "");
+                            if (p === "/field-officer/dashboard") {
+                                var btn = document.getElementById("fieldOfficerDashboardReturnBtn");
+                                if (btn) btn.style.display = "none";
+                            }
+                        })();
+                    </script>
+                </th:block>
+
+                <!-- District Officer Dashboard Return Button (Visible on all inner pages except /district-officer/dashboard itself) -->
+                <th:block sec:authorize="hasRole('DISTRICT_OFFICER')">
+                    <a th:unless="${#execInfo != null and (#execInfo.processedTemplateName == 'district-officer/dashboard' or #execInfo.processedTemplateName == 'district-officer/dashboard.html')}"
+                       th:href="@{/district-officer/dashboard}" 
+                       id="districtOfficerDashboardReturnBtn" 
+                       class="btn btn-warning text-dark fw-bold px-3 shadow-sm me-2">
+                        <i class="fa-solid fa-arrow-left me-1"></i> ← Go to Dashboard
+                    </a>
+                    <script>
+                        (function() {
+                            var p = window.location.pathname.replace(/\/$/, "");
+                            if (p === "/district-officer/dashboard") {
+                                var btn = document.getElementById("districtOfficerDashboardReturnBtn");
+                                if (btn) btn.style.display = "none";
+                            }
+                        })();
+                    </script>
+                </th:block>
+
+                <!-- Finance Approver Dashboard Return Button (Visible on all inner pages except /finance/dashboard itself) -->
+                <th:block sec:authorize="hasRole('FINANCE_APPROVER')">
+                    <a th:unless="${#execInfo != null and (#execInfo.processedTemplateName == 'finance/dashboard' or #execInfo.processedTemplateName == 'finance/dashboard.html')}"
+                       th:href="@{/finance/dashboard}" 
+                       id="financeDashboardReturnBtn" 
+                       class="btn btn-warning text-dark fw-bold px-3 shadow-sm me-2">
+                        <i class="fa-solid fa-arrow-left me-1"></i> ← Go to Dashboard
+                    </a>
+                    <script>
+                        (function() {
+                            var p = window.location.pathname.replace(/\/$/, "");
+                            if (p === "/finance/dashboard") {
+                                var btn = document.getElementById("financeDashboardReturnBtn");
+                                if (btn) btn.style.display = "none";
+                            }
+                        })();
+                    </script>
+                </th:block>
+
+                <!-- Admin Dashboard Return Button (Visible on all inner admin pages except /admin/dashboard itself) -->
+                <th:block sec:authorize="hasRole('ADMIN')">
+                    <a th:unless="${#execInfo != null and (#execInfo.processedTemplateName == 'admin/dashboard' or #execInfo.processedTemplateName == 'admin/dashboard.html')}"
+                       th:href="@{/admin/dashboard}" 
+                       id="adminDashboardReturnBtn" 
+                       class="btn btn-warning text-dark fw-bold px-3 shadow-sm me-2">
+                        <i class="fa-solid fa-arrow-left me-1"></i> ← Go to Dashboard
+                    </a>
+                    <script>
+                        (function() {
+                            var p = window.location.pathname.replace(/\/$/, "");
+                            if (p === "/admin/dashboard") {
+                                var btn = document.getElementById("adminDashboardReturnBtn");
+                                if (btn) btn.style.display = "none";
+                            }
+                        })();
+                    </script>
+                </th:block>
+
+                <!-- Unauthenticated user links -->
+                <th:block sec:authorize="isAnonymous()">
+                    <a th:href="@{/login}" class="btn btn-outline-primary fw-semibold px-3"><i class="fa-solid fa-right-to-bracket me-1"></i> Sign In</a>
+                    <a th:href="@{/register}" class="btn btn-primary fw-semibold px-3"><i class="fa-solid fa-user-plus me-1"></i> Register</a>
+                </th:block>
+
+                <!-- Authenticated user links -->
+                <th:block sec:authorize="isAuthenticated()">
+                    <div class="dropdown">
+                        <button class="btn btn-navy dropdown-toggle fw-bold text-white" type="button" data-bs-toggle="dropdown">
+                            <i class="fa-solid fa-circle-user me-1"></i> <span sec:authentication="name">User</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end shadow">
+                            <li sec:authorize="hasRole('BENEFICIARY')"><a class="dropdown-item" th:href="@{/beneficiary/dashboard}"><i class="fa-solid fa-gauge me-2"></i> Beneficiary Dashboard</a></li>
+                            <li sec:authorize="hasRole('FIELD_OFFICER')"><a class="dropdown-item" th:href="@{/field-officer/dashboard}"><i class="fa-solid fa-clipboard-check me-2"></i> Field Verification</a></li>
+                            <li sec:authorize="hasRole('DISTRICT_OFFICER')"><a class="dropdown-item" th:href="@{/district-officer/dashboard}"><i class="fa-solid fa-building-user me-2"></i> District Review</a></li>
+                            <li sec:authorize="hasRole('FINANCE_APPROVER')"><a class="dropdown-item" th:href="@{/finance/dashboard}"><i class="fa-solid fa-sack-dollar me-2"></i> Finance Dashboard</a></li>
+                            <li sec:authorize="hasRole('ADMIN')"><a class="dropdown-item" th:href="@{/admin/dashboard}"><i class="fa-solid fa-user-shield me-2"></i> Admin Dashboard</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li>
+                                <form th:action="@{/logout}" method="post">
+                                    <button type="submit" class="dropdown-item text-danger"><i class="fa-solid fa-right-from-bracket me-2"></i> Sign Out</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </th:block>
+            </div>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

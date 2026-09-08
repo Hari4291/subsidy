@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a th:href="@{/}">Home</a></li>
+            <li class="breadcrumb-item"><a th:href="@{/schemes}">Schemes</a></li>
+            <li class="breadcrumb-item active" aria-current="page" th:text="${scheme.name}">Scheme Details</li>
+        </ol>
+    </nav>
+
+    <div class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header gov-card-header bg-navy text-white d-flex justify-content-between align-items-center py-3">
+            <h4 class="mb-0 fw-bold" th:text="${scheme.name}">Scheme Name</h4>
+            <span class="badge bg-success px-3 py-2 fs-6">ACTIVE SCHEME</span>
+        </div>
+        <div class="card-body p-4 p-md-5">
+            <h5 class="fw-bold text-navy mb-3">Scheme Overview &amp; Objectives</h5>
+            <p class="lead text-dark mb-4" th:text="${scheme.description}">Full description</p>
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-3 col-6">
+                    <div class="p-3 bg-light rounded border">
+                        <small class="text-muted d-block fw-semibold">Minimum Grant</small>
+                        <h4 class="fw-bold text-navy mb-0" th:text="'₹' + ${#numbers.formatDecimal(scheme.minAmount, 0, 'COMMA', 0, 'POINT')}">₹20,000</h4>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="p-3 bg-light rounded border">
+                        <small class="text-muted d-block fw-semibold">Maximum Grant</small>
+                        <h4 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(scheme.maxAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</h4>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="p-3 bg-light rounded border">
+                        <small class="text-muted d-block fw-semibold">Total Allocation</small>
+                        <h4 class="fw-bold text-primary mb-0" th:text="'₹' + ${#numbers.formatDecimal(scheme.totalBudget, 0, 'COMMA', 0, 'POINT')}">₹5,00,00,000</h4>
+                    </div>
+                </div>
+                <div class="col-md-3 col-6">
+                    <div class="p-3 bg-light rounded border">
+                        <small class="text-muted d-block fw-semibold">Eligible Categories</small>
+                        <h5 class="fw-bold text-dark mb-0 mt-1" th:text="${scheme.targetCategories}">General, OBC, SC, ST</h5>
+                    </div>
+                </div>
+            </div>
+
+            <h5 class="fw-bold text-navy mb-3"><i class="fa-solid fa-list-check text-primary me-2"></i> Configured Eligibility Rules</h5>
+            <div class="table-responsive mb-4">
+                <table class="table table-bordered align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Criterion Name</th>
+                            <th>Evaluation Operator</th>
+                            <th>Target Threshold Value</th>
+                            <th>Score Weight Points</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="c : ${scheme.criteriaList}">
+                            <td class="fw-bold text-navy" th:text="${c.criterionName}">MIN_AGE</td>
+                            <td><span class="badge bg-secondary" th:text="${c.operator}">GTE</span></td>
+                            <td class="fw-semibold text-primary" th:text="${c.targetValue}">18</td>
+                            <td><span class="badge bg-warning text-dark fw-bold" th:text="${c.weightPoints} + ' pts'">20 pts</span></td>
+                            <td th:text="${c.description}">Description</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center">
+                <a th:href="@{/schemes}" class="btn btn-outline-secondary"><i class="fa-solid fa-arrow-left me-1"></i> Back to Schemes List</a>
+                <a th:href="@{'/beneficiary/check-eligibility?schemeId=' + ${scheme.id}}" class="btn btn-primary btn-lg fw-bold shadow"><i class="fa-solid fa-calculator me-2"></i> Check Your Eligibility Now</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

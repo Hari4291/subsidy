@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{admin/fragments/header :: admin-header}"></div>
+
+    <h3 class="fw-bold text-navy mb-4"><i class="fa-solid fa-list-check text-primary me-2"></i> Official System Audit Logs</h3>
+
+    <div class="card gov-card shadow-sm border-0">
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Log ID</th>
+                            <th>Timestamp</th>
+                            <th>User Email</th>
+                            <th>Role</th>
+                            <th>Action Executed</th>
+                            <th>Entity Target</th>
+                            <th>Audit Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="log : ${auditLogs}">
+                            <td class="fw-bold" th:text="${log.id}">1</td>
+                            <td th:text="${#temporals.format(log.timestamp, 'dd-MMM-yyyy HH:mm:ss')}">02-Sep-2026 20:45</td>
+                            <td class="fw-bold text-navy" th:text="${log.userEmail}">user@gov.in</td>
+                            <td><span class="badge bg-secondary" th:text="${log.userRole}">ROLE_ADMIN</span></td>
+                            <td><span class="badge bg-info text-dark" th:text="${log.action}">ACTION</span></td>
+                            <td th:text="${log.entityName} + ' #' + ${log.entityId}">Entity #1</td>
+                            <td class="small text-muted" th:text="${log.remarks}">Remarks</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

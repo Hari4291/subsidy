@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card gov-card shadow-sm border-0">
+                <div class="card-header gov-card-header bg-navy text-white py-3">
+                    <h4 class="mb-0 fw-bold"><i class="fa-solid fa-file-signature me-2 text-warning"></i> Grant Application Submission</h4>
+                    <small class="text-light" th:text="${scheme.name}">Scheme Name</small>
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <form th:action="@{/beneficiary/apply}" th:object="${dto}" method="post">
+                        <input type="hidden" th:field="*{schemeId}"/>
+
+                        <div class="p-3 bg-light rounded border mb-4">
+                            <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-user-check text-success me-2"></i> Applicant Verified Credentials</h6>
+                            <div class="row g-2 small text-muted">
+                                <div class="col-6"><strong>Beneficiary:</strong> <span th:text="${beneficiary.user.fullName}">Hari Pabbuleti</span></div>
+                                <div class="col-6"><strong>Mobile:</strong> <span th:text="'+91 ' + ${beneficiary.user.mobileNumber}">+91 9988776655</span></div>
+                                <div class="col-6"><strong>Identity:</strong> <span th:text="${beneficiary.identityType} + ': ' + ${beneficiary.identityNumber}">Aadhaar</span></div>
+                                <div class="col-6"><strong>Location:</strong> <span th:text="${beneficiary.state} + ' - ' + ${beneficiary.district}">State - District</span></div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="requestedAmount" class="form-label fw-bold">Requested Subsidy Grant Amount (₹) <span class="text-danger">*</span></label>
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text fw-bold">₹</span>
+                                <input type="number" id="requestedAmount" th:field="*{requestedAmount}" class="form-control fw-bold text-success" th:max="${scheme.maxAmount}" required>
+                            </div>
+                            <small class="form-text text-muted">Maximum grant limit for this scheme is ₹<span th:text="${#numbers.formatDecimal(scheme.maxAmount, 0, 'COMMA', 0, 'POINT')}">1,00,000</span>.</small>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="remarks" class="form-label fw-bold">Project / Purpose Remarks</label>
+                            <textarea id="remarks" th:field="*{remarks}" class="form-control" rows="3" placeholder="Enter intended usage details (e.g. Solar pump installation in Kakinada farm)..."></textarea>
+                        </div>
+
+                        <div class="form-check mb-4">
+                            <input class="form-check-input" type="checkbox" id="declare" required checked>
+                            <label class="form-check-label small" for="declare">
+                                I affirm that I satisfy the eligibility conditions and authorize field inspection officers to conduct ground verification of my premises.
+                            </label>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-navy btn-lg fw-bold text-white shadow">
+                                <i class="fa-solid fa-paper-plane me-2"></i> Submit Official Grant Application
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+    <div th:replace="~{admin/fragments/header :: admin-header}"></div>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-navy mb-1"><i class="fa-solid fa-sliders text-warning me-2"></i> Priority Queue Configuration</h3>
+            <p class="text-muted small mb-0">Scheme: <strong class="text-dark" th:text="${scheme.name}">PM Kisan Grant</strong> (ID: <span th:text="${scheme.id}">1</span>)</p>
+        </div>
+        <a th:href="@{/admin/schemes}" class="btn btn-outline-secondary fw-semibold">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Schemes
+        </a>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show p-3 mb-4 shadow-sm" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Validation Error</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show p-3 mb-4 shadow-sm" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${successMessage}">Saved successfully</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <form th:action="@{'/admin/schemes/' + ${scheme.id} + '/priority-config'}" method="post" id="priorityConfigForm" onsubmit="return validateWeights();">
+
+        <!-- Card: Enable / Disable Toggle -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-power-off me-2 text-warning"></i> Priority Queue Engine Status
+            </div>
+            <div class="card-body p-4">
+                <div class="form-check form-switch fs-5">
+                    <input class="form-check-input" type="checkbox" role="switch" id="priorityQueueEnabled" name="priorityQueueEnabled" value="true" th:checked="${scheme.priorityQueueEnabled}">
+                    <label class="form-check-label fw-bold text-navy ms-2" for="priorityQueueEnabled">
+                        Enable Configurable Priority Queue Sorting for this Scheme
+                    </label>
+                </div>
+                <small class="text-muted d-block mt-2">
+                    When enabled, applications in Field Officer and District Officer queues are prioritized using scheme-specific weighted eligibility, waiting time aging, and welfare factors.
+                </small>
+            </div>
+        </div>
+
+        <!-- Card: Factor Weights -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <span><i class="fa-solid fa-scale-balanced me-2 text-warning"></i> Priority Factor Weights (Must Total Exactly 100%)</span>
+                <span class="badge bg-light text-navy fw-bold fs-6" id="weightTotalBadge">Total: 100%</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa-solid fa-calculator text-primary me-1"></i> Eligibility Score Weight (%)
+                        </label>
+                        <input type="number" class="form-control form-control-lg weight-input" id="eligibilityWeight" name="eligibilityWeight" min="0" max="100" th:value="${scheme.eligibilityWeight}" required oninput="calculateWeightSum()">
+                        <small class="text-muted d-block mt-1">Weight for beneficiary qualification score (0-100 scale).</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa-solid fa-hourglass-half text-warning me-1"></i> Waiting Time Weight (%)
+                        </label>
+                        <input type="number" class="form-control form-control-lg weight-input" id="waitingWeight" name="waitingWeight" min="0" max="100" th:value="${scheme.waitingWeight}" required oninput="calculateWeightSum()">
+                        <small class="text-muted d-block mt-1">Weight for application queue waiting duration & aging accumulation.</small>
+                    </div>
+
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa-solid fa-hands-holding-child text-success me-1"></i> Vulnerability Weight (%)
+                        </label>
+                        <input type="number" class="form-control form-control-lg weight-input" id="vulnerabilityWeight" name="vulnerabilityWeight" min="0" max="100" th:value="${scheme.vulnerabilityWeight}" required oninput="calculateWeightSum()">
+                        <small class="text-muted d-block mt-1">Weight for affirmative social inclusion & welfare indicators.</small>
+                    </div>
+                </div>
+
+                <div id="weightErrorAlert" class="alert alert-danger mt-3 mb-0 py-2 d-none">
+                    <i class="fa-solid fa-circle-exclamation me-1"></i> Weights must add up to exactly 100%. Current sum: <strong id="currentSumVal">100</strong>%
+                </div>
+            </div>
+        </div>
+
+        <!-- Card: Thresholds & Aging Rules -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-layer-group me-2 text-warning"></i> Priority Level Thresholds & Aging Escalation
+            </div>
+            <div class="card-body p-4">
+                <div class="row g-4 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">
+                            <span class="badge bg-danger me-1">HIGH</span> High Priority Threshold Score (0 - 100)
+                        </label>
+                        <input type="number" class="form-control" id="highPriorityThreshold" name="highPriorityThreshold" min="1" max="100" th:value="${scheme.highPriorityThreshold}" required>
+                        <small class="text-muted">Applications with composite score &ge; threshold are assigned <strong class="text-danger">HIGH</strong> priority.</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">
+                            <span class="badge bg-warning text-dark me-1">MEDIUM</span> Medium Priority Threshold Score (0 - 100)
+                        </label>
+                        <input type="number" class="form-control" id="mediumPriorityThreshold" name="mediumPriorityThreshold" min="1" max="100" th:value="${scheme.mediumPriorityThreshold}" required>
+                        <small class="text-muted">Applications with composite score &ge; threshold are assigned <strong class="text-warning">MEDIUM</strong> priority.</small>
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="row g-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa-solid fa-clock-rotate-left text-info me-1"></i> Max Aging Days for Waiting Time Normalization
+                        </label>
+                        <input type="number" class="form-control" id="maxAgingDays" name="maxAgingDays" min="1" max="365" th:value="${scheme.maxAgingDays}" required>
+                        <small class="text-muted">Number of pending days required to reach 100% max waiting factor score.</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">
+                            <i class="fa-solid fa-bell text-danger me-1"></i> Escalation Notification Waiting Threshold (Days)
+                        </label>
+                        <input type="number" class="form-control" id="escalationWaitingDays" name="escalationWaitingDays" min="1" max="365" th:value="${scheme.escalationWaitingDays}" required>
+                        <small class="text-muted">Pending days threshold that triggers high-priority escalation notifications to reviewing officers.</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-end gap-3 mb-5">
+            <a th:href="@{/admin/schemes}" class="btn btn-light border px-4 fw-semibold">Cancel</a>
+            <button type="submit" class="btn btn-primary fw-bold px-5 shadow-sm">
+                <i class="fa-solid fa-floppy-disk me-1"></i> Save Priority Settings
+            </button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function calculateWeightSum() {
+        const ew = parseInt(document.getElementById('eligibilityWeight').value) || 0;
+        const ww = parseInt(document.getElementById('waitingWeight').value) || 0;
+        const vw = parseInt(document.getElementById('vulnerabilityWeight').value) || 0;
+        const sum = ew + ww + vw;
+
+        const badge = document.getElementById('weightTotalBadge');
+        const alert = document.getElementById('weightErrorAlert');
+        const sumVal = document.getElementById('currentSumVal');
+
+        badge.textContent = 'Total: ' + sum + '%';
+
+        if (sum === 100) {
+            badge.className = 'badge bg-success text-white fs-6';
+            alert.classList.add('d-none');
+        } else {
+            badge.className = 'badge bg-danger text-white fs-6';
+            alert.classList.remove('d-none');
+            sumVal.textContent = sum;
+        }
+    }
+
+    function validateWeights() {
+        const ew = parseInt(document.getElementById('eligibilityWeight').value) || 0;
+        const ww = parseInt(document.getElementById('waitingWeight').value) || 0;
+        const vw = parseInt(document.getElementById('vulnerabilityWeight').value) || 0;
+        const sum = ew + ww + vw;
+
+        if (sum !== 100) {
+            alert('Priority weights must sum to exactly 100%. Current sum: ' + sum + '%');
+            return false;
+        }
+
+        const ht = parseInt(document.getElementById('highPriorityThreshold').value) || 0;
+        const mt = parseInt(document.getElementById('mediumPriorityThreshold').value) || 0;
+
+        if (ht <= mt) {
+            alert('High priority threshold (' + ht + ') must be strictly greater than medium priority threshold (' + mt + ').');
+            return false;
+        }
+
+        return true;
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        calculateWeightSum();
+    });
+</script>
+
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    <small>&copy; 2026 Digital Subsidy & Grant Management Portal. All rights reserved.</small>
+</footer>
+</body>
+</html>

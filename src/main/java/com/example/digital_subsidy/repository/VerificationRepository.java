@@ -10,4 +10,6 @@ import java.util.List;
 @Repository
 public interface VerificationRepository extends JpaRepository<Verification, Long> {
     List<Verification> findByApplicationOrderByVerifiedAtDesc(Application application);
+    List<Verification> findByOfficerUserEmailOrderByIdDesc(String email);
+    List<Verification> findByOfficerRoleAndApplicationBeneficiaryDistrictOrderByIdDesc(String officerRole, String district);
 }

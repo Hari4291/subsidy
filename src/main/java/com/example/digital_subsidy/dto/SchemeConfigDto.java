@@ -15,6 +15,7 @@ public class SchemeConfigDto {
     private String targetCategories;
     private String eligibleStates;
     private Integer minQualifyingScore = 60;
+    private Integer rejectionCooldownDays = 30;
     
     @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
     private java.time.LocalDate startDate;
@@ -112,6 +113,14 @@ public class SchemeConfigDto {
 
     public void setMinQualifyingScore(Integer minQualifyingScore) {
         this.minQualifyingScore = minQualifyingScore;
+    }
+
+    public Integer getRejectionCooldownDays() {
+        return rejectionCooldownDays != null ? rejectionCooldownDays : 30;
+    }
+
+    public void setRejectionCooldownDays(Integer rejectionCooldownDays) {
+        this.rejectionCooldownDays = rejectionCooldownDays;
     }
 
     public java.time.LocalDate getStartDate() {

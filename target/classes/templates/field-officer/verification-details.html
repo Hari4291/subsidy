@@ -6,10 +6,16 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
         <div>
-            <h3 class="fw-bold text-navy mb-1"><i class="fa-solid fa-clipboard-check text-primary me-2"></i> Field Verification &amp; Document Review</h3>
-            <p class="text-muted small mb-0">Application Number: <strong th:text="${app.applicationNumber}">APP-123456</strong></p>
+            <h4 class="mb-1 fw-bold"><i class="fa-solid fa-clipboard-check text-warning me-2"></i> Field Verification &amp; Document Review</h4>
+            <p class="mb-0 text-light small">Application Number: <strong class="text-warning" th:text="${app.applicationNumber}">APP-123456</strong></p>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+            <span class="badge bg-warning text-dark font-weight-bold p-2">Role: FIELD_OFFICER</span>
+            <form th:action="@{/logout}" method="post" class="d-inline ms-2">
+                <button type="submit" class="btn btn-danger fw-bold"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</button>
+            </form>
         </div>
     </div>
 
@@ -21,6 +27,19 @@
     <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show" role="alert">
         <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${successMessage}">Success</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- DO Re-verification Request Banner -->
+    <div th:if="${app.status == 'RE_VERIFICATION_REQUIRED'}" class="alert alert-warning border-start border-4 border-warning p-4 mb-4 shadow-sm rounded-3">
+        <div class="d-flex align-items-start">
+            <i class="fa-solid fa-rotate-left fs-2 text-warning me-3 mt-1"></i>
+            <div>
+                <h5 class="fw-bold text-dark mb-1">Re-Verification Requested by District Officer</h5>
+                <p class="mb-1 text-muted small">The District Officer returned this application for re-verification / document correction.</p>
+                <p class="mb-0"><strong>District Officer's Re-Verification Remarks / Reason:</strong></p>
+                <p class="p-3 bg-white rounded border fw-semibold text-dark mb-0 mt-2" th:text="${app.rejectionReason != null ? app.rejectionReason : 'Re-verification requested by District Officer.'}">District Officer Reason</p>
+            </div>
+        </div>
     </div>
 
     <form th:action="@{/officer/verify}" th:object="${actionDto}" method="post">
@@ -240,7 +259,44 @@
         </div>
 
         <!-- ══════════════════════════════════════════
-             4. FIELD OFFICER GROUND INSPECTION DECISION
+             4. PREVIOUS VERIFICATION HISTORY & REMARKS
+             ══════════════════════════════════════════ -->
+        <div class="card gov-card shadow-sm border-0 mb-4" th:if="${verifications != null and !verifications.isEmpty()}">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-clock-rotate-left me-2"></i> Verification Audit History &amp; Officer Remarks
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle border mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Officer Role</th>
+                                <th>Officer Email</th>
+                                <th>Decision / Action</th>
+                                <th>Remarks / Reason</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="v : ${verifications}">
+                                <td><span class="badge bg-dark" th:text="${v.officerRole}">OFFICER</span></td>
+                                <td th:text="${v.officerUser != null ? v.officerUser.email : 'Officer'}">email@example.com</td>
+                                <td>
+                                    <span th:if="${v.status == 'APPROVE'}" class="badge bg-success">APPROVED</span>
+                                    <span th:if="${v.status == 'REJECT' || v.status == 'FINAL_REJECT' || v.status == 'FINAL_REJECTED'}" class="badge bg-danger">FINAL REJECTED</span>
+                                    <span th:if="${v.status == 'REQUEST_RE_VERIFICATION' || v.status == 'RE_VERIFICATION_REQUIRED'}" class="badge bg-warning text-dark">RE-VERIFICATION REQUESTED</span>
+                                </td>
+                                <td th:text="${v.remarks}">Remarks</td>
+                                <td th:text="${#temporals.format(v.verifiedAt, 'dd-MMM-yyyy HH:mm')}">Date</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ══════════════════════════════════════════
+             5. FIELD OFFICER GROUND INSPECTION DECISION
              ══════════════════════════════════════════ -->
         <div class="card gov-card shadow-sm border-0 mb-4">
             <div class="card-header bg-navy text-white fw-bold py-3">

@@ -150,7 +150,11 @@ public class Beneficiary {
         return createdAt;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public String getFullName() {
+        return user != null ? user.getFullName() : "";
+    }
+
+    public String getAadhaarNumber() {
+        return identityNumber != null ? identityNumber : "";
     }
 }

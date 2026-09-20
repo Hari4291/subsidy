@@ -23,6 +23,28 @@
                         <i class="fa-solid fa-circle-exclamation me-2"></i> <span th:text="${errorMessage}">Error Message</span>
                     </div>
 
+                    <!-- REAPPLICATION RESTRICTION ALERT -->
+                    <div th:if="${activeRestriction != null and activeRestriction.isActive()}" class="alert alert-danger border-start border-4 border-danger p-4 mb-4 rounded-3 shadow-sm">
+                        <div class="d-flex align-items-start">
+                            <i class="fa-solid fa-ban fs-2 text-danger me-3 mt-1"></i>
+                            <div>
+                                <h5 class="fw-bold text-navy mb-2">Reapplication Cooldown Active</h5>
+                                <p class="mb-2 text-dark">
+                                    Your previous application for <strong><span th:text="${activeRestriction.scheme != null ? activeRestriction.scheme.name : 'this scheme'}">Scheme</span></strong> was rejected on 
+                                    <strong th:text="${#temporals.format(activeRestriction.rejectedAt, 'dd-MMM-yyyy')}">19-Sep-2026</strong>.
+                                </p>
+                                <div class="p-3 bg-white rounded border mb-2">
+                                    <strong class="text-navy d-block mb-1">Rejection Reason:</strong>
+                                    <span class="text-dark" th:text="${activeRestriction.rejectionReason}">Reason</span>
+                                </div>
+                                <p class="mb-0 fw-bold text-navy">
+                                    <i class="fa-solid fa-calendar-check me-1 text-primary"></i> You can apply again on: 
+                                    <span class="badge bg-navy fs-6 ms-1" th:text="${#temporals.format(activeRestriction.reapplicationAllowedAt, 'dd-MMM-yyyy HH:mm')}">19-Oct-2026</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     <form th:action="@{/beneficiary/check-eligibility}" th:object="${requestDto}" method="post" enctype="multipart/form-data" id="eligibilityForm">
                         
                         <!-- 1. SCHEME SELECTION -->
@@ -67,7 +89,7 @@
 
                                 <div th:if="${!#lists.isEmpty(criteria)}" class="row g-3">
                                     <div th:each="criterion, stat : ${criteria}" class="col-12 mb-3">
-                                        <div class="p-3 bg-white border rounded shadow-xs">
+                                        <div class="p-3 bg-white border rounded shadow-xs" th:with="submittedVal=${requestDto.criterionAnswers != null ? requestDto.criterionAnswers.get(criterion.id) : null}">
                                             
                                             <!-- YES_NO / BOOLEAN -->
                                             <div th:if="${criterion.answerType == 'YES_NO' or criterion.answerType == 'BOOLEAN' or criterion.criterionType == 'BOOLEAN'}">
@@ -75,11 +97,12 @@
                                                     <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
                                                     <span th:if="${criterion.required}" class="text-danger">*</span>
                                                 </label>
-                                                <select th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-select fw-semibold" th:required="${criterion.required}">
-                                                    <option value="YES">Yes</option>
-                                                    <option value="NO">No</option>
+                                                <select th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" th:class="'form-select fw-semibold ' + (${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)} ? 'is-invalid' : '')" th:required="${criterion.required}">
+                                                    <option value="YES" th:selected="${submittedVal == 'YES'}">Yes</option>
+                                                    <option value="NO" th:selected="${submittedVal == 'NO'}">No</option>
                                                 </select>
                                                 <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                                <div th:if="${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)}" class="invalid-feedback d-block fw-bold mt-1" th:text="${criteriaErrors.get(criterion.id)}">Error</div>
                                             </div>
 
                                             <!-- NUMBER / DECIMAL / NUMERIC -->
@@ -88,8 +111,9 @@
                                                     <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
                                                     <span th:if="${criterion.required}" class="text-danger">*</span>
                                                 </label>
-                                                <input type="number" step="any" th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-control fw-semibold" placeholder="Enter numerical value..." th:required="${criterion.required}">
+                                                <input type="number" step="any" min="0" th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" th:value="${submittedVal}" th:class="'form-control fw-semibold ' + (${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)} ? 'is-invalid' : '')" placeholder="Enter numerical value..." th:required="${criterion.required}">
                                                 <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                                <div th:if="${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)}" class="invalid-feedback d-block fw-bold mt-1" th:text="${criteriaErrors.get(criterion.id)}">Error</div>
                                             </div>
 
                                             <!-- SINGLE_SELECT / CATEGORICAL -->
@@ -98,13 +122,15 @@
                                                     <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
                                                     <span th:if="${criterion.required}" class="text-danger">*</span>
                                                 </label>
-                                                <select th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-select fw-semibold" th:required="${criterion.required}">
+                                                <select th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" th:class="'form-select fw-semibold ' + (${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)} ? 'is-invalid' : '')" th:required="${criterion.required}">
                                                     <option value="">-- Select Option --</option>
                                                     <option th:each="opt : ${#strings.arraySplit(criterion.options != null ? criterion.options : 'General', ',')}" 
                                                             th:value="${#strings.trim(opt)}" 
+                                                            th:selected="${submittedVal != null and #strings.trim(opt) == submittedVal}"
                                                             th:text="${#strings.trim(opt)}">Option</option>
                                                 </select>
                                                 <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                                <div th:if="${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)}" class="invalid-feedback d-block fw-bold mt-1" th:text="${criteriaErrors.get(criterion.id)}">Error</div>
                                             </div>
 
                                             <!-- MULTI_SELECT -->
@@ -113,12 +139,14 @@
                                                     <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
                                                     <span th:if="${criterion.required}" class="text-danger">*</span>
                                                 </label>
-                                                <select th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-select fw-semibold" multiple th:required="${criterion.required}">
+                                                <select th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" th:class="'form-select fw-semibold ' + (${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)} ? 'is-invalid' : '')" multiple th:required="${criterion.required}">
                                                     <option th:each="opt : ${#strings.arraySplit(criterion.options != null ? criterion.options : 'General', ',')}" 
                                                             th:value="${#strings.trim(opt)}" 
+                                                            th:selected="${submittedVal != null and submittedVal.contains(#strings.trim(opt))}"
                                                             th:text="${#strings.trim(opt)}">Option</option>
                                                 </select>
                                                 <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                                <div th:if="${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)}" class="invalid-feedback d-block fw-bold mt-1" th:text="${criteriaErrors.get(criterion.id)}">Error</div>
                                             </div>
 
                                             <!-- DATE -->
@@ -127,8 +155,9 @@
                                                     <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
                                                     <span th:if="${criterion.required}" class="text-danger">*</span>
                                                 </label>
-                                                <input type="date" th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-control fw-semibold" th:required="${criterion.required}">
+                                                <input type="date" th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" th:value="${submittedVal}" th:class="'form-control fw-semibold ' + (${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)} ? 'is-invalid' : '')" th:required="${criterion.required}">
                                                 <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                                <div th:if="${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)}" class="invalid-feedback d-block fw-bold mt-1" th:text="${criteriaErrors.get(criterion.id)}">Error</div>
                                             </div>
 
                                             <!-- TEXT / DEFAULT -->
@@ -137,8 +166,9 @@
                                                     <span th:text="${stat.count} + '. ' + ${criterion.questionText}">Question</span>
                                                     <span th:if="${criterion.required}" class="text-danger">*</span>
                                                 </label>
-                                                <input type="text" th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" class="form-control fw-semibold" placeholder="Enter response..." th:required="${criterion.required}">
+                                                <input type="text" th:id="'criterion_' + ${criterion.id}" th:name="'criterionAnswers[' + ${criterion.id} + ']'" th:value="${submittedVal}" th:class="'form-control fw-semibold ' + (${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)} ? 'is-invalid' : '')" placeholder="Enter response..." th:required="${criterion.required}">
                                                 <small class="text-muted d-block mt-1" th:text="${criterion.description}">Description</small>
+                                                <div th:if="${criteriaErrors != null and criteriaErrors.containsKey(criterion.id)}" class="invalid-feedback d-block fw-bold mt-1" th:text="${criteriaErrors.get(criterion.id)}">Error</div>
                                             </div>
 
                                         </div>

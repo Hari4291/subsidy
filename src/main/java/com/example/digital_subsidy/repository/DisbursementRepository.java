@@ -25,4 +25,7 @@ public interface DisbursementRepository extends JpaRepository<Disbursement, Long
 
     @Query("SELECT SUM(d.disbursedAmount) FROM Disbursement d")
     BigDecimal sumTotalDisbursedAmount();
+
+    @Query("SELECT SUM(d.disbursedAmount) FROM Disbursement d WHERE d.application.beneficiary.state = :state")
+    BigDecimal sumTotalDisbursedAmountByState(@Param("state") String state);
 }

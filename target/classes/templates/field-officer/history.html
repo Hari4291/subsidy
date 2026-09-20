@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container-fluid py-4 bg-light">
+    <div class="container">
+        <!-- Header Banner -->
+        <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
+            <div>
+                <h4 class="mb-1 fw-bold"><i class="fa-solid fa-clock-rotate-left text-warning me-2"></i> Field Verification History</h4>
+                <p class="mb-0 text-light small">Audit trail of completed ground inspections and document checks</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning text-dark font-weight-bold p-2">Role: FIELD_OFFICER</span>
+                <form th:action="@{/logout}" method="post" class="d-inline ms-2">
+                    <button type="submit" class="btn btn-danger fw-bold"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
+            <li class="nav-item">
+                <a class="nav-link text-secondary fw-bold" th:href="@{/field-officer/dashboard}"><i class="fa-solid fa-list-check me-1"></i> Assigned Queue</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link active fw-bold" th:href="@{/field-officer/history}"><i class="fa-solid fa-clock-rotate-left me-1"></i> Verification History</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary fw-bold" th:href="@{/field-officer/reports}"><i class="fa-solid fa-chart-pie me-1"></i> Inspection Reports</a>
+            </li>
+        </ul>
+
+        <div class="card gov-card shadow-sm border-0">
+            <div class="card-header gov-card-header bg-light fw-bold py-3">
+                <i class="fa-solid fa-history text-primary me-2"></i> Field Officer Completed Inspections Log
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>App ID</th>
+                                <th>Beneficiary</th>
+                                <th>Scheme</th>
+                                <th>Requested Amount</th>
+                                <th>Stage</th>
+                                <th>Verification Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(completedApplications)}">
+                                <td colspan="6" class="text-center text-muted py-4">No historical field inspections found.</td>
+                            </tr>
+                            <tr th:each="app : ${completedApplications}">
+                                <td class="fw-bold text-navy" th:text="${app.applicationNumber}">APP-123456</td>
+                                <td th:text="${app.beneficiary != null and app.beneficiary.user != null ? app.beneficiary.user.fullName : 'Beneficiary'}">Beneficiary</td>
+                                <td th:text="${app.scheme != null ? app.scheme.name : ''}">Scheme</td>
+                                <td class="fw-bold text-success" th:text="${app.requestedAmount != null ? '₹' + #numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT') : ''}">₹50,000</td>
+                                <td><span class="badge bg-secondary" th:text="${app.currentStage}">DISTRICT_REVIEW</span></td>
+                                <td><span class="badge bg-success" th:text="${app.verificationStatus}">VERIFIED</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -106,6 +106,7 @@ public class SchemeController {
         schemeDto.setTargetCategories(scheme.getTargetCategories());
         schemeDto.setEligibleStates(scheme.getEligibleStates());
         schemeDto.setMinQualifyingScore(scheme.getMinQualifyingScore());
+        schemeDto.setRejectionCooldownDays(scheme.getRejectionCooldownDays());
         schemeDto.setStartDate(scheme.getStartDate());
         schemeDto.setEndDate(scheme.getEndDate());
         schemeDto.setStatus(scheme.getStatus());
@@ -228,6 +229,39 @@ public class SchemeController {
         } catch (Exception ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
             return "redirect:/admin/schemes/" + schemeId + "/config?step=6";
+        }
+        return "redirect:/admin/schemes";
+    }
+
+    @GetMapping("/{id}/priority-config")
+    public String showPriorityConfig(@PathVariable("id") Long schemeId, Model model) {
+        Scheme scheme = schemeService.getSchemeById(schemeId);
+        model.addAttribute("scheme", scheme);
+        return "admin/priority-config";
+    }
+
+    @PostMapping("/{id}/priority-config")
+    public String savePriorityConfig(@PathVariable("id") Long schemeId,
+                                     @RequestParam(value = "priorityQueueEnabled", required = false, defaultValue = "false") Boolean priorityQueueEnabled,
+                                     @RequestParam("eligibilityWeight") Integer eligibilityWeight,
+                                     @RequestParam("waitingWeight") Integer waitingWeight,
+                                     @RequestParam("vulnerabilityWeight") Integer vulnerabilityWeight,
+                                     @RequestParam("highPriorityThreshold") Integer highPriorityThreshold,
+                                     @RequestParam("mediumPriorityThreshold") Integer mediumPriorityThreshold,
+                                     @RequestParam("maxAgingDays") Integer maxAgingDays,
+                                     @RequestParam("escalationWaitingDays") Integer escalationWaitingDays,
+                                     Authentication authentication,
+                                     RedirectAttributes redirectAttributes) {
+        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        try {
+            schemeService.updatePriorityConfig(
+                    schemeId, priorityQueueEnabled, eligibilityWeight, waitingWeight, vulnerabilityWeight,
+                    highPriorityThreshold, mediumPriorityThreshold, maxAgingDays, escalationWaitingDays, adminEmail
+            );
+            redirectAttributes.addFlashAttribute("successMessage", "Scheme priority queue configuration saved successfully.");
+        } catch (Exception ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+            return "redirect:/admin/schemes/" + schemeId + "/priority-config";
         }
         return "redirect:/admin/schemes";
     }

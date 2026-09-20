@@ -41,10 +41,14 @@
                             <td>
                                 <span th:if="${app.status == 'APPROVED'}" class="badge bg-success">APPROVED</span>
                                 <span th:if="${app.status == 'PENDING'}" class="badge bg-warning text-dark">PENDING</span>
-                                <span th:if="${app.status == 'REJECTED'}" class="badge bg-danger">REJECTED</span>
+                                <span th:if="${app.status == 'REJECTED' || app.status == 'FINAL_REJECTED'}" class="badge bg-danger">FINAL REJECTED</span>
+                                <span th:if="${app.status == 'RE_VERIFICATION_REQUIRED'}" class="badge bg-warning text-dark">RE-VERIFICATION REQUIRED</span>
                             </td>
                             <td th:text="${#temporals.format(app.createdAt, 'dd-MMM-yyyy HH:mm')}">02-Sep-2026</td>
-                            <td><a th:href="@{'/beneficiary/applications/' + ${app.id}}" class="btn btn-sm btn-navy text-white">Track Progress</a></td>
+                            <td class="text-nowrap">
+                                <a th:href="@{'/beneficiary/applications/' + ${app.id}}" class="btn btn-sm btn-navy text-white me-1"><i class="fa-solid fa-eye me-1"></i> Details</a>
+                                <a th:href="@{'/applications/' + ${app.id != null ? app.id : (app.applicationNumber != null ? app.applicationNumber : 'latest')} + '/tracking'}" class="btn btn-sm btn-primary text-white"><i class="fa-solid fa-route me-1"></i> Live Timeline</a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

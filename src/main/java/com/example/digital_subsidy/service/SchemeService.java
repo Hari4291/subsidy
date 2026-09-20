@@ -141,6 +141,10 @@ public class SchemeService {
             throw new IllegalArgumentException("Minimum qualifying score must be between 0 and 100.");
         }
 
+        if (dto.getRejectionCooldownDays() != null && dto.getRejectionCooldownDays() < 0) {
+            throw new IllegalArgumentException("Rejection cooldown period cannot be negative.");
+        }
+
         if (dto.getStartDate() != null && dto.getEndDate() != null && dto.getEndDate().isBefore(dto.getStartDate())) {
             throw new IllegalArgumentException("Application end date cannot be before start date.");
         }
@@ -178,6 +182,7 @@ public class SchemeService {
         scheme.setTargetCategories(dto.getTargetCategories() != null ? dto.getTargetCategories() : "General,OBC,SC,ST");
         scheme.setEligibleStates(dto.getEligibleStates() != null ? dto.getEligibleStates() : "ALL");
         scheme.setMinQualifyingScore(dto.getMinQualifyingScore());
+        scheme.setRejectionCooldownDays(dto.getRejectionCooldownDays() != null ? dto.getRejectionCooldownDays() : 30);
         scheme.setStartDate(dto.getStartDate());
         scheme.setEndDate(dto.getEndDate());
 
@@ -189,7 +194,7 @@ public class SchemeService {
 
         Scheme saved = schemeRepository.save(scheme);
         auditLogger.log(isNew ? "SCHEME_CREATED" : "SCHEME_UPDATED", "Scheme", saved.getId(),
-                "Saved scheme: " + saved.getName() + " | Category: " + saved.getCategory() + " | Admin: " + adminEmail);
+                "Saved scheme: " + saved.getName() + " | Category: " + saved.getCategory() + " | Cooldown: " + saved.getRejectionCooldownDays() + " days | Admin: " + adminEmail);
         return saved;
     }
 
@@ -437,6 +442,49 @@ public class SchemeService {
 
     public long countTotalDocuments() {
         return requiredDocumentRepository.count();
+    }
+
+    @Transactional
+    public Scheme updatePriorityConfig(Long schemeId, Boolean enabled, Integer eligWeight, Integer waitWeight, Integer vulnWeight, Integer highThresh, Integer medThresh, Integer maxAging, Integer escWaiting, String adminEmail) {
+        Scheme scheme = getSchemeById(schemeId);
+
+        int ew = eligWeight != null ? eligWeight : 60;
+        int ww = waitWeight != null ? waitWeight : 25;
+        int vw = vulnWeight != null ? vulnWeight : 15;
+
+        if (ew < 0 || ww < 0 || vw < 0) {
+            throw new IllegalArgumentException("Priority factor weights cannot be negative.");
+        }
+        if (ew + ww + vw != 100) {
+            throw new IllegalArgumentException("Priority factor weights must sum to exactly 100%. (Current sum: " + (ew + ww + vw) + "%)");
+        }
+
+        int ht = highThresh != null ? highThresh : 75;
+        int mt = medThresh != null ? medThresh : 50;
+
+        if (ht <= mt) {
+            throw new IllegalArgumentException("High priority threshold (" + ht + ") must be greater than medium priority threshold (" + mt + ").");
+        }
+
+        scheme.setPriorityQueueEnabled(enabled != null ? enabled : true);
+        scheme.setEligibilityWeight(ew);
+        scheme.setWaitingWeight(ww);
+        scheme.setVulnerabilityWeight(vw);
+        scheme.setHighPriorityThreshold(ht);
+        scheme.setMediumPriorityThreshold(mt);
+        scheme.setMaxAgingDays(maxAging != null && maxAging > 0 ? maxAging : 30);
+        scheme.setEscalationWaitingDays(escWaiting != null && escWaiting > 0 ? escWaiting : 7);
+
+        Scheme saved = schemeRepository.save(scheme);
+
+        auditLogger.log(
+                "SCHEME_PRIORITY_CONFIG_UPDATED",
+                "Scheme",
+                schemeId,
+                "Admin " + adminEmail + " updated priority config for Scheme '" + scheme.getName() + "'. Weights: " + ew + "/" + ww + "/" + vw + ", Thresholds: " + ht + "/" + mt
+        );
+
+        return saved;
     }
 }
 

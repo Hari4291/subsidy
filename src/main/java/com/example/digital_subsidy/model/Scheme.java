@@ -44,6 +44,33 @@ public class Scheme {
     @Column(name = "min_qualifying_score", nullable = false)
     private Integer minQualifyingScore = 60; // Minimum score % required for eligibility
 
+    @Column(name = "rejection_cooldown_days", nullable = false)
+    private Integer rejectionCooldownDays = 30; // Reapplication restriction cooldown period in days
+
+    @Column(name = "priority_queue_enabled", nullable = false)
+    private Boolean priorityQueueEnabled = true;
+
+    @Column(name = "eligibility_weight", nullable = false)
+    private Integer eligibilityWeight = 60;
+
+    @Column(name = "waiting_weight", nullable = false)
+    private Integer waitingWeight = 25;
+
+    @Column(name = "vulnerability_weight", nullable = false)
+    private Integer vulnerabilityWeight = 15;
+
+    @Column(name = "high_priority_threshold", nullable = false)
+    private Integer highPriorityThreshold = 75;
+
+    @Column(name = "medium_priority_threshold", nullable = false)
+    private Integer mediumPriorityThreshold = 50;
+
+    @Column(name = "max_aging_days", nullable = false)
+    private Integer maxAgingDays = 30;
+
+    @Column(name = "escalation_waiting_days", nullable = false)
+    private Integer escalationWaitingDays = 7;
+
     @Column(name = "start_date")
     private java.time.LocalDate startDate;
 
@@ -155,6 +182,14 @@ public class Scheme {
         this.minQualifyingScore = minQualifyingScore;
     }
 
+    public Integer getRejectionCooldownDays() {
+        return rejectionCooldownDays != null ? rejectionCooldownDays : 30;
+    }
+
+    public void setRejectionCooldownDays(Integer rejectionCooldownDays) {
+        this.rejectionCooldownDays = rejectionCooldownDays;
+    }
+
     public String getStatus() {
         return status;
     }
@@ -209,5 +244,76 @@ public class Scheme {
 
     public void setMilestones(List<DisbursementMilestone> milestones) {
         this.milestones = milestones;
+    }
+
+    public Boolean getPriorityQueueEnabled() {
+        return priorityQueueEnabled != null ? priorityQueueEnabled : true;
+    }
+
+    public void setPriorityQueueEnabled(Boolean priorityQueueEnabled) {
+        this.priorityQueueEnabled = priorityQueueEnabled;
+    }
+
+    public Integer getEligibilityWeight() {
+        return eligibilityWeight != null ? eligibilityWeight : 60;
+    }
+
+    public void setEligibilityWeight(Integer eligibilityWeight) {
+        this.eligibilityWeight = eligibilityWeight;
+    }
+
+    public Integer getWaitingWeight() {
+        return waitingWeight != null ? waitingWeight : 25;
+    }
+
+    public void setWaitingWeight(Integer waitingWeight) {
+        this.waitingWeight = waitingWeight;
+    }
+
+    public Integer getVulnerabilityWeight() {
+        return vulnerabilityWeight != null ? vulnerabilityWeight : 15;
+    }
+
+    public void setVulnerabilityWeight(Integer vulnerabilityWeight) {
+        this.vulnerabilityWeight = vulnerabilityWeight;
+    }
+
+    public Integer getHighPriorityThreshold() {
+        return highPriorityThreshold != null ? highPriorityThreshold : 75;
+    }
+
+    public void setHighPriorityThreshold(Integer highPriorityThreshold) {
+        this.highPriorityThreshold = highPriorityThreshold;
+    }
+
+    public Integer getMediumPriorityThreshold() {
+        return mediumPriorityThreshold != null ? mediumPriorityThreshold : 50;
+    }
+
+    public void setMediumPriorityThreshold(Integer mediumPriorityThreshold) {
+        this.mediumPriorityThreshold = mediumPriorityThreshold;
+    }
+
+    public Integer getMaxAgingDays() {
+        return maxAgingDays != null ? maxAgingDays : 30;
+    }
+
+    public void setMaxAgingDays(Integer maxAgingDays) {
+        this.maxAgingDays = maxAgingDays;
+    }
+
+    public Integer getEscalationWaitingDays() {
+        return escalationWaitingDays != null ? escalationWaitingDays : 7;
+    }
+
+    public void setEscalationWaitingDays(Integer escalationWaitingDays) {
+        this.escalationWaitingDays = escalationWaitingDays;
+    }
+
+    public boolean isValidPriorityWeights() {
+        int ew = getEligibilityWeight();
+        int ww = getWaitingWeight();
+        int vw = getVulnerabilityWeight();
+        return ew >= 0 && ww >= 0 && vw >= 0 && (ew + ww + vw == 100);
     }
 }

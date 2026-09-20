@@ -19,6 +19,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -83,6 +84,16 @@ public class DocumentService {
     public Document saveDocument(Beneficiary beneficiary, Application application, String documentType, MultipartFile file) throws IOException {
         if (file == null || file.isEmpty()) {
             return null;
+        }
+
+        if (application == null) {
+            List<Document> existing = documentRepository.findByBeneficiaryIdAndDocumentType(beneficiary.getId(), documentType);
+            for (Document oldDoc : existing) {
+                if (oldDoc.getApplication() == null && "ACTIVE".equalsIgnoreCase(oldDoc.getStatus())) {
+                    oldDoc.setStatus("ARCHIVED");
+                    documentRepository.save(oldDoc);
+                }
+            }
         }
 
         String originalFilename = file.getOriginalFilename();
@@ -157,5 +168,22 @@ public class DocumentService {
 
     public List<Document> getDocumentsByApplication(Long applicationId) {
         return documentRepository.findByApplicationId(applicationId);
+    }
+
+    public List<Document> getLatestActiveDocumentsByApplication(Long applicationId) {
+        List<Document> allDocs = documentRepository.findByApplicationId(applicationId);
+        Map<String, Document> latestMap = new java.util.LinkedHashMap<>();
+        for (Document doc : allDocs) {
+            if ("ACTIVE".equalsIgnoreCase(doc.getStatus())) {
+                String type = doc.getDocumentType() != null ? doc.getDocumentType().toUpperCase() : "OTHER";
+                Document existing = latestMap.get(type);
+                if (existing == null || 
+                    (doc.getUploadedDate() != null && existing.getUploadedDate() != null && doc.getUploadedDate().isAfter(existing.getUploadedDate())) ||
+                    (doc.getId() != null && existing.getId() != null && doc.getId() > existing.getId())) {
+                    latestMap.put(type, doc);
+                }
+            }
+        }
+        return new java.util.ArrayList<>(latestMap.values());
     }
 }

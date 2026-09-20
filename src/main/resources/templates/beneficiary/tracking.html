@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <!-- Header Navigation -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4">
+        <div>
+            <h3 class="fw-bold text-navy mb-1"><i class="fa-solid fa-route text-primary me-2"></i> Live Application Tracking Timeline</h3>
+            <p class="text-muted mb-0">Track real-time progress, officer verification steps, re-verification events, and disbursement milestones.</p>
+        </div>
+        <div class="mt-3 mt-md-0 d-flex gap-2">
+            <a th:href="@{/beneficiary/applications}" class="btn btn-outline-navy fw-semibold">
+                <i class="fa-solid fa-list me-1"></i> My Applications
+            </a>
+            <a th:href="@{/beneficiary/dashboard}" class="btn btn-warning text-dark fw-bold shadow-sm">
+                <i class="fa-solid fa-gauge me-1"></i> Dashboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Application Summary Banner -->
+    <div th:if="${application != null}" class="card gov-card shadow-sm border-0 mb-4 bg-white">
+        <div class="card-body p-4">
+            <div class="row g-3 align-items-center">
+                <div class="col-md-3 border-end">
+                    <span class="text-muted small text-uppercase fw-semibold d-block">Application ID</span>
+                    <h4 class="fw-bold text-navy mb-1" th:text="${application.applicationNumber != null ? application.applicationNumber : 'N/A'}">APP-10001</h4>
+                    <span class="badge bg-secondary" th:text="${application.scheme != null ? application.scheme.name : 'N/A'}">Scheme Name</span>
+                </div>
+
+                <div class="col-md-3 border-end">
+                    <span class="text-muted small text-uppercase fw-semibold d-block">Beneficiary Details</span>
+                    <div class="fw-bold text-dark mb-1" th:text="${application.beneficiary != null && application.beneficiary.user != null ? application.beneficiary.user.fullName : 'N/A'}">Applicant Name</div>
+                    <small class="text-muted d-block"><i class="fa-solid fa-location-dot me-1"></i> <span th:text="${application.beneficiary != null ? application.beneficiary.district + ', ' + application.beneficiary.state : 'N/A'}">District, State</span></small>
+                </div>
+
+                <div class="col-md-3 border-end">
+                    <span class="text-muted small text-uppercase fw-semibold d-block">Subsidy Financials</span>
+                    <div>
+                        <span class="text-muted small">Requested:</span>
+                        <strong class="text-dark" th:text="${application.requestedAmount != null ? '₹' + #numbers.formatDecimal(application.requestedAmount, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹50,000</strong>
+                    </div>
+                    <div th:if="${application.sanctionedAmount != null}">
+                        <span class="text-muted small">Sanctioned:</span>
+                        <strong class="text-success" th:text="'₹' + ${#numbers.formatDecimal(application.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹45,000</strong>
+                    </div>
+                    <div th:if="${application.amountAdjustmentReason != null and !application.amountAdjustmentReason.isBlank()}" class="small text-warning text-truncate mt-1" th:title="${application.amountAdjustmentReason}">
+                        <i class="fa-solid fa-info-circle me-1"></i> <span th:text="${application.amountAdjustmentReason}">Reason</span>
+                    </div>
+                </div>
+
+                <div class="col-md-3 text-md-end">
+                    <span class="text-muted small text-uppercase fw-semibold d-block mb-1">Current Status</span>
+                    <span class="badge fs-6 px-3 py-2 mb-2"
+                          th:classappend="${application.status == 'APPROVED' ? 'bg-success' : (application.status == 'REJECTED' || application.status == 'FINAL_REJECTED' ? 'bg-danger' : (application.status == 'RE_VERIFICATION_REQUIRED' ? 'bg-warning text-dark' : 'bg-primary'))}"
+                          th:text="${application.status != null ? application.status : 'PENDING'}">PENDING</span>
+                    <div class="small text-muted">
+                        Eligibility Score: <strong class="text-navy" th:text="${application.eligibilityScore != null ? application.eligibilityScore + '/100' : 'N/A'}">85/100</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Rejection Cooldown Alert Banner (if applicable) -->
+    <div th:if="${application != null and (application.status == 'REJECTED' or application.status == 'FINAL_REJECTED')}" class="alert alert-danger shadow-sm border-0 p-4 mb-4">
+        <div class="d-flex align-items-start gap-3">
+            <i class="fa-solid fa-circle-xmark fs-2 text-danger mt-1"></i>
+            <div>
+                <h5 class="fw-bold mb-1">Application Rejected & Cooldown Active</h5>
+                <p class="mb-2">This application has been finally rejected. As per scheme guidelines, a cooling period applies before re-applying.</p>
+                <div class="d-flex gap-4 small text-dark fw-semibold" th:if="${application.rejectionReason != null}">
+                    <span>
+                        <i class="fa-solid fa-comment-dots text-danger me-1"></i> Rejection Reason: <span th:text="${application.rejectionReason}">Reason</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Re-Verification Required Alert Banner (if applicable) -->
+    <div th:if="${application != null and application.status == 'RE_VERIFICATION_REQUIRED'}" class="alert alert-warning shadow-sm border-0 p-4 mb-4">
+        <div class="d-flex align-items-start gap-3">
+            <i class="fa-solid fa-triangle-exclamation fs-2 text-warning mt-1"></i>
+            <div>
+                <h5 class="fw-bold text-dark mb-1">Re-Verification Requested by District Officer</h5>
+                <p class="text-dark mb-2">The District Officer requested ground verification review or document correction. <strong>This is NOT a final rejection and does NOT trigger any reapplication restriction.</strong></p>
+                <a sec:authorize="hasRole('BENEFICIARY')" 
+                   th:href="@{'/beneficiary/applications/' + ${application.id}}" 
+                   class="btn btn-warning btn-sm text-dark fw-bold mt-1 shadow-sm">
+                    <i class="fa-solid fa-upload me-1"></i> View Details & Upload Corrected Documents
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Timeline Container Card -->
+    <div class="card gov-card shadow-sm border-0 mb-5">
+        <div class="card-header bg-navy text-white p-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="fa-solid fa-timeline me-2 text-warning"></i> Audit & Execution Lifecycle</h5>
+            <span class="badge bg-light text-navy fw-bold" th:text="${timelineEvents != null ? #lists.size(timelineEvents) : 0} + ' Lifecycle Milestones Recorded'">6 Milestones</span>
+        </div>
+        <div class="card-body p-4 p-md-5">
+
+            <!-- Vertical Timeline -->
+            <div class="timeline position-relative">
+                <div th:each="event, iterStat : ${timelineEvents}" class="timeline-item position-relative pb-5">
+                    
+                    <!-- Line Connector -->
+                    <div th:unless="${iterStat.last}" class="timeline-line bg-secondary opacity-25 position-absolute" style="left: 23px; top: 45px; bottom: 0; width: 3px; z-index: 1;"></div>
+
+                    <div class="d-flex align-items-start gap-3 position-relative" style="z-index: 2;">
+                        
+                        <!-- Timeline Icon Badge -->
+                        <div class="timeline-icon rounded-circle d-flex align-items-center justify-content-center shadow-sm text-white flex-shrink-0"
+                             style="width: 48px; height: 48px;"
+                             th:classappend="${event.badgeClass != null ? event.badgeClass : 'bg-secondary'}">
+                            
+                            <i class="fs-5" th:classappend="${event.iconClass != null ? event.iconClass : 'fa-solid fa-clock'}"></i>
+                        </div>
+
+                        <!-- Timeline Content Box -->
+                        <div class="card border border-light-subtle shadow-sm flex-grow-1">
+                            <div class="card-header bg-light d-flex justify-content-between align-items-center py-2 px-3">
+                                <div>
+                                    <span class="fw-bold text-navy me-2" th:text="${event.stageTitle != null ? event.stageTitle : 'Milestone'}">Stage Title</span>
+                                    <span class="badge small"
+                                          th:classappend="${event.badgeClass != null ? event.badgeClass : 'bg-secondary'}"
+                                          th:text="${event.status != null ? event.status : 'PENDING'}">COMPLETED</span>
+                                </div>
+                                <span class="text-muted small" th:if="${event.eventDate != null}">
+                                    <i class="fa-regular fa-clock me-1"></i> <span th:text="${#temporals.format(event.eventDate, 'dd-MMM-yyyy HH:mm')}">19-09-2026 10:00</span>
+                                </span>
+                            </div>
+
+                            <div class="card-body p-3">
+                                <h6 class="fw-bold text-dark mb-1" th:text="${event.stageTitle != null ? event.stageTitle : 'Event'}">Event Title</h6>
+
+                                <!-- Performed By -->
+                                <div class="text-muted small mb-2" th:if="${event.performedByRole != null}">
+                                    <i class="fa-solid fa-user-gear text-primary me-1"></i> Handled By: <strong class="text-dark" th:text="${event.performedByRole + (event.performedByEmail != null ? ' (' + event.performedByEmail + ')' : '')}">Officer Name</strong>
+                                </div>
+
+                                <!-- Remarks Box (if present) -->
+                                <div th:if="${event.remarks != null and !event.remarks.isBlank()}" class="p-2 rounded bg-light border-start border-3 border-info small mb-2">
+                                    <strong class="text-dark d-block mb-1"><i class="fa-solid fa-comment-dots text-info me-1"></i> Remarks / Status:</strong>
+                                    <span class="text-secondary fst-italic" th:text="${event.remarks}">Remarks content</span>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

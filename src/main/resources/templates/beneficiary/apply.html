@@ -16,6 +16,34 @@
                 </div>
                 <div class="card-body p-4 p-md-5">
 
+                    <!-- ERROR ALERT -->
+                    <div th:if="${errorMessage}" class="alert alert-danger border-0 shadow-sm p-3 mb-4 rounded-3">
+                        <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Error Message</span>
+                    </div>
+
+                    <!-- REAPPLICATION RESTRICTION ALERT -->
+                    <div th:if="${activeRestriction != null and activeRestriction.isActive()}" class="alert alert-danger border-start border-4 border-danger p-4 mb-4 rounded-3 shadow-sm">
+                        <div class="d-flex align-items-start">
+                            <i class="fa-solid fa-ban fs-2 text-danger me-3 mt-1"></i>
+                            <div>
+                                <h5 class="fw-bold text-navy mb-2">Reapplication Cooldown Restriction Active</h5>
+                                <p class="mb-2 text-dark">
+                                    Your previous application for <strong><span th:text="${activeRestriction.scheme != null ? activeRestriction.scheme.name : 'this scheme'}">Scheme</span></strong> was rejected on 
+                                    <strong th:text="${#temporals.format(activeRestriction.rejectedAt, 'dd-MMM-yyyy')}">19-Sep-2026</strong>.
+                                </p>
+                                <div class="p-3 bg-white rounded border mb-2">
+                                    <strong class="text-navy d-block mb-1">Rejection Reason:</strong>
+                                    <span class="text-dark" th:text="${activeRestriction.rejectionReason}">Reason</span>
+                                </div>
+                                <p class="mb-0 fw-bold text-navy">
+                                    <i class="fa-solid fa-calendar-check me-1 text-primary"></i> You can apply again on: 
+                                    <span class="badge bg-navy fs-6 ms-1" th:text="${#temporals.format(activeRestriction.reapplicationAllowedAt, 'dd-MMM-yyyy HH:mm')}">19-Oct-2026</span>
+                                </p>
+                                <small class="text-muted d-block mt-2"><i class="fa-solid fa-clock me-1"></i> Please wait until the reapplication date before submitting a new application.</small>
+                            </div>
+                        </div>
+                    </div>
+
                     <form th:action="@{/beneficiary/apply}" th:object="${dto}" method="post">
                         <input type="hidden" th:field="*{schemeId}"/>
 
@@ -33,25 +61,25 @@
                             <label for="requestedAmount" class="form-label fw-bold">Requested Subsidy Grant Amount (₹) <span class="text-danger">*</span></label>
                             <div class="input-group input-group-lg">
                                 <span class="input-group-text fw-bold">₹</span>
-                                <input type="number" id="requestedAmount" th:field="*{requestedAmount}" class="form-control fw-bold text-success" th:max="${scheme.maxAmount}" required>
+                                <input type="number" id="requestedAmount" th:field="*{requestedAmount}" class="form-control fw-bold text-success" th:max="${scheme.maxAmount}" th:disabled="${activeRestriction != null and activeRestriction.isActive()}" required>
                             </div>
                             <small class="form-text text-muted">Maximum grant limit for this scheme is ₹<span th:text="${#numbers.formatDecimal(scheme.maxAmount, 0, 'COMMA', 0, 'POINT')}">1,00,000</span>.</small>
                         </div>
 
                         <div class="mb-4">
                             <label for="remarks" class="form-label fw-bold">Project / Purpose Remarks</label>
-                            <textarea id="remarks" th:field="*{remarks}" class="form-control" rows="3" placeholder="Enter intended usage details (e.g. Solar pump installation in Kakinada farm)..."></textarea>
+                            <textarea id="remarks" th:field="*{remarks}" class="form-control" rows="3" placeholder="Enter intended usage details (e.g. Solar pump installation in Kakinada farm)..." th:disabled="${activeRestriction != null and activeRestriction.isActive()}"></textarea>
                         </div>
 
                         <div class="form-check mb-4">
-                            <input class="form-check-input" type="checkbox" id="declare" required checked>
+                            <input class="form-check-input" type="checkbox" id="declare" required checked th:disabled="${activeRestriction != null and activeRestriction.isActive()}">
                             <label class="form-check-label small" for="declare">
                                 I affirm that I satisfy the eligibility conditions and authorize field inspection officers to conduct ground verification of my premises.
                             </label>
                         </div>
 
                         <div class="d-grid">
-                            <button type="submit" class="btn btn-navy btn-lg fw-bold text-white shadow">
+                            <button type="submit" th:disabled="${activeRestriction != null and activeRestriction.isActive()}" class="btn btn-navy btn-lg fw-bold text-white shadow">
                                 <i class="fa-solid fa-paper-plane me-2"></i> Submit Official Grant Application
                             </button>
                         </div>

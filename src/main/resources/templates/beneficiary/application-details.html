@@ -33,11 +33,12 @@
                 </h4>
                 <small class="text-light opacity-75" th:text="'Submitted on: ' + ${#temporals.format(application.createdAt, 'dd-MMM-yyyy HH:mm')}">01-Jan-2026 10:00</small>
             </div>
-            <div class="mt-2 mt-md-0">
+            <div class="mt-2 mt-md-0 d-flex align-items-center gap-2">
                 <span th:if="${application.status == 'APPROVED'}" class="badge bg-success fs-6"><i class="fa-solid fa-circle-check me-1"></i> SANCTION APPROVED</span>
                 <span th:if="${application.status == 'PENDING'}" class="badge bg-warning text-dark fs-6"><i class="fa-solid fa-hourglass-half me-1"></i> UNDER VERIFICATION</span>
-                <span th:if="${application.status == 'REJECTED'}" class="badge bg-danger fs-6"><i class="fa-solid fa-circle-xmark me-1"></i> APPLICATION REJECTED</span>
+                <span th:if="${application.status == 'REJECTED' || application.status == 'FINAL_REJECTED'}" class="badge bg-danger fs-6"><i class="fa-solid fa-circle-xmark me-1"></i> FINAL REJECTED</span>
                 <span th:if="${application.status == 'RE_VERIFICATION_REQUIRED'}" class="badge bg-warning text-dark fs-6"><i class="fa-solid fa-rotate-left me-1"></i> RE-VERIFICATION REQUIRED</span>
+                <a th:if="${application != null}" th:href="@{'/applications/' + ${application.id != null ? application.id : (application.applicationNumber != null ? application.applicationNumber : 'latest')} + '/tracking'}" class="btn btn-warning text-dark fw-bold btn-sm shadow-sm"><i class="fa-solid fa-route me-1"></i> Live Timeline</a>
             </div>
         </div>
 
@@ -47,7 +48,7 @@
             <h5 class="fw-bold text-navy mb-3 border-bottom pb-2">
                 <i class="fa-solid fa-list-check text-primary me-2"></i> Application Summary
             </h5>
-            <div class="row g-3 mb-4">
+            <div class="row g-3 mb-3">
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded border h-100">
                         <small class="text-muted d-block fw-bold mb-1">Application ID</small>
@@ -62,14 +63,31 @@
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded border h-100">
-                        <small class="text-muted d-block fw-bold mb-1">Requested Subsidy Grant</small>
-                        <h5 class="fw-bold text-success mb-0" th:text="${application.requestedAmount != null ? '₹' + #numbers.formatDecimal(application.requestedAmount, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹50,000</h5>
+                        <small class="text-muted d-block fw-bold mb-1">Requested Subsidy Amount</small>
+                        <h5 class="fw-bold text-primary mb-0" th:text="${application.requestedAmount != null ? '₹' + #numbers.formatDecimal(application.requestedAmount, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹1,00,000</h5>
                     </div>
                 </div>
                 <div class="col-md-3">
                     <div class="p-3 bg-light rounded border h-100">
-                        <small class="text-muted d-block fw-bold mb-1">Current Audit Stage</small>
-                        <span class="badge bg-primary fs-6 mt-1" th:text="${application.currentStage}">FIELD_VERIFICATION</span>
+                        <small class="text-muted d-block fw-bold mb-1">Final Sanctioned Amount</small>
+                        <h5 th:if="${application.sanctionedAmount != null}" class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(application.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹75,000</h5>
+                        <span th:if="${application.sanctionedAmount == null}" class="badge bg-secondary mt-1">Pending Sanction</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Amount Adjustment Alert for Beneficiary -->
+            <div th:if="${application.sanctionedAmount != null and application.requestedAmount != null and application.sanctionedAmount.compareTo(application.requestedAmount) < 0}"
+                 class="alert alert-warning border-start border-4 border-warning p-3 mb-4 rounded shadow-sm">
+                <div class="d-flex align-items-center">
+                    <i class="fa-solid fa-circle-info fs-3 text-warning me-3"></i>
+                    <div>
+                        <h6 class="fw-bold mb-1">Sanctioned Amount Adjusted by District Collectorate</h6>
+                        <p class="mb-0 text-dark small">
+                            Original Requested: <strong th:text="'₹' + ${#numbers.formatDecimal(application.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</strong> |
+                            Final Approved Sanction: <strong class="text-success" th:text="'₹' + ${#numbers.formatDecimal(application.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹75,000</strong><br>
+                            <span class="fw-bold text-navy">Adjustment Reason:</span> <span th:text="${application.amountAdjustmentReason}">Amount reduced according to scheme max limit / eligibility criteria.</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -179,16 +197,33 @@
                 </div>
             </div>
 
-            <!-- Rejection Reason Banner if Rejected -->
-            <div th:if="${application.status == 'REJECTED'}" class="alert alert-danger p-3 mb-4">
-                <h6 class="fw-bold mb-1"><i class="fa-solid fa-triangle-exclamation me-2"></i> Application Rejection Reason:</h6>
-                <p class="mb-0 small" th:text="${application.rejectionReason}">Reason text</p>
+            <!-- Rejection Reason Banner if Final Rejected -->
+            <div th:if="${application.status == 'REJECTED' || application.status == 'FINAL_REJECTED'}" class="alert alert-danger p-4 mb-4 rounded-3 shadow-sm">
+                <div class="d-flex align-items-start">
+                    <i class="fa-solid fa-circle-xmark fs-2 text-danger me-3 mt-1"></i>
+                    <div>
+                        <h5 class="fw-bold mb-1">Application Final Rejected</h5>
+                        <p class="mb-2"><strong>Official Rejection Reason:</strong> <span th:text="${application.rejectionReason}">Reason text</span></p>
+                        <div th:if="${restriction != null && 'ACTIVE'.equalsIgnoreCase(restriction.status)}" class="p-3 bg-white text-danger rounded border border-danger small mt-2">
+                            <strong class="d-block mb-1"><i class="fa-solid fa-ban me-1"></i> Reapplication Restriction Active:</strong>
+                            <span>You cannot submit a new application for this scheme for <strong th:text="${restriction.cooldownPeriodDays}">30</strong> days (until <strong th:text="${#temporals.format(restriction.reapplicationAllowedAt, 'dd-MMM-yyyy HH:mm')}">Date</strong>).</span>
+                        </div>
+                    </div>
+                </div>
             </div>
 
             <!-- Re-verification Alert -->
-            <div th:if="${application.status == 'RE_VERIFICATION_REQUIRED' || application.currentStage == 'RE_VERIFICATION'}" class="alert alert-warning p-3 mb-4 text-dark">
-                <h6 class="fw-bold mb-1"><i class="fa-solid fa-rotate-left me-2"></i> Re-verification Required:</h6>
-                <p class="mb-0 small">The verification officer requested additional document submission or physical inspection.</p>
+            <div th:if="${application.status == 'RE_VERIFICATION_REQUIRED' || application.currentStage == 'RE_VERIFICATION'}" class="alert alert-warning p-4 mb-4 text-dark rounded-3 shadow-sm border-warning">
+                <div class="d-flex align-items-start">
+                    <i class="fa-solid fa-rotate-left fs-2 text-warning me-3 mt-1"></i>
+                    <div>
+                        <h5 class="fw-bold mb-1">Application Status: Re-verification Required</h5>
+                        <p class="mb-1 text-muted small">The District Officer has requested additional document submission or information correction.</p>
+                        <p class="mb-1"><strong>Reason / Instructions from District Officer:</strong></p>
+                        <p class="p-3 bg-white rounded border fw-semibold text-dark mb-2 mt-1" th:text="${application.rejectionReason != null ? application.rejectionReason : 'Please update the requested documents.'}">Reason</p>
+                        <p class="mb-0 small fw-bold text-navy"><i class="fa-solid fa-circle-info me-1"></i> Action Required: Please update the requested information or upload replacement documents below.</p>
+                    </div>
+                </div>
             </div>
 
             <!-- UPLOADED DOCUMENTS STATUS & RE-UPLOAD FORM -->

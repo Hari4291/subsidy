@@ -107,6 +107,9 @@
                                     <a th:href="@{'/admin/schemes/' + ${s.id} + '/config?step=2'}" class="btn btn-outline-secondary" title="Configure Scheme Engine">
                                         <i class="fa-solid fa-gears me-1"></i> Configure
                                     </a>
+                                    <a th:href="@{'/admin/schemes/' + ${s.id} + '/priority-config'}" class="btn btn-outline-warning text-dark fw-bold" title="Priority Queue Settings">
+                                        <i class="fa-solid fa-list-ol me-1"></i> Priority
+                                    </a>
                                     <form th:action="@{'/admin/schemes/' + ${s.id} + '/activate'}" method="post" class="d-inline">
                                         <input type="hidden" name="targetStatus" th:value="${s.status == 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'}" />
                                         <button type="submit" th:class="${s.status == 'ACTIVE' ? 'btn btn-outline-danger' : 'btn btn-outline-success'}"

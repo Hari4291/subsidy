@@ -5,21 +5,33 @@
 <div th:replace="~{fragments/header :: header-banner}"></div>
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
-<div class="container py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h3 class="fw-bold text-navy mb-1"><i class="fa-solid fa-gavel text-warning me-2"></i> District Collectorate Review &amp; Sanction</h3>
-            <p class="text-muted small mb-0">Application Number: <strong th:text="${app != null and app.applicationNumber != null ? app.applicationNumber : 'N/A'}">APP-123456</strong></p>
+<div class="container-fluid px-3 px-md-4 px-lg-5 py-4">
+    <!-- Top Header Bar -->
+    <div class="card gov-card border-0 shadow-sm mb-4 bg-navy text-white">
+        <div class="card-body p-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+            <div>
+                <h3 class="fw-bold mb-1 text-white">
+                    <i class="fa-solid fa-gavel text-warning me-2"></i> District Collectorate Review &amp; Sanction
+                </h3>
+                <p class="text-white-50 mb-0 small">
+                    Official Verification &amp; Financial Sanction Desk | Application ID: <span class="fw-bold text-warning" th:text="${app != null ? app.applicationNumber : 'N/A'}">APP-123456</span>
+                </p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a th:href="@{'/applications/' + ${app.id} + '/tracking'}" class="btn btn-warning text-dark fw-bold shadow-sm" target="_blank">
+                    <i class="fa-solid fa-route me-1"></i> View Live Timeline
+                </a>
+            </div>
         </div>
     </div>
 
     <!-- Alert Messages -->
-    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
         <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Error processing review</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <form th:action="@{/officer/verify}" th:object="${actionDto}" method="post">
+    <form id="districtReviewForm" th:action="@{'/district-officer/review/' + ${app.id}}" th:object="${actionDto}" method="post">
         <input type="hidden" th:field="*{applicationId}">
         <input type="hidden" name="role" value="DISTRICT_OFFICER">
 
@@ -200,29 +212,308 @@
             </div>
         </div>
 
-        <!-- 5. District Officer Sanction Decision -->
+        <!-- 5. District Officer Adjustable Sanction Decision -->
         <div class="card gov-card shadow-sm border-0 mb-4">
-            <div class="card-header bg-navy text-white fw-bold py-3">
-                <i class="fa-solid fa-user-shield me-2"></i> District Officer Sanction Decision
+            <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <span><i class="fa-solid fa-calculator text-warning me-2"></i> District Officer Financial Sanction &amp; Grant Adjustment Desk</span>
+                <span class="badge bg-light text-navy fw-bold" th:text="'Scheme Max: ₹' + ${scheme != null and scheme.maxAmount != null ? #numbers.formatDecimal(scheme.maxAmount, 0, 'COMMA', 0, 'POINT') : 'N/A'}">Scheme Limit</span>
             </div>
             <div class="card-body p-4">
-                <div class="mb-3">
-                    <label for="remarks" class="form-label fw-bold">District Collectorate Remarks / Sanction Notes <span class="text-danger">*</span></label>
-                    <textarea id="remarks" th:field="*{remarks}" class="form-control" rows="3"
-                              placeholder="Enter District Officer sanction remarks or rejection reason..." required></textarea>
+
+                <!-- Financial Reference Summary Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-3">
+                        <div class="p-3 bg-light rounded border">
+                            <small class="text-muted d-block fw-bold mb-1">Beneficiary Name</small>
+                            <h6 class="fw-bold text-navy mb-0" th:text="${beneficiary != null and beneficiary.user != null ? beneficiary.user.fullName : 'N/A'}">Beneficiary</h6>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-light rounded border">
+                            <small class="text-muted d-block fw-bold mb-1">Original Requested Amount</small>
+                            <h5 class="fw-bold text-primary mb-0" th:text="'₹' + ${app.requestedAmount != null ? #numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT') : '0'}">₹1,00,000</h5>
+                            <input type="hidden" id="requestedAmountVal" th:value="${app.requestedAmount}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-light rounded border">
+                            <small class="text-muted d-block fw-bold mb-1">Scheme Maximum Permitted</small>
+                            <h5 class="fw-bold text-secondary mb-0" th:text="'₹' + ${scheme != null and scheme.maxAmount != null ? #numbers.formatDecimal(scheme.maxAmount, 0, 'COMMA', 0, 'POINT') : '0'}">₹80,000</h5>
+                            <input type="hidden" id="schemeMaxAmountVal" th:value="${scheme != null ? scheme.maxAmount : 0}">
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 bg-light rounded border">
+                            <small class="text-muted d-block fw-bold mb-1">Eligibility Score &amp; Recommended</small>
+                            <h5 class="fw-bold text-success mb-0" th:text="${app.eligibilityScore != null ? app.eligibilityScore + '/100' : 'N/A'}">85/100</h5>
+                            <small class="text-muted" th:text="'Rec: ₹' + ${app.requestedAmount != null and scheme != null and scheme.maxAmount != null and app.requestedAmount.compareTo(scheme.maxAmount) > 0 ? #numbers.formatDecimal(scheme.maxAmount, 0, 'COMMA', 0, 'POINT') : #numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT')}">Recommended</small>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="d-flex flex-wrap gap-2 pt-2 border-top">
-                    <button type="submit" name="action" value="APPROVE" class="btn btn-success btn-lg fw-bold shadow-sm">
-                        <i class="fa-solid fa-circle-check me-2"></i> Approve &amp; Sanction
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label for="sanctionedAmount" class="form-label fw-bold text-navy">
+                            Final Sanctioned Grant Amount (₹) <span class="text-danger">*</span>
+                        </label>
+                        <div class="input-group">
+                            <span class="input-group-text fw-bold bg-navy text-white">₹</span>
+                            <input type="number" step="0.01" min="1" id="sanctionedAmount" name="sanctionedAmount" class="form-control form-control-lg fw-bold text-success"
+                                   th:value="${app.sanctionedAmount != null ? app.sanctionedAmount : app.requestedAmount}" required>
+                        </div>
+                        <small class="text-muted">Must be greater than 0 and cannot exceed requested amount or scheme maximum.</small>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label for="adjustmentReason" class="form-label fw-bold text-navy">
+                            Amount Adjustment / Reduction Reason <span class="text-muted small">(Mandatory if reducing requested amount)</span>
+                        </label>
+                        <textarea id="adjustmentReason" name="adjustmentReason" class="form-control" rows="2"
+                                  placeholder="Enter mandatory reason if sanctioned amount is lower than requested amount..."
+                                  th:text="${app.amountAdjustmentReason}"></textarea>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="remarks" class="form-label fw-bold">District Officer Verification &amp; Sanction Remarks <span class="text-danger">*</span></label>
+                    <textarea id="remarks" th:field="*{remarks}" class="form-control" rows="2"
+                              placeholder="Enter official District Officer verification notes..." required></textarea>
+                </div>
+
+                <!-- Inline Validation Error Alert Banner -->
+                <div id="validationErrorAlert" class="alert alert-danger shadow-sm d-none mb-4" role="alert">
+                    <i class="fa-solid fa-circle-exclamation me-2"></i> <span id="validationErrorMessage" class="fw-bold"></span>
+                </div>
+
+                <script>
+                    function hideValidationError() {
+                        var errDiv = document.getElementById('validationErrorAlert');
+                        if (errDiv) errDiv.classList.add('d-none');
+                    }
+
+                    function showValidationError(msg, focusElemId) {
+                        var errDiv = document.getElementById('validationErrorAlert');
+                        var errMsgSpan = document.getElementById('validationErrorMessage');
+                        if (errDiv && errMsgSpan) {
+                            errMsgSpan.textContent = msg;
+                            errDiv.classList.remove('d-none');
+                            errDiv.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                        if (focusElemId) {
+                            var elem = document.getElementById(focusElemId);
+                            if (elem) elem.focus();
+                        }
+                    }
+
+                    function openActionModal(actionVal) {
+                        hideValidationError();
+                        var reqElem = document.getElementById('requestedAmountVal');
+                        var maxElem = document.getElementById('schemeMaxAmountVal');
+                        var req = parseFloat((reqElem && reqElem.value) ? reqElem.value : 0);
+                        var max = parseFloat((maxElem && maxElem.value) ? maxElem.value : 0);
+                        var sancInput = document.getElementById('sanctionedAmount');
+                        var sanc = parseFloat(sancInput ? sancInput.value : 0);
+                        var reasonInput = document.getElementById('adjustmentReason');
+                        var remarksInput = document.getElementById('remarks');
+                        var remarksVal = remarksInput ? remarksInput.value.trim() : '';
+
+                        if (actionVal === 'APPROVE') {
+                            if (isNaN(sanc) || sanc <= 0) {
+                                showValidationError('Final sanctioned amount must be greater than zero.', 'sanctionedAmount');
+                                return;
+                            }
+                            if (req > 0 && sanc > req) {
+                                showValidationError('Sanctioned amount (₹' + sanc.toLocaleString('en-IN') + ') cannot exceed requested amount (₹' + req.toLocaleString('en-IN') + ').', 'sanctionedAmount');
+                                return;
+                            }
+                            if (max > 0 && sanc > max) {
+                                showValidationError('Sanctioned amount (₹' + sanc.toLocaleString('en-IN') + ') cannot exceed scheme maximum limit of ₹' + max.toLocaleString('en-IN') + '.', 'sanctionedAmount');
+                                return;
+                            }
+                            if (sanc < req && (!reasonInput || !reasonInput.value || reasonInput.value.trim() === '')) {
+                                showValidationError('Mandatory adjustment reason required when sanctioned amount (₹' + sanc.toLocaleString('en-IN') + ') is lower than requested amount (₹' + req.toLocaleString('en-IN') + ').', 'adjustmentReason');
+                                return;
+                            }
+                            if (!remarksVal) {
+                                showValidationError('District Officer verification & sanction remarks are mandatory.', 'remarks');
+                                return;
+                            }
+
+                            var dispAmt = document.getElementById('confirmSanctionAmountDisplay');
+                            if (dispAmt) dispAmt.textContent = '₹' + sanc.toLocaleString('en-IN');
+                            var dispRem = document.getElementById('confirmSanctionRemarksDisplay');
+                            if (dispRem) dispRem.textContent = remarksVal;
+
+                            var elem1 = document.getElementById('sanctionConfirmModal');
+                            if (window.bootstrap && window.bootstrap.Modal) {
+                                var modal1 = window.bootstrap.Modal.getOrCreateInstance ? window.bootstrap.Modal.getOrCreateInstance(elem1) : new bootstrap.Modal(elem1);
+                                modal1.show();
+                            } else {
+                                submitDistrictAction('APPROVE');
+                            }
+                        } else if (actionVal === 'REQUEST_RE_VERIFICATION') {
+                            if (!remarksVal) {
+                                showValidationError('Mandatory re-verification reason required. Please enter remarks explaining what needs correction/re-verification.', 'remarks');
+                                return;
+                            }
+
+                            var dispRevRem = document.getElementById('reverifyRemarksDisplay');
+                            if (dispRevRem) dispRevRem.textContent = remarksVal;
+
+                            var elem2 = document.getElementById('reVerificationModal');
+                            if (window.bootstrap && window.bootstrap.Modal) {
+                                var modal2 = window.bootstrap.Modal.getOrCreateInstance ? window.bootstrap.Modal.getOrCreateInstance(elem2) : new bootstrap.Modal(elem2);
+                                modal2.show();
+                            } else {
+                                submitDistrictAction('REQUEST_RE_VERIFICATION');
+                            }
+                        } else if (actionVal === 'REJECT') {
+                            if (!remarksVal) {
+                                showValidationError('Mandatory rejection reason required for Final Rejection. Please enter official rejection remarks.', 'remarks');
+                                return;
+                            }
+
+                            var dispRejRem = document.getElementById('rejectRemarksDisplay');
+                            if (dispRejRem) dispRejRem.textContent = remarksVal;
+
+                            var elem3 = document.getElementById('finalRejectConfirmModal');
+                            if (window.bootstrap && window.bootstrap.Modal) {
+                                var modal3 = window.bootstrap.Modal.getOrCreateInstance ? window.bootstrap.Modal.getOrCreateInstance(elem3) : new bootstrap.Modal(elem3);
+                                modal3.show();
+                            } else {
+                                submitDistrictAction('REJECT');
+                            }
+                        }
+                    }
+
+                    function submitDistrictAction(actionVal) {
+                        var actionInput = document.getElementById('actionField');
+                        if (actionInput) {
+                            actionInput.value = actionVal;
+                        }
+                        var form = document.getElementById('districtReviewForm');
+                        if (form) {
+                            form.submit();
+                        }
+                    }
+                </script>
+
+                <input type="hidden" id="actionField" name="action" value="">
+
+                <div class="d-flex flex-wrap gap-3 pt-3 border-top">
+                    <button type="button" onclick="openActionModal('APPROVE')" class="btn btn-success btn-lg fw-bold shadow-sm">
+                        <i class="fa-solid fa-paper-plane me-2"></i> Sanction Amount &amp; Forward to Finance
                     </button>
-                    <button type="submit" name="action" value="REQUEST_RE_VERIFICATION" class="btn btn-warning text-dark btn-lg fw-bold shadow-sm">
-                        <i class="fa-solid fa-rotate-left me-2"></i> Request Re-verification
+                    <button type="button" onclick="openActionModal('REQUEST_RE_VERIFICATION')" class="btn btn-warning text-dark btn-lg fw-bold shadow-sm">
+                        <i class="fa-solid fa-rotate-left me-2"></i> Send for Re-Verification
                     </button>
-                    <button type="submit" name="action" value="REJECT" class="btn btn-danger btn-lg fw-bold shadow-sm">
-                        <i class="fa-solid fa-circle-xmark me-2"></i> Reject
+                    <button type="button" onclick="openActionModal('REJECT')" class="btn btn-danger btn-lg fw-bold shadow-sm">
+                        <i class="fa-solid fa-circle-xmark me-2"></i> Final Reject
                     </button>
                 </div>
+            </div>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- Action Confirmation Modals (No JS Alert)   -->
+        <!-- ========================================== -->
+
+        <!-- 1. Re-Verification Confirmation Modal -->
+        <div class="modal fade" id="reVerificationModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-warning text-dark">
+                        <h5 class="modal-title fw-bold"><i class="fa-solid fa-rotate-left me-2"></i> Confirm Send for Re-Verification</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4 text-start">
+                        <div class="alert alert-info border-0 shadow-xs mb-3">
+                            <i class="fa-solid fa-circle-info me-2"></i>
+                            <strong>Important Notice:</strong> This action will send the application back to the Field Officer for ground re-inspection and beneficiary document/data corrections.
+                            <span class="d-block mt-1 fw-bold text-navy"><i class="fa-solid fa-shield-check me-1 text-success"></i> Re-verification will NOT create any rejection cooldown restriction for the beneficiary.</span>
+                        </div>
+                        <div class="p-3 bg-light rounded border mb-3">
+                            <small class="text-muted d-block fw-bold mb-1">Re-Verification Remarks / Correction Notes</small>
+                            <p class="mb-0 fw-semibold text-dark" id="reverifyRemarksDisplay">Remarks</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel / Edit Remarks</button>
+                        <button type="button" onclick="submitDistrictAction('REQUEST_RE_VERIFICATION')" class="btn btn-warning text-dark fw-bold shadow-sm">
+                            <i class="fa-solid fa-paper-plane me-1"></i> Confirm &amp; Send for Re-Verification
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. Sanction Confirmation Modal -->
+        <div class="modal fade" id="sanctionConfirmModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-navy text-white">
+                        <h5 class="modal-title fw-bold"><i class="fa-solid fa-gavel text-warning me-2"></i> Confirm Financial Sanction &amp; Forward</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4 text-start">
+                        <p class="text-secondary mb-3">Are you sure you want to sanction this grant and forward to the Finance Treasury for final disbursement approval?</p>
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded border">
+                                    <small class="text-muted d-block fw-bold mb-1">Sanctioned Amount</small>
+                                    <h4 class="fw-bold text-success mb-0" id="confirmSanctionAmountDisplay">₹0</h4>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="p-3 bg-light rounded border">
+                                    <small class="text-muted d-block fw-bold mb-1">Target Stage</small>
+                                    <h5 class="fw-bold text-navy mb-0"><i class="fa-solid fa-building-columns me-1"></i> Finance Treasury Approval</h5>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-3 bg-light rounded border mb-3">
+                            <small class="text-muted d-block fw-bold mb-1">Official Sanction Remarks</small>
+                            <p class="mb-0 text-dark" id="confirmSanctionRemarksDisplay">Remarks</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel / Modify</button>
+                        <button type="button" onclick="submitDistrictAction('APPROVE')" class="btn btn-success fw-bold shadow-sm">
+                            <i class="fa-solid fa-paper-plane me-1"></i> Confirm Sanction &amp; Forward
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Final Rejection Confirmation Modal -->
+        <div class="modal fade" id="finalRejectConfirmModal" tabindex="-1">
+            <div class="modal-dialog modal-dialog-centered modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title fw-bold"><i class="fa-solid fa-triangle-exclamation me-2"></i> Confirm Final Application Rejection</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body p-4 text-start">
+                        <div class="alert alert-danger border-0 shadow-xs mb-3">
+                            <i class="fa-solid fa-circle-exclamation me-2"></i>
+                            <strong>CRITICAL NOTICE:</strong> This is a FINAL REJECTION decision.
+                            <span class="d-block mt-1">This action <strong>WILL CREATE</strong> an active rejection cooldown restricting the beneficiary from submitting a new application for this scheme.</span>
+                        </div>
+                        <div class="p-3 bg-light rounded border mb-3">
+                            <small class="text-muted d-block fw-bold mb-1">Official Final Rejection Reason</small>
+                            <p class="mb-0 text-danger fw-semibold" id="rejectRemarksDisplay">Reason</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel / Go Back</button>
+                        <button type="button" onclick="submitDistrictAction('REJECT')" class="btn btn-danger fw-bold shadow-sm">
+                            <i class="fa-solid fa-circle-xmark me-1"></i> Confirm Final Rejection
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
             </div>
         </div>
 

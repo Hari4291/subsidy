@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <!-- Header Banner -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h4 class="fw-bold text-navy mb-1"><i class="fa-solid fa-file-shield text-primary me-2"></i> Grievance Ticket Details & Tracking</h4>
+            <p class="text-muted mb-0">Tracking Number: <strong class="text-navy" th:text="${grievance.grievanceNumber}">GRV-10001</strong></p>
+        </div>
+        <div>
+            <a th:href="@{/beneficiary/grievances}" class="btn btn-outline-navy fw-bold me-2"><i class="fa-solid fa-arrow-left me-1"></i> My Grievances</a>
+            <a th:href="@{/beneficiary/dashboard}" class="btn btn-warning text-dark fw-bold shadow-sm"><i class="fa-solid fa-gauge me-1"></i> Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Success / Error Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm p-3 mb-4" role="alert">
+        <i class="fa-solid fa-circle-check me-2 fs-5"></i> <span th:text="${successMessage}">Success message</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm p-3 mb-4" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> <span th:text="${errorMessage}">Error message</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- MAIN TICKET SUMMARY CARD -->
+    <div class="card gov-card shadow-sm border-0 mb-4 bg-white">
+        <div class="card-header bg-navy text-white p-3 px-4 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0">
+                <i class="fa-solid fa-ticket text-warning me-2"></i> Ticket: <span th:text="${grievance.grievanceNumber}">GRV-10001</span>
+            </h5>
+            <span class="badge fs-6 px-3 py-2"
+                  th:classappend="${grievance.status == 'RESOLVED' ? 'bg-success' : (grievance.status == 'REJECTED' ? 'bg-danger' : (grievance.status == 'CLARIFICATION_REQUIRED' ? 'bg-warning text-dark' : 'bg-primary'))}"
+                  th:text="${grievance.status}">SUBMITTED</span>
+        </div>
+        <div class="card-body p-4">
+            <div class="row g-3 mb-4 border-bottom pb-4">
+                <div class="col-md-3 border-end">
+                    <span class="text-muted small text-uppercase fw-semibold d-block">Category</span>
+                    <strong class="text-navy fs-6" th:text="${#strings.replace(grievance.category, '_', ' ')}">APPLICATION DELAY</strong>
+                </div>
+
+                <div class="col-md-3 border-end">
+                    <span class="text-muted small text-uppercase fw-semibold d-block">Related Application</span>
+                    <div th:if="${grievance.application != null}">
+                        <strong class="text-primary" th:text="${grievance.application.applicationNumber}">APP-1001</strong>
+                        <small class="text-muted d-block" th:text="${grievance.application.scheme != null ? grievance.application.scheme.name : ''}">Scheme</small>
+                    </div>
+                    <span th:unless="${grievance.application != null}" class="text-muted">General Complaint</span>
+                </div>
+
+                <div class="col-md-3 border-end">
+                    <span class="text-muted small text-uppercase fw-semibold d-block">Submitted Date</span>
+                    <strong class="text-dark" th:text="${#temporals.format(grievance.createdAt, 'dd-MMM-yyyy HH:mm')}">01-Jan-2026 10:00</strong>
+                </div>
+
+                <div class="col-md-3">
+                    <span class="text-muted small text-uppercase fw-semibold d-block">Assigned District Desk</span>
+                    <strong class="text-navy" th:text="${grievance.beneficiary != null ? grievance.beneficiary.district + ', ' + grievance.beneficiary.state : 'District Collectorate'}">District Desk</strong>
+                </div>
+            </div>
+
+            <!-- Subject & Description -->
+            <div class="mb-4">
+                <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-heading text-primary me-2"></i> Subject: <span class="text-dark" th:text="${grievance.subject}">Subject Line</span></h6>
+                <div class="p-3 bg-light rounded border">
+                    <strong class="text-muted d-block mb-1 small uppercase">Detailed Complaint Description:</strong>
+                    <p class="mb-0 text-dark" style="white-space: pre-wrap;" th:text="${grievance.description}">Full description of the complaint.</p>
+                </div>
+            </div>
+
+            <!-- Supporting Document Attachment (if present) -->
+            <div th:if="${grievance.supportingDocumentPath != null}" class="mb-4">
+                <div class="p-3 bg-info bg-opacity-10 border border-info rounded d-flex align-items-center justify-content-between">
+                    <div>
+                        <i class="fa-solid fa-paperclip text-info me-2 fs-5"></i>
+                        <strong class="text-navy">Supporting Document Uploaded:</strong>
+                        <span class="text-muted small ms-2" th:text="${grievance.supportingDocumentPath}">document.pdf</span>
+                    </div>
+                    <a th:href="${grievance.supportingDocumentPath}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold">
+                        <i class="fa-solid fa-download me-1"></i> View Attachment
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ACTION REQUIRED / CLARIFICATION RESPONSE FORM (IF APPLICABLE) -->
+    <div th:if="${grievance.status == 'CLARIFICATION_REQUIRED' or grievance.status == 'ACTION_REQUIRED'}" class="card gov-card border-warning shadow-sm mb-4">
+        <div class="card-header bg-warning text-dark fw-bold py-3 px-4">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> Action Required: District Officer Requested Clarification
+        </div>
+        <div class="card-body p-4">
+            <div class="alert alert-warning border-start border-4 border-warning p-3 mb-3">
+                <strong class="d-block mb-1"><i class="fa-solid fa-comment-dots me-1"></i> District Officer Remarks / Question:</strong>
+                <span class="text-dark" th:text="${grievance.resolutionRemarks}">District officer remarks requesting info.</span>
+            </div>
+
+            <form th:action="@{'/beneficiary/grievances/' + ${grievance.id} + '/clarification'}" method="post">
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-navy">Enter Your Response / Clarification Details <span class="text-danger">*</span></label>
+                    <textarea name="clarificationResponse" class="form-control" rows="4" required placeholder="Provide the requested clarification or information to the District Officer..."></textarea>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-warning text-dark fw-bold px-4 shadow-sm">
+                        <i class="fa-solid fa-paper-plane me-1"></i> Submit Clarification Response
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PREVIOUS BENEFICIARY CLARIFICATION (IF SUBMITTED) -->
+    <div th:if="${grievance.beneficiaryClarification != null and !#strings.isEmpty(grievance.beneficiaryClarification)}" class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light fw-bold py-3 px-4">
+            <i class="fa-solid fa-reply text-primary me-2"></i> Your Submitted Clarification Response
+        </div>
+        <div class="card-body p-4">
+            <div class="p-3 bg-light rounded border border-info border-start border-4">
+                <p class="mb-0 text-dark" style="white-space: pre-wrap;" th:text="${grievance.beneficiaryClarification}">Beneficiary clarification text.</p>
+            </div>
+        </div>
+    </div>
+
+            <!-- OFFICER RESOLUTION / REMARKS CARD -->
+    <div th:if="${grievance.resolutionRemarks != null and !#strings.isEmpty(grievance.resolutionRemarks)}" class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-navy text-white fw-bold py-3 px-4 d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-user-shield text-warning me-2"></i> District Officer Resolution & Official Remarks</span>
+            <span class="badge bg-light text-navy" th:if="${grievance.resolvedBy != null}" th:text="'By: ' + ${grievance.resolvedBy}">Officer</span>
+        </div>
+        <div class="card-body p-4">
+            <div class="p-3 rounded bg-light border-start border-4"
+                 th:classappend="${grievance.status == 'RESOLVED' ? 'border-success' : (grievance.status == 'REJECTED' ? 'border-danger' : 'border-primary')}">
+                <strong class="d-block mb-1 text-navy">Official Remarks:</strong>
+                <p class="mb-2 text-dark" style="white-space: pre-wrap;" th:text="${grievance.resolutionRemarks}">Official resolution remarks.</p>
+                <small class="text-muted d-block" th:if="${grievance.resolvedAt != null}">
+                    <i class="fa-regular fa-clock me-1"></i> Recorded at: <span th:text="${#temporals.format(grievance.resolvedAt, 'dd-MMM-yyyy HH:mm')}">01-Jan-2026</span>
+                </small>
+            </div>
+        </div>
+    </div>
+
+    <!-- REOPEN RESOLVED / CLOSED GRIEVANCE CARD -->
+    <div th:if="${grievance.status == 'RESOLVED' or grievance.status == 'CLOSED'}" class="card gov-card border-info shadow-sm mb-4">
+        <div class="card-header bg-info bg-opacity-10 text-navy fw-bold py-3 px-4 border-info">
+            <i class="fa-solid fa-rotate-left me-2 text-info"></i> Reopen Grievance (If issue remains unresolved)
+        </div>
+        <div class="card-body p-4">
+            <p class="text-muted small mb-3">If you are not satisfied with the resolution or if the issue persists, you may request to reopen this ticket by providing your reason below.</p>
+            <form th:action="@{'/beneficiary/grievances/' + ${grievance.id} + '/reopen'}" method="post">
+                <div class="mb-3">
+                    <label class="form-label fw-bold text-navy">Reason for Reopening Ticket <span class="text-danger">*</span></label>
+                    <textarea name="reopenReason" class="form-control" rows="3" required placeholder="Explain why the resolution is incomplete or what further assistance is needed..."></textarea>
+                </div>
+                <div class="text-end">
+                    <button type="submit" class="btn btn-outline-danger fw-bold px-4">
+                        <i class="fa-solid fa-rotate-left me-1"></i> Submit Reopen Request
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container-fluid py-4 bg-light">
+    <div class="container">
+        <!-- Header Banner -->
+        <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
+            <div>
+                <h4 class="mb-1 fw-bold"><i class="fa-solid fa-users text-warning me-2"></i> District Field Officer Management &amp; Reassignment</h4>
+                <p class="mb-0 text-light small" th:text="'District Team Workload Distribution &amp; Application Assignment | ' + ${districtName}">Field Officers</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning text-dark font-weight-bold p-2">Role: DISTRICT_OFFICER</span>
+                <span class="badge bg-light text-navy fw-bold p-2" th:text="${districtName}">District</span>
+                <form th:action="@{/logout}" method="post" class="d-inline ms-2">
+                    <button type="submit" class="btn btn-danger fw-bold shadow-sm" id="doLogoutBtn"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
+            <li class="nav-item"><a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/dashboard}"><i class="fa-solid fa-gavel me-1"></i> Applications Review</a></li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/escalations}">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i> Escalations 
+                    <span class="badge bg-danger rounded-pill ms-1" th:text="${metrics != null ? metrics.escalationCount : 0}">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/anomalies}">
+                    <i class="fa-solid fa-shield-cat me-1"></i> Anomalies 
+                    <span class="badge bg-warning text-dark rounded-pill ms-1" th:text="${metrics != null ? metrics.anomalyCount : 0}">0</span>
+                </a>
+            </li>
+            <li class="nav-item"><a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/budget}"><i class="fa-solid fa-wallet me-1"></i> Budget Monitoring</a></li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/grievances}">
+                    <i class="fa-solid fa-comments me-1"></i> Grievances 
+                    <span class="badge bg-info text-dark rounded-pill ms-1" th:text="${metrics != null ? metrics.openGrievanceCount : 0}">0</span>
+                </a>
+            </li>
+            <li class="nav-item"><a class="nav-link active fw-bold" th:href="@{/district-officer/officers}"><i class="fa-solid fa-users me-1"></i> Field Officers</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/reports}"><i class="fa-solid fa-chart-line me-1"></i> Analytics</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/audit}"><i class="fa-solid fa-history me-1"></i> Audit Logs</a></li>
+        </ul>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${successMessage}">Success</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Reassignment Card -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header gov-card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-right-left text-warning me-2"></i> Reassign Application to Field Officer
+            </div>
+            <div class="card-body p-4">
+                <form th:action="@{/district-officer/reassign}" method="post" class="row g-3 align-items-end">
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold">Select Application</label>
+                        <select name="applicationId" class="form-select" required>
+                            <option value="">-- Choose Application --</option>
+                            <option th:each="app : ${pendingApplications}" th:value="${app.id}" th:text="${app.applicationNumber} + ' (' + (${app.beneficiary != null and app.beneficiary.user != null ? app.beneficiary.user.fullName : 'Beneficiary'}) + ')'"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold">Assign to Field Officer</label>
+                        <select name="officerId" class="form-select" required>
+                            <option value="">-- Choose Officer --</option>
+                            <option th:each="off : ${officers}" th:value="${off.id}" th:text="${off.fullName} + ' (' + ${off.email} + ')'"></option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-warning w-100 fw-bold text-dark"><i class="fa-solid fa-user-check me-1"></i> Assign Officer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Active Officers List -->
+        <div class="card gov-card shadow-sm border-0">
+            <div class="card-header gov-card-header bg-light fw-bold py-3">
+                <i class="fa-solid fa-address-book text-primary me-2"></i> District Field Officers Roster
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Officer ID</th>
+                                <th>Officer Name</th>
+                                <th>District</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(officers)}">
+                                <td colspan="5" class="text-center text-muted py-4">No field officers registered in this district.</td>
+                            </tr>
+                            <tr th:each="off : ${officers}">
+                                <td class="fw-bold text-navy" th:text="'OFF-' + ${off.id}">OFF-001</td>
+                                <td th:text="${off.fullName}">Officer Name</td>
+                                <td th:text="${off.district}">District</td>
+                                <td th:text="${off.officerType}">Field Officer</td>
+                                <td><span class="badge bg-success" th:text="${off.status}">ACTIVE</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

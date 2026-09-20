@@ -1,2 +1,13 @@
+com\example\digital_subsidy\AdjustableSanctionAmountTest.class
+com\example\digital_subsidy\DistrictOfficerModuleTest.class
 com\example\digital_subsidy\EndToEndPortalTest.class
+com\example\digital_subsidy\ApplicationTrackingAndNotificationTest.class
+com\example\digital_subsidy\EducationSubsidyWorkflowTest.class
+com\example\digital_subsidy\PriorityQueueTest.class
+com\example\digital_subsidy\DistrictOfficerReverificationTest.class
+com\example\digital_subsidy\RoleDifferenceWorkflowTest.class
+com\example\digital_subsidy\SeparateReverificationCooldownTest.class
+com\example\digital_subsidy\BeneficiaryGrievanceWorkflowTest.class
+com\example\digital_subsidy\RejectionCooldownTest.class
+com\example\digital_subsidy\FixBugsValidationTest.class
 com\example\digital_subsidy\EndToEndSampleBeneficiaryTest.class

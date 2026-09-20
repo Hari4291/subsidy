@@ -365,6 +365,7 @@ public class SeedDataConfig {
             newS1.setEligibleStates("ALL");
             newS1.setCategory("Agriculture");
             newS1.setMinQualifyingScore(60);
+            newS1.setRejectionCooldownDays(30);
             newS1.setStatus("ACTIVE");
             schemeRepo.save(newS1);
 
@@ -379,6 +380,7 @@ public class SeedDataConfig {
             newS2.setEligibleStates("ALL");
             newS2.setCategory("Solar");
             newS2.setMinQualifyingScore(70);
+            newS2.setRejectionCooldownDays(30);
             newS2.setStatus("ACTIVE");
             schemeRepo.save(newS2);
 
@@ -393,6 +395,7 @@ public class SeedDataConfig {
             newS3.setEligibleStates("ALL");
             newS3.setCategory("MSME");
             newS3.setMinQualifyingScore(65);
+            newS3.setRejectionCooldownDays(30);
             newS3.setStatus("ACTIVE");
             schemeRepo.save(newS3);
 
@@ -407,12 +410,36 @@ public class SeedDataConfig {
             newS4.setEligibleStates("ALL");
             newS4.setCategory("Education");
             newS4.setMinQualifyingScore(60);
+            newS4.setRejectionCooldownDays(30);
             newS4.setStatus("ACTIVE");
             schemeRepo.save(newS4);
         }
 
         List<Scheme> allSchemes = schemeRepo.findAll();
+        boolean hasEducation = allSchemes.stream().anyMatch(s -> "Education".equalsIgnoreCase(s.getCategory()) || (s.getName() != null && s.getName().toLowerCase().contains("education")));
+        if (!hasEducation) {
+            Scheme eduScheme = new Scheme();
+            eduScheme.setName("Higher Education Financial Assistance Scheme");
+            eduScheme.setDescription("Financial assistance for eligible students pursuing higher education.");
+            eduScheme.setMinAmount(new BigDecimal("10000"));
+            eduScheme.setMaxAmount(new BigDecimal("100000"));
+            eduScheme.setTotalBudget(new BigDecimal("200000000"));
+            eduScheme.setRemainingBudget(new BigDecimal("195000000"));
+            eduScheme.setTargetCategories("General,OBC,SC,ST,Minority");
+            eduScheme.setEligibleStates("ALL");
+            eduScheme.setCategory("Education");
+            eduScheme.setMinQualifyingScore(60);
+            eduScheme.setRejectionCooldownDays(30);
+            eduScheme.setStatus("ACTIVE");
+            schemeRepo.save(eduScheme);
+            allSchemes.add(eduScheme);
+        }
+
         for (Scheme s : allSchemes) {
+            if (s.getRejectionCooldownDays() == null || s.getRejectionCooldownDays() <= 0) {
+                s.setRejectionCooldownDays(30);
+                schemeRepo.save(s);
+            }
             String nameLower = s.getName().toLowerCase();
             if (nameLower.contains("krishi") || nameLower.contains("micro-irrigation") || nameLower.contains("farmer")) {
                 if (s.getCategory() == null || s.getCategory().equals("General")) s.setCategory("Agriculture");
@@ -484,7 +511,7 @@ public class SeedDataConfig {
 
         createCriteria(criteriaRepo, s, "MIN_AGE", "NUMERIC", "GTE", "21", 15, "Entrepreneur age 21 or older", "Applicant age 21 or older?", "NUMBER", null, 1);
         createCriteria(criteriaRepo, s, "MAX_INCOME", "NUMERIC", "LTE", "1000000", 35, "Annual business turnover ceiling ₹10,00,000", "What is your annual business turnover? (₹)", "NUMBER", null, 2);
-        createCriteria(criteriaRepo, s, "BUSINESS_TYPE", "CATEGORICAL", "IN", "MANUFACTURING,SERVICE,TRADING", 15, "Registered enterprise category", "What is your business type?", "SINGLE_SELECT", "MANUFACTURING,SERVICE,TRADING,OTHER", 3);
+        createCriteria(criteriaRepo, s, "BUSINESS_TYPE", "CATEGORICAL", "IN", "MANUFACTURING,SERVICE,TRADING,MICRO_ENTERPRISE,SMALL_ENTERPRISE", 15, "Registered enterprise category", "What is your business type?", "SINGLE_SELECT", "MANUFACTURING,SERVICE,TRADING,OTHER", 3);
         createCriteria(criteriaRepo, s, "REQUIRED_DOCS", "BOOLEAN", "IS_TRUE", "TRUE", 25, "Required supporting document uploads", "Have you uploaded required supporting documents?", "YES_NO", "YES,NO", 4);
         createCriteria(criteriaRepo, s, "EQUIPMENT_INVESTMENT", "NUMERIC", "GTE", "50000", 10, "Planned technology & equipment investment", "What is your planned technology/equipment investment? (₹)", "NUMBER", null, 5);
 
@@ -502,24 +529,21 @@ public class SeedDataConfig {
     private void seedEducationScheme(EligibilityCriteriaRepository criteriaRepo, RequiredDocumentRepository reqDocRepo, com.example.digital_subsidy.repository.DisbursementMilestoneRepository milestoneRepo, Scheme s) {
         criteriaRepo.deleteByScheme(s);
 
-        createCriteria(criteriaRepo, s, "ENROLLMENT_STATUS", "BOOLEAN", "EQUALS", "YES", 15, "Are you currently enrolled in an educational institution?", "Are you currently enrolled in an educational institution?", "YES_NO", "YES,NO", 1);
-        createCriteria(criteriaRepo, s, "EDUCATION_LEVEL", "CATEGORICAL", "IN", "Intermediate / 12th,Diploma,Undergraduate,Postgraduate,PhD,Other", 10, "What is your current education level?", "What is your current education level?", "SINGLE_SELECT", "Intermediate / 12th,Diploma,Undergraduate,Postgraduate,PhD,Other", 2);
-        createCriteria(criteriaRepo, s, "INSTITUTION_TYPE", "CATEGORICAL", "IN", "Government,Government Aided,Private,Other", 10, "What type of institution are you studying in?", "What type of institution are you studying in?", "SINGLE_SELECT", "Government,Government Aided,Private,Other", 3);
-        createCriteria(criteriaRepo, s, "COURSE_NAME", "TEXT", "EQUALS", "ALL", 0, "What is your course/program name?", "What is your course/program name?", "TEXT", null, 4);
-        createCriteria(criteriaRepo, s, "STUDY_YEAR", "CATEGORICAL", "IN", "1st Year,2nd Year,3rd Year,4th Year,Final Year,Other", 0, "What is your current year of study?", "What is your current year of study?", "SINGLE_SELECT", "1st Year,2nd Year,3rd Year,4th Year,Final Year,Other", 5);
-        createCriteria(criteriaRepo, s, "ACADEMIC_PERFORMANCE", "NUMERIC", "GTE", "50", 20, "What was your previous academic percentage/CGPA?", "What was your previous academic percentage/CGPA?", "DECIMAL", null, 6);
-        createCriteria(criteriaRepo, s, "MAX_INCOME", "NUMERIC", "LTE", "300000", 20, "What is your annual family income?", "What is your annual family income?", "NUMBER", null, 7);
-        createCriteria(criteriaRepo, s, "TUITION_FEE", "NUMERIC", "GTE", "10000", 10, "What is your annual tuition/course fee?", "What is your annual tuition/course fee?", "NUMBER", null, 8);
-        createCriteria(criteriaRepo, s, "SCHOLARSHIP_STATUS", "BOOLEAN", "EQUALS", "NO", 10, "Are you already receiving another scholarship or education subsidy?", "Are you already receiving another scholarship or education subsidy?", "YES_NO", "YES,NO", 9);
-        createCriteria(criteriaRepo, s, "FINANCIAL_NEED", "BOOLEAN", "EQUALS", "YES", 5, "Do you require financial assistance for your current course?", "Do you require financial assistance for your current course?", "YES_NO", "YES,NO", 10);
+        createCriteria(criteriaRepo, s, "MAX_INCOME", "NUMERIC", "LTE", "300000", 20, "Annual family income limit ₹3,00,000", "What is your annual family income? (₹)", "NUMBER", null, 1);
+        createCriteria(criteriaRepo, s, "ACADEMIC_PERFORMANCE", "NUMERIC", "GTE", "50", 20, "Previous academic percentage or CGPA (Minimum 50%)", "What was your previous academic percentage/CGPA?", "DECIMAL", null, 2);
+        createCriteria(criteriaRepo, s, "ENROLLMENT_STATUS", "BOOLEAN", "EQUALS", "YES", 15, "Are you currently enrolled in an educational institution?", "Are you currently enrolled in an educational institution?", "YES_NO", "YES,NO", 3);
+        createCriteria(criteriaRepo, s, "SCHOLARSHIP_STATUS", "BOOLEAN", "EQUALS", "NO", 15, "Are you already receiving another scholarship or education subsidy?", "Are you already receiving another scholarship or education subsidy?", "YES_NO", "YES,NO", 4);
+        createCriteria(criteriaRepo, s, "EDUCATION_LEVEL", "CATEGORICAL", "IN", "Intermediate / 12th,Diploma,Undergraduate,Postgraduate,PhD,Other", 10, "What is your current education level?", "What is your current education level?", "SINGLE_SELECT", "Intermediate / 12th,Diploma,Undergraduate,Postgraduate,PhD,Other", 5);
+        createCriteria(criteriaRepo, s, "INSTITUTION_TYPE", "CATEGORICAL", "IN", "Government,Government Aided,Private,Other", 10, "What type of institution are you studying in?", "What type of institution are you studying in?", "SINGLE_SELECT", "Government,Government Aided,Private,Other", 6);
+        createCriteria(criteriaRepo, s, "STUDY_YEAR", "CATEGORICAL", "IN", "1st Year,2nd Year,3rd Year,4th Year,Final Year,Other", 5, "What is your current year of study?", "What is your current year of study?", "SINGLE_SELECT", "1st Year,2nd Year,3rd Year,4th Year,Final Year,Other", 7);
+        createCriteria(criteriaRepo, s, "COURSE_DURATION", "NUMERIC", "GTE", "1", 5, "Course duration in years (Minimum 1 year)", "What is your course duration in years?", "NUMBER", null, 8);
 
-        createOrUpdateRequiredDoc(reqDocRepo, s, "Aadhaar Card", "AADHAAR", true, "PDF, JPG, JPEG, PNG", 5, 1);
-        createOrUpdateRequiredDoc(reqDocRepo, s, "Bank Passbook", "BANK_PASSBOOK", true, "PDF, JPG, JPEG, PNG", 5, 2);
-        createOrUpdateRequiredDoc(reqDocRepo, s, "Bonafide / Student Certificate", "BONAFIDE_CERTIFICATE", true, "PDF, JPG, JPEG, PNG", 5, 3);
-        createOrUpdateRequiredDoc(reqDocRepo, s, "Previous Academic Marksheet", "ACADEMIC_MARKSHEET", true, "PDF, JPG, JPEG, PNG", 5, 4);
-        createOrUpdateRequiredDoc(reqDocRepo, s, "Income Certificate", "INCOME_CERTIFICATE", true, "PDF, JPG, JPEG, PNG", 5, 5);
-        createOrUpdateRequiredDoc(reqDocRepo, s, "Fee Structure / Tuition Fee Certificate", "FEE_STRUCTURE", true, "PDF, JPG, JPEG, PNG", 5, 6);
-        createOrUpdateRequiredDoc(reqDocRepo, s, "Admission / Enrollment Proof", "ADMISSION_PROOF", true, "PDF, JPG, JPEG, PNG", 5, 7);
+        createOrUpdateRequiredDoc(reqDocRepo, s, "Income Certificate", "INCOME_CERTIFICATE", true, "PDF, JPG, JPEG, PNG", 5, 1);
+        createOrUpdateRequiredDoc(reqDocRepo, s, "Bonafide / Student Certificate", "BONAFIDE_CERTIFICATE", true, "PDF, JPG, JPEG, PNG", 5, 2);
+        createOrUpdateRequiredDoc(reqDocRepo, s, "Previous Academic Marksheet", "ACADEMIC_MARKSHEET", true, "PDF, JPG, JPEG, PNG", 5, 3);
+        createOrUpdateRequiredDoc(reqDocRepo, s, "Admission Proof / Fee Structure", "ADMISSION_PROOF", true, "PDF, JPG, JPEG, PNG", 5, 4);
+        createOrUpdateRequiredDoc(reqDocRepo, s, "Aadhaar Card", "AADHAAR", true, "PDF, JPG, JPEG, PNG", 5, 5);
+        createOrUpdateRequiredDoc(reqDocRepo, s, "Bank Passbook", "BANK_PASSBOOK", true, "PDF, JPG, JPEG, PNG", 5, 6);
 
         seedSchemeMilestoneIfEmpty(milestoneRepo, s, List.of(
             new MilestoneSeed("Admission Verification", 30, 1, "First tranche upon admission verification"),

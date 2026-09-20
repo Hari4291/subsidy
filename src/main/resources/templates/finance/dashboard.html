@@ -38,42 +38,57 @@
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle">
+                    <table class="table table-hover align-middle border">
                         <thead class="table-dark">
                             <tr>
                                 <th>App ID</th>
                                 <th>Beneficiary</th>
-                                <th>Scheme Name</th>
-                                <th>Sanction Amount</th>
+                                <th>Scheme &amp; Max Limit</th>
+                                <th>Requested Amount</th>
+                                <th>Sanctioned Amount</th>
+                                <th>Adjustment Notes / DO Details</th>
                                 <th>Score</th>
-                                <th>Finance Approval Action</th>
+                                <th>Finance Authorization Action</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr th:if="${#lists.isEmpty(pendingApplications)}">
-                                <td colspan="6" class="text-center text-muted py-4">No pending applications awaiting treasury authorization.</td>
+                                <td colspan="8" class="text-center text-muted py-4">No pending applications awaiting treasury authorization.</td>
                             </tr>
                             <tr th:each="app : ${pendingApplications}">
                                 <td class="fw-bold text-navy" th:text="${app.applicationNumber}">APP-123456</td>
                                 <td>
-                                    <strong th:text="${app.beneficiary.user.fullName}">Beneficiary</strong><br>
-                                    <small class="text-muted" th:text="${app.beneficiary.identityType} + ': ' + ${app.beneficiary.identityNumber}">Aadhaar</small>
+                                    <strong th:text="${app.beneficiary != null and app.beneficiary.user != null ? app.beneficiary.user.fullName : 'N/A'}">Beneficiary</strong><br>
+                                    <small class="text-muted" th:text="${app.beneficiary != null ? (app.beneficiary.identityType + ': ' + app.beneficiary.identityNumber) : 'N/A'}">Aadhaar</small>
                                 </td>
-                                <td th:text="${app.scheme.name}">Scheme Name</td>
-                                <td class="fw-bold text-success fs-6" th:text="'₹' + ${#numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</td>
+                                <td>
+                                    <span class="fw-bold text-dark" th:text="${app.scheme != null ? app.scheme.name : 'N/A'}">Scheme Name</span><br>
+                                    <small class="text-muted" th:text="${app.scheme != null and app.scheme.maxAmount != null ? 'Max Limit: ₹' + #numbers.formatDecimal(app.scheme.maxAmount, 0, 'COMMA', 0, 'POINT') : ''}">Max Limit: ₹80,000</small>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-primary" th:text="'₹' + ${app.requestedAmount != null ? #numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT') : '0'}">₹1,00,000</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success fs-6" th:text="'₹' + ${#numbers.formatDecimal(app.sanctionedAmount != null ? app.sanctionedAmount : app.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹75,000</span>
+                                    <span th:if="${app.sanctionedAmount != null and app.requestedAmount != null and app.sanctionedAmount.compareTo(app.requestedAmount) < 0}" class="badge bg-warning text-dark d-block mt-1">REDUCED</span>
+                                </td>
+                                <td>
+                                    <small class="d-block text-dark fw-bold" th:text="${app.amountAdjustmentReason != null and !app.amountAdjustmentReason.isBlank() ? app.amountAdjustmentReason : 'Full requested amount approved.'}">Reason</small>
+                                    <small class="text-muted" th:text="${app.sanctionedBy != null ? 'DO: ' + app.sanctionedBy : ''}">DO: officer@gov.in</small>
+                                </td>
                                 <td><span class="badge bg-info text-dark" th:text="${app.eligibilityScore} + '%'">85%</span></td>
                                 <td>
                                     <form th:action="@{/finance/approve}" method="post" class="d-inline">
                                         <input type="hidden" name="applicationId" th:value="${app.id}">
                                         <input type="hidden" name="action" value="APPROVE">
                                         <input type="hidden" name="remarks" value="Treasury Fund Sanctioned">
-                                        <button type="submit" class="btn btn-sm btn-success fw-bold me-2"><i class="fa-solid fa-check me-1"></i> Authorize &amp; Schedule Disbursement</button>
+                                        <button type="submit" onclick="return confirm('Authorize treasury disbursement for this sanctioned application?');" class="btn btn-sm btn-success fw-bold me-1 mb-1"><i class="fa-solid fa-check me-1"></i> Authorize &amp; Schedule</button>
                                     </form>
                                     <form th:action="@{/finance/approve}" method="post" class="d-inline">
                                         <input type="hidden" name="applicationId" th:value="${app.id}">
                                         <input type="hidden" name="action" value="REJECT">
                                         <input type="hidden" name="remarks" value="Treasury Budget Rejection">
-                                        <button type="submit" class="btn btn-sm btn-danger fw-bold"><i class="fa-solid fa-xmark me-1"></i> Reject</button>
+                                        <button type="submit" onclick="return confirm('Reject treasury authorization for this application?');" class="btn btn-sm btn-danger fw-bold me-1 mb-1"><i class="fa-solid fa-xmark me-1"></i> Reject</button>
                                     </form>
                                 </td>
                             </tr>

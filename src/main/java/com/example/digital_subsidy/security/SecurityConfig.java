@@ -53,7 +53,7 @@ public class SecurityConfig {
                 .requestMatchers("/disbursements/schedule/**").hasAnyRole("FINANCE_APPROVER", "ADMIN", "BENEFICIARY")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/field-officer/**").hasRole("FIELD_OFFICER")
-                .requestMatchers("/district-officer/**").hasRole("DISTRICT_OFFICER")
+                .requestMatchers("/district-officer/**", "/district_officer/**").hasRole("DISTRICT_OFFICER")
                 .requestMatchers("/finance/**").hasRole("FINANCE_APPROVER")
                 .requestMatchers("/beneficiary/**").hasRole("BENEFICIARY")
                 .anyRequest().authenticated()

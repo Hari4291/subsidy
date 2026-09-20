@@ -35,6 +35,8 @@ public class BeneficiaryController {
     private final VerificationRepository verificationRepository;
     private final EligibilityScoreRepository eligibilityScoreRepository;
     private final DocumentService documentService;
+    private final com.example.digital_subsidy.repository.ApplicationRestrictionRepository restrictionRepository;
+    private final com.example.digital_subsidy.service.GrievanceService grievanceService;
 
     public BeneficiaryController(BeneficiaryService beneficiaryService,
                                  ApplicationService applicationService,
@@ -42,7 +44,9 @@ public class BeneficiaryController {
                                  DisbursementService disbursementService,
                                  VerificationRepository verificationRepository,
                                  EligibilityScoreRepository eligibilityScoreRepository,
-                                 DocumentService documentService) {
+                                 DocumentService documentService,
+                                 com.example.digital_subsidy.repository.ApplicationRestrictionRepository restrictionRepository,
+                                 com.example.digital_subsidy.service.GrievanceService grievanceService) {
         this.beneficiaryService = beneficiaryService;
         this.applicationService = applicationService;
         this.schemeService = schemeService;
@@ -50,6 +54,8 @@ public class BeneficiaryController {
         this.verificationRepository = verificationRepository;
         this.eligibilityScoreRepository = eligibilityScoreRepository;
         this.documentService = documentService;
+        this.restrictionRepository = restrictionRepository;
+        this.grievanceService = grievanceService;
     }
 
     @GetMapping("/dashboard")
@@ -58,6 +64,7 @@ public class BeneficiaryController {
         Beneficiary beneficiary = beneficiaryService.getBeneficiaryByEmail(email).orElseThrow();
 
         List<Application> applications = applicationService.getApplicationsForBeneficiary(beneficiary.getId());
+        List<com.example.digital_subsidy.model.Grievance> myGrievances = grievanceService.getGrievancesForBeneficiary(beneficiary.getId());
 
         long totalApps = applications.size();
         long approvedApps = applications.stream().filter(a -> "APPROVED".equalsIgnoreCase(a.getStatus())).count();
@@ -73,6 +80,7 @@ public class BeneficiaryController {
 
         model.addAttribute("beneficiary", beneficiary);
         model.addAttribute("applications", applications);
+        model.addAttribute("myGrievances", myGrievances);
         model.addAttribute("latestApplication", latestApplication);
         model.addAttribute("totalApps", totalApps);
         model.addAttribute("approvedApps", approvedApps);
@@ -100,13 +108,14 @@ public class BeneficiaryController {
         return "beneficiary/applications";
     }
 
-    @GetMapping("/applications/{id}")
-    public String viewApplicationDetails(@PathVariable("id") Long id,
+    @GetMapping("/applications/{identifier}")
+    public String viewApplicationDetails(@PathVariable("identifier") String identifier,
                                          @RequestParam(value = "submitted", required = false) Boolean submitted,
                                          Authentication authentication,
-                                         Model model) {
+                                         Model model,
+                                         org.springframework.web.servlet.mvc.support.RedirectAttributes redirectAttributes) {
         String username = (authentication != null) ? authentication.getName() : "";
-        Application application = applicationService.getApplicationById(id);
+        Application application = applicationService.findApplicationByIdOrNumber(identifier);
 
         boolean isAdmin = authentication != null && authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
@@ -114,6 +123,20 @@ public class BeneficiaryController {
                 .anyMatch(a -> a.getAuthority().equals("ROLE_BENEFICIARY"));
 
         Beneficiary beneficiary = beneficiaryService.getBeneficiaryByEmail(username).orElse(null);
+
+        if (application == null && isBeneficiary && beneficiary != null) {
+            List<Application> ownApps = applicationService.getApplicationsForBeneficiary(beneficiary.getId());
+            if (!ownApps.isEmpty()) {
+                return "redirect:/beneficiary/applications/" + ownApps.get(0).getId();
+            }
+        }
+
+        if (application == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Application not found.");
+            return "redirect:/beneficiary/dashboard";
+        }
+
+        Long id = application.getId();
 
         Long appBeneficiaryId = (application.getBeneficiary() != null) ? application.getBeneficiary().getId() : null;
         Long authBeneficiaryId = (beneficiary != null) ? beneficiary.getId() : null;
@@ -126,6 +149,12 @@ public class BeneficiaryController {
             if (!isBeneficiary || authBeneficiaryId == null || !authBeneficiaryId.equals(appBeneficiaryId)) {
                 org.slf4j.LoggerFactory.getLogger(BeneficiaryController.class).warn(
                         "Access denied for user {} accessing application {}", username, id);
+                if (beneficiary != null) {
+                    List<Application> ownApps = applicationService.getApplicationsForBeneficiary(beneficiary.getId());
+                    if (!ownApps.isEmpty()) {
+                        return "redirect:/beneficiary/applications/" + ownApps.get(0).getId();
+                    }
+                }
                 throw new org.springframework.security.access.AccessDeniedException("Unauthorized access to application details");
             }
         }
@@ -149,12 +178,18 @@ public class BeneficiaryController {
                 .filter(d -> "BANK_PASSBOOK".equalsIgnoreCase(d.getDocumentType()) && "ACTIVE".equals(d.getStatus()))
                 .findFirst().orElse(null) : null;
 
+        List<com.example.digital_subsidy.model.ApplicationRestriction> appRestrictions = restrictionRepository.findByApplicationId(id);
+        com.example.digital_subsidy.model.ApplicationRestriction activeRestriction = appRestrictions.stream()
+                .filter(r -> "ACTIVE".equalsIgnoreCase(r.getStatus()))
+                .findFirst().orElse(null);
+
         model.addAttribute("application", application);
         model.addAttribute("disbursement", disbursement);
         model.addAttribute("verifications", verifications);
         model.addAttribute("eligibilityScore", eligibilityScore);
         model.addAttribute("aadhaarDoc", aadhaarDoc);
         model.addAttribute("passbookDoc", passbookDoc);
+        model.addAttribute("restriction", activeRestriction);
         model.addAttribute("submitted", Boolean.TRUE.equals(submitted));
         return "beneficiary/application-details";
     }
@@ -199,10 +234,7 @@ public class BeneficiaryController {
     }
 
     @GetMapping("/notifications")
-    public String viewNotifications(Authentication authentication, Model model) {
-        String email = authentication.getName();
-        Beneficiary beneficiary = beneficiaryService.getBeneficiaryByEmail(email).orElseThrow();
-        model.addAttribute("beneficiary", beneficiary);
-        return "beneficiary/notifications";
+    public String viewNotifications() {
+        return "redirect:/notifications";
     }
 }

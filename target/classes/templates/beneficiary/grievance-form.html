@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <!-- Header Banner -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h4 class="fw-bold text-navy mb-1"><i class="fa-solid fa-headset text-danger me-2"></i> Raise Official Grievance & Complaint</h4>
+            <p class="text-muted mb-0">Submit a formal grievance regarding your subsidy application, verification, or disbursement.</p>
+        </div>
+        <div>
+            <a th:href="@{/beneficiary/grievances}" class="btn btn-outline-navy fw-bold me-2"><i class="fa-solid fa-list me-1"></i> My Grievances</a>
+            <a th:href="@{/beneficiary/dashboard}" class="btn btn-warning text-dark fw-bold shadow-sm"><i class="fa-solid fa-gauge me-1"></i> Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm p-3 mb-4" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> <span th:text="${errorMessage}">Error message</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card gov-card shadow-sm border-0 bg-white">
+                <div class="card-header bg-navy text-white p-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0"><i class="fa-solid fa-file-pen text-warning me-2"></i> Official Grievance Form</h5>
+                    <span class="badge bg-light text-navy px-3 py-2 fw-bold">Ticket Preview: GRV-AUTO</span>
+                </div>
+                <div class="card-body p-4 p-md-5">
+
+                    <form th:action="@{/beneficiary/grievances/submit}" method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+
+                        <!-- APPLICANT PROFILE SUMMARY -->
+                        <div class="bg-light p-3 rounded border mb-4">
+                            <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-user me-2 text-primary"></i> Applicant Profile Details</h6>
+                            <div class="row g-3 small">
+                                <div class="col-md-4">
+                                    <span class="text-muted d-block">Full Name</span>
+                                    <strong class="text-dark" th:text="${beneficiary.user.fullName}">Applicant Name</strong>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="text-muted d-block">Aadhaar / ID Number</span>
+                                    <strong class="text-dark" th:text="${beneficiary.identityNumber}">1234-5678-9012</strong>
+                                </div>
+                                <div class="col-md-4">
+                                    <span class="text-muted d-block">District / State</span>
+                                    <strong class="text-dark" th:text="${beneficiary.district + ', ' + beneficiary.state}">District Name</strong>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- APPLICATION SELECTION -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-navy">Related Application (Optional)</label>
+                            <select name="applicationId" class="form-select border-navy">
+                                <option value="">-- General Complaint (Not specific to any application) --</option>
+                                <option th:each="app : ${applications}"
+                                        th:value="${app.id}"
+                                        th:text="${app.applicationNumber + ' - ' + app.scheme.name + ' (Stage: ' + app.currentStage + ', Status: ' + app.status + ')'}">
+                                    APP-1001 - Agriculture Scheme
+                                </option>
+                            </select>
+                            <small class="form-text text-muted">Select the specific application if your grievance is regarding an application delay, verification issue, or rejection.</small>
+                        </div>
+
+                        <!-- CATEGORY SELECTION -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-navy">Grievance Category <span class="text-danger">*</span></label>
+                            <select name="category" class="form-select border-navy" required>
+                                <option value="" disabled selected>-- Select Grievance Category --</option>
+                                <option value="APPLICATION_DELAY">Application Delay (Verification or review pending)</option>
+                                <option value="DOCUMENT_VERIFICATION">Document Verification Issue</option>
+                                <option value="REJECTION_APPEAL">Rejection Appeal (Appeal against rejected application)</option>
+                                <option value="DISBURSEMENT_ISSUE">Payment / Disbursement Issue</option>
+                                <option value="FIELD_OFFICER_BEHAVIOUR">Field Officer Complaint</option>
+                                <option value="DISTRICT_OFFICER_REVIEW">District Officer Complaint</option>
+                                <option value="TECHNICAL_ISSUE">Technical Issue / Portal Error</option>
+                                <option value="OTHER">Other / General Grievance</option>
+                            </select>
+                        </div>
+
+                        <!-- SUBJECT -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-navy">Subject / Brief Summary <span class="text-danger">*</span></label>
+                            <input type="text" name="subject" class="form-control border-navy" required placeholder="Enter concise summary of the issue (e.g. Verification pending over 20 days)" maxlength="150" />
+                        </div>
+
+                        <!-- DETAILED DESCRIPTION -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-navy">Detailed Description <span class="text-danger">*</span></label>
+                            <textarea name="description" class="form-control border-navy" rows="6" required placeholder="Provide complete facts, dates, officer interactions, or background context regarding your complaint..."></textarea>
+                            <small class="form-text text-muted">Be clear and accurate to enable fast resolution by District Administration.</small>
+                        </div>
+
+                        <!-- SUPPORTING DOCUMENT UPLOAD -->
+                        <div class="mb-4">
+                            <label class="form-label fw-bold text-navy">Supporting Document Attachment (Optional)</label>
+                            <input type="file" name="supportingDocument" class="form-control border-navy" accept=".pdf,.jpg,.jpeg,.png" />
+                            <small class="form-text text-muted">Supported formats: PDF, JPG, JPEG, PNG. Maximum allowed file size: <strong>5MB</strong>.</small>
+                        </div>
+
+                        <hr class="my-4" />
+
+                        <!-- SUBMIT ACTION -->
+                        <div class="d-flex justify-content-between align-items-center">
+                            <a th:href="@{/beneficiary/dashboard}" class="btn btn-outline-secondary fw-bold px-4">Cancel</a>
+                            <button type="submit" class="btn btn-warning text-dark fw-bold px-5 py-2 shadow-sm">
+                                <i class="fa-solid fa-paper-plane me-2"></i> Submit Grievance
+                            </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

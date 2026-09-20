@@ -75,17 +75,43 @@
                         </table>
                     </div>
 
+                    <!-- REAPPLICATION RESTRICTION ALERT -->
+                    <div th:if="${activeRestriction != null and activeRestriction.isActive()}" class="alert alert-danger border-start border-4 border-danger p-4 mb-4 rounded-3 shadow-sm">
+                        <div class="d-flex align-items-start">
+                            <i class="fa-solid fa-ban fs-2 text-danger me-3 mt-1"></i>
+                            <div>
+                                <h5 class="fw-bold text-navy mb-2">Reapplication Cooldown Active</h5>
+                                <p class="mb-2 text-dark">
+                                    Your previous application for <strong><span th:text="${activeRestriction.scheme != null ? activeRestriction.scheme.name : 'this scheme'}">Scheme</span></strong> was rejected on 
+                                    <strong th:text="${#temporals.format(activeRestriction.rejectedAt, 'dd-MMM-yyyy')}">19-Sep-2026</strong>.
+                                </p>
+                                <div class="p-3 bg-white rounded border mb-2">
+                                    <strong class="text-navy d-block mb-1">Rejection Reason:</strong>
+                                    <span class="text-dark" th:text="${activeRestriction.rejectionReason}">Reason</span>
+                                </div>
+                                <p class="mb-0 fw-bold text-navy">
+                                    <i class="fa-solid fa-calendar-check me-1 text-primary"></i> You can apply again on: 
+                                    <span class="badge bg-navy fs-6 ms-1" th:text="${#temporals.format(activeRestriction.reapplicationAllowedAt, 'dd-MMM-yyyy HH:mm')}">19-Oct-2026</span>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Action Buttons -->
                     <div class="d-flex justify-content-between align-items-center border-top pt-4">
                         <a th:href="@{/beneficiary/check-eligibility}" class="btn btn-outline-secondary">
                             <i class="fa-solid fa-arrow-left me-1"></i> Check Another Scheme
                         </a>
                         
-                        <a th:if="${result.eligible}" th:href="@{'/beneficiary/apply?schemeId=' + ${result.schemeId}}" class="btn btn-success btn-lg fw-bold px-4 shadow">
+                        <a th:if="${result.eligible and (activeRestriction == null or !activeRestriction.isActive())}" th:href="@{'/beneficiary/apply?schemeId=' + ${result.schemeId}}" class="btn btn-success btn-lg fw-bold px-4 shadow">
                             <i class="fa-solid fa-paper-plane me-2"></i> APPLY NOW FOR GRANT
                         </a>
 
-                        <button th:if="${!result.eligible}" class="btn btn-secondary btn-lg fw-bold" disabled>
+                        <button th:if="${activeRestriction != null and activeRestriction.isActive()}" class="btn btn-danger btn-lg fw-bold" disabled>
+                            <i class="fa-solid fa-ban me-2"></i> Reapplication Restricted (30-day Cooldown)
+                        </button>
+
+                        <button th:if="${!result.eligible and (activeRestriction == null or !activeRestriction.isActive())}" class="btn btn-secondary btn-lg fw-bold" disabled>
                             Ineligible to Apply
                         </button>
                     </div>

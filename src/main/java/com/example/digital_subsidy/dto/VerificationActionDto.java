@@ -21,6 +21,10 @@ public class VerificationActionDto {
 
     private String remarks;
 
+    private java.math.BigDecimal sanctionedAmount;
+
+    private String adjustmentReason;
+
     /**
      * Map from document.id → verification status decision
      * Values: VERIFIED | INVALID | RE_VERIFICATION_REQUIRED
@@ -42,6 +46,12 @@ public class VerificationActionDto {
 
     public String getRemarks() { return remarks; }
     public void setRemarks(String remarks) { this.remarks = remarks; }
+
+    public java.math.BigDecimal getSanctionedAmount() { return sanctionedAmount; }
+    public void setSanctionedAmount(java.math.BigDecimal sanctionedAmount) { this.sanctionedAmount = sanctionedAmount; }
+
+    public String getAdjustmentReason() { return adjustmentReason; }
+    public void setAdjustmentReason(String adjustmentReason) { this.adjustmentReason = adjustmentReason; }
 
     public Map<Long, String> getDocumentVerificationStatuses() { return documentVerificationStatuses; }
     public void setDocumentVerificationStatuses(Map<Long, String> documentVerificationStatuses) {

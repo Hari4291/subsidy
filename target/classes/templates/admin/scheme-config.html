@@ -110,18 +110,23 @@
                         <textarea th:field="*{description}" class="form-control" rows="3" placeholder="Provide clear summary and purpose of the scheme..." required></textarea>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <label class="form-label fw-bold">Maximum Grant Amount (₹) <span class="text-danger">*</span></label>
                         <input type="number" step="0.01" th:field="*{maxAmount}" class="form-control" placeholder="100000" required />
                     </div>
 
-                    <div class="col-md-4">
-                        <label class="form-label fw-bold">Minimum Eligibility Score (0-100) <span class="text-danger">*</span></label>
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Min Qualifying Score (0-100) <span class="text-danger">*</span></label>
                         <input type="number" th:field="*{minQualifyingScore}" class="form-control" min="0" max="100" placeholder="60" required />
-                        <div class="form-text text-muted">Beneficiaries scoring &ge; this value are eligible.</div>
                     </div>
 
-                    <div class="col-md-4">
+                    <div class="col-md-3">
+                        <label class="form-label fw-bold">Rejection Cooldown (Days) <span class="text-danger">*</span></label>
+                        <input type="number" th:field="*{rejectionCooldownDays}" class="form-control" min="0" placeholder="30" required />
+                        <div class="form-text text-muted">Wait days before reapplication (0 = disabled).</div>
+                    </div>
+
+                    <div class="col-md-3">
                         <label class="form-label fw-bold">Status</label>
                         <select th:field="*{status}" class="form-select">
                             <option value="DRAFT">DRAFT</option>

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-4">
+
+    <!-- Header Banner -->
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3">
+        <div>
+            <h4 class="fw-bold text-navy mb-1"><i class="fa-solid fa-user-shield text-primary me-2"></i> District Officer Grievance Review</h4>
+            <p class="text-muted mb-0">Ticket Number: <strong class="text-navy" th:text="${grievance.grievanceNumber}">GRV-10001</strong></p>
+        </div>
+        <div>
+            <a th:href="@{/district-officer/grievances}" class="btn btn-outline-navy fw-bold me-2"><i class="fa-solid fa-arrow-left me-1"></i> Back to Grievance Desk</a>
+            <a th:href="@{/district-officer/dashboard}" class="btn btn-warning text-dark fw-bold shadow-sm"><i class="fa-solid fa-gauge me-1"></i> Dashboard</a>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm p-3 mb-4" role="alert">
+        <i class="fa-solid fa-circle-check me-2 fs-5"></i> <span th:text="${successMessage}">Success message</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm p-3 mb-4" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> <span th:text="${errorMessage}">Error message</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: Details & Details Info -->
+        <div class="col-lg-8">
+            <!-- MAIN TICKET SUMMARY CARD -->
+            <div class="card gov-card shadow-sm border-0 mb-4 bg-white">
+                <div class="card-header bg-navy text-white p-3 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fa-solid fa-ticket text-warning me-2"></i> Ticket: <span th:text="${grievance.grievanceNumber}">GRV-10001</span>
+                    </h5>
+                    <div>
+                        <span class="badge me-2 px-3 py-2 fs-6"
+                              th:classappend="${grievance.priority == 'HIGH' or grievance.priority == 'URGENT' ? 'bg-danger' : 'bg-info text-dark'}"
+                              th:text="${grievance.priority != null ? grievance.priority : 'STANDARD'}">HIGH</span>
+                        <span class="badge fs-6 px-3 py-2"
+                              th:classappend="${grievance.status == 'RESOLVED' ? 'bg-success' : (grievance.status == 'REJECTED' ? 'bg-danger' : (grievance.status == 'CLARIFICATION_REQUIRED' ? 'bg-warning text-dark' : 'bg-primary'))}"
+                              th:text="${grievance.status}">SUBMITTED</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+
+                    <!-- APPLICANT DETAILS SECTION -->
+                    <div class="bg-light p-3 rounded border mb-4">
+                        <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-user me-2 text-primary"></i> Beneficiary Information</h6>
+                        <div class="row g-3" th:if="${grievance.beneficiary != null}">
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block">Full Name</span>
+                                <strong class="text-dark" th:text="${grievance.beneficiary.fullName}">Applicant Name</strong>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block">Aadhaar Number</span>
+                                <strong class="text-dark" th:text="${grievance.beneficiary.aadhaarNumber}">1234-5678-9012</strong>
+                            </div>
+                            <div class="col-md-4">
+                                <span class="text-muted small d-block">District / State</span>
+                                <strong class="text-dark" th:text="${grievance.beneficiary.district + ', ' + grievance.beneficiary.state}">District Name</strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4 border-bottom pb-4">
+                        <div class="col-md-4 border-end">
+                            <span class="text-muted small text-uppercase fw-semibold d-block">Grievance Category</span>
+                            <strong class="text-navy fs-6" th:text="${#strings.replace(grievance.category, '_', ' ')}">APPLICATION DELAY</strong>
+                        </div>
+
+                        <div class="col-md-4 border-end">
+                            <span class="text-muted small text-uppercase fw-semibold d-block">Related Application</span>
+                            <div th:if="${grievance.application != null}">
+                                <strong class="text-primary" th:text="${grievance.application.applicationNumber}">APP-1001</strong>
+                                <small class="text-muted d-block" th:text="${grievance.application.scheme != null ? grievance.application.scheme.name : ''}">Scheme Name</small>
+                            </div>
+                            <span th:unless="${grievance.application != null}" class="text-muted">General Complaint</span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <span class="text-muted small text-uppercase fw-semibold d-block">Submitted Date & Time</span>
+                            <strong class="text-dark" th:text="${#temporals.format(grievance.createdAt, 'dd-MMM-yyyy HH:mm')}">01-Jan-2026 10:00</strong>
+                        </div>
+                    </div>
+
+                    <!-- Subject & Description -->
+                    <div class="mb-4">
+                        <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-heading text-primary me-2"></i> Subject: <span class="text-dark" th:text="${grievance.subject}">Subject Line</span></h6>
+                        <div class="p-3 bg-light rounded border">
+                            <strong class="text-muted d-block mb-1 small uppercase">Detailed Complaint Description:</strong>
+                            <p class="mb-0 text-dark" style="white-space: pre-wrap;" th:text="${grievance.description}">Full description of the complaint.</p>
+                        </div>
+                    </div>
+
+                    <!-- Supporting Document Attachment (if present) -->
+                    <div th:if="${grievance.supportingDocumentPath != null}" class="mb-4">
+                        <div class="p-3 bg-info bg-opacity-10 border border-info rounded d-flex align-items-center justify-content-between">
+                            <div>
+                                <i class="fa-solid fa-paperclip text-info me-2 fs-5"></i>
+                                <strong class="text-navy">Supporting Attachment:</strong>
+                                <span class="text-muted small ms-2" th:text="${grievance.supportingDocumentPath}">document.pdf</span>
+                            </div>
+                            <a th:href="${grievance.supportingDocumentPath}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold">
+                                <i class="fa-solid fa-download me-1"></i> View / Download Document
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- BENEFICIARY CLARIFICATION RESPONSE (IF SUBMITTED) -->
+                    <div th:if="${grievance.beneficiaryClarification != null and !#strings.isEmpty(grievance.beneficiaryClarification)}" class="p-3 bg-warning bg-opacity-10 border border-warning rounded mb-4">
+                        <h6 class="fw-bold text-dark mb-2"><i class="fa-solid fa-reply text-warning me-2"></i> Beneficiary Clarification Response</h6>
+                        <p class="mb-0 text-dark" style="white-space: pre-wrap;" th:text="${grievance.beneficiaryClarification}">Clarification text provided by applicant.</p>
+                    </div>
+
+                    <!-- EXISTING RESOLUTION / REMARKS (IF ANY) -->
+                    <div th:if="${grievance.resolutionRemarks != null and !#strings.isEmpty(grievance.resolutionRemarks)}" class="p-3 bg-light rounded border border-secondary border-start border-4 mb-4">
+                        <strong class="d-block mb-1 text-navy"><i class="fa-solid fa-comment me-1"></i> Recorded Officer Remarks:</strong>
+                        <p class="mb-1 text-dark" style="white-space: pre-wrap;" th:text="${grievance.resolutionRemarks}">Previous remarks.</p>
+                        <small class="text-muted" th:if="${grievance.resolvedBy != null}">Recorded by <span th:text="${grievance.resolvedBy}">Officer</span></small>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Action Form -->
+        <div class="col-lg-4">
+            <div class="card gov-card shadow-sm border-0 sticky-top" style="top: 20px;">
+                <div class="card-header bg-navy text-white p-3 px-4">
+                    <h5 class="fw-bold mb-0"><i class="fa-solid fa-gavel text-warning me-2"></i> Take Official Action</h5>
+                </div>
+                <div class="card-body p-4">
+                    <form th:action="@{'/district-officer/grievances/' + ${grievance.id} + '/action'}" method="post">
+                        <input type="hidden" name="grievanceId" th:value="${grievance.id}" />
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-navy">Update Status <span class="text-danger">*</span></label>
+                            <select name="status" class="form-select fw-semibold" required>
+                                <option value="UNDER_REVIEW" th:selected="${grievance.status == 'UNDER_REVIEW'}">UNDER REVIEW</option>
+                                <option value="IN_PROGRESS" th:selected="${grievance.status == 'IN_PROGRESS'}">IN PROGRESS</option>
+                                <option value="CLARIFICATION_REQUIRED" th:selected="${grievance.status == 'CLARIFICATION_REQUIRED' or grievance.status == 'NEEDS_CLARIFICATION'}">NEEDS CLARIFICATION</option>
+                                <option value="RESOLVED" th:selected="${grievance.status == 'RESOLVED'}">RESOLVED</option>
+                                <option value="REJECTED" th:selected="${grievance.status == 'REJECTED'}">REJECTED</option>
+                                <option value="CLOSED" th:selected="${grievance.status == 'CLOSED'}">CLOSED</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-navy">Resolution / Officer Remarks <span class="text-danger">*</span></label>
+                            <textarea name="remarks" class="form-control" rows="5" required placeholder="Enter detailed action remarks, instructions, or resolution notes..."></textarea>
+                            <small class="form-text text-muted">For 'CLARIFICATION REQUIRED', specify the missing information requested from applicant.</small>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-warning text-dark fw-bold py-2 shadow-sm">
+                                <i class="fa-solid fa-circle-check me-1"></i> Update Grievance Action
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

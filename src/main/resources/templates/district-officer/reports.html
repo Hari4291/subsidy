@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container-fluid py-4 bg-light">
+    <div class="container">
+        <!-- Header Banner -->
+        <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
+            <div>
+                <h4 class="mb-1 fw-bold"><i class="fa-solid fa-chart-line text-warning me-2"></i> District Analytics &amp; Performance Summary</h4>
+                <p class="mb-0 text-light small" th:text="'District Performance, SLA Tracking &amp; Scheme Analytics | ' + ${districtName}">District Analytics Desk</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <span class="badge bg-warning text-dark font-weight-bold p-2">Role: DISTRICT_OFFICER</span>
+                <span class="badge bg-light text-navy fw-bold p-2" th:text="${districtName}">District</span>
+                <form th:action="@{/logout}" method="post" class="d-inline ms-2">
+                    <button type="submit" class="btn btn-danger fw-bold shadow-sm" id="doLogoutBtn"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Navigation Bar -->
+        <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
+            <li class="nav-item"><a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/dashboard}"><i class="fa-solid fa-gavel me-1"></i> Applications Review</a></li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/escalations}">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i> Escalations 
+                    <span class="badge bg-danger rounded-pill ms-1" th:text="${metrics != null ? metrics.escalationCount : 0}">0</span>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/anomalies}">
+                    <i class="fa-solid fa-shield-cat me-1"></i> Anomalies 
+                    <span class="badge bg-warning text-dark rounded-pill ms-1" th:text="${metrics != null ? metrics.anomalyCount : 0}">0</span>
+                </a>
+            </li>
+            <li class="nav-item"><a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/budget}"><i class="fa-solid fa-wallet me-1"></i> Budget Monitoring</a></li>
+            <li class="nav-item">
+                <a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/grievances}">
+                    <i class="fa-solid fa-comments me-1"></i> Grievances 
+                    <span class="badge bg-info text-dark rounded-pill ms-1" th:text="${metrics != null ? metrics.openGrievanceCount : 0}">0</span>
+                </a>
+            </li>
+            <li class="nav-item"><a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/officers}"><i class="fa-solid fa-users me-1"></i> Field Officers</a></li>
+            <li class="nav-item"><a class="nav-link active fw-bold" th:href="@{/district-officer/reports}"><i class="fa-solid fa-chart-line me-1"></i> Analytics</a></li>
+            <li class="nav-item"><a class="nav-link text-secondary fw-bold" th:href="@{/district-officer/audit}"><i class="fa-solid fa-history me-1"></i> Audit Logs</a></li>
+        </ul>
+
+        <div class="row g-4 mb-4" th:if="${metrics}">
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 text-center bg-white">
+                    <h1 class="display-4 fw-bold text-navy" th:text="${metrics.totalApplications}">0</h1>
+                    <p class="text-muted fw-bold mb-0"><i class="fa-solid fa-folder me-1"></i> Total District Applications</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 text-center bg-white">
+                    <h1 class="display-4 fw-bold text-success" th:text="${metrics.approvedCount}">0</h1>
+                    <p class="text-muted fw-bold mb-0"><i class="fa-solid fa-circle-check text-success me-1"></i> District Approved Grants</p>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card border-0 shadow-sm p-4 text-center bg-white">
+                    <h1 class="display-4 fw-bold text-warning" th:text="${metrics.pendingCount}">0</h1>
+                    <p class="text-muted fw-bold mb-0"><i class="fa-solid fa-hourglass-half text-warning me-1"></i> Pending Verification Pipeline</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="fa-solid fa-shield-halved text-navy me-2"></i> District Officer Sanction Authority Scope
+            </div>
+            <div class="card-body">
+                <div class="alert alert-warning mb-0 text-dark">
+                    <h6 class="fw-bold mb-2"><i class="fa-solid fa-gavel me-2"></i> Authority &amp; Escalation Boundaries:</h6>
+                    <ul class="mb-0 small">
+                        <li><strong>Regional Authority:</strong> District Officers have full sanction, rejection, and escalation authority over all schemes within their designated district.</li>
+                        <li><strong>Sanction Forwarding:</strong> Approval by District Officer transitions application stage to <code>FINANCE_APPROVAL</code> for Treasury fund disbursement.</li>
+                        <li><strong>Reassignment &amp; Anomaly Override:</strong> District Officers can assign/reassign cases to Field Officers, resolve anomaly flags, and respond to beneficiary grievances.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

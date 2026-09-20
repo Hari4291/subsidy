@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h3 class="fw-bold text-navy mb-1"><i class="fa-solid fa-bell text-primary me-2"></i> Notification Center</h3>
+            <p class="text-muted mb-0">Stay updated on your subsidy application progress, action items, and verification alerts.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <form th:action="@{/notifications/mark-all-read}" method="post">
+                <button type="submit" class="btn btn-outline-secondary fw-semibold shadow-sm">
+                    <i class="fa-solid fa-check-double me-1"></i> Mark All as Read
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Alert Messages -->
+    <div th:if="${param.markedRead}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> Notification marked as read.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${param.allMarkedRead}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> All notifications have been marked as read.
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Filter Tabs -->
+    <ul class="nav nav-pills mb-4 border-bottom pb-2">
+        <li class="nav-item">
+            <a class="nav-link fw-bold px-4" th:classappend="${currentFilter == 'all' or currentFilter == null ? 'active bg-primary' : 'text-dark'}" th:href="@{/notifications(filter='all')}">
+                All Notifications <span class="badge bg-secondary ms-1" th:text="${allCount != null ? allCount : (notifications != null ? notifications.size() : 0)}">0</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-bold px-4" th:classappend="${currentFilter == 'unread' ? 'active bg-primary' : 'text-dark'}" th:href="@{/notifications(filter='unread')}">
+                Unread <span class="badge bg-danger ms-1" th:text="${unreadCount != null ? unreadCount : 0}">0</span>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link fw-bold px-4" th:classappend="${currentFilter == 'read' ? 'active bg-primary' : 'text-dark'}" th:href="@{/notifications(filter='read')}">
+                Read <span class="badge bg-secondary ms-1" th:text="${readCount != null ? readCount : 0}">0</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Notifications List -->
+    <div class="card gov-card shadow-sm border-0">
+        <div class="card-body p-0">
+            <div th:if="${#lists.isEmpty(notifications)}" class="text-center py-5 text-muted">
+                <i class="fa-solid fa-bell-slash fs-1 text-secondary mb-3 d-block"></i>
+                <h5>No notifications found</h5>
+                <p class="mb-0">You're all caught up! Updates regarding your applications will appear here.</p>
+            </div>
+
+            <div class="list-group list-group-flush" th:unless="${#lists.isEmpty(notifications)}">
+                <div th:each="n : ${notifications}" 
+                     class="list-group-item p-4 transition-all"
+                     th:classappend="${!n.isRead ? 'bg-light border-start border-4 border-primary' : ''}">
+                    <div class="d-flex justify-content-between align-items-start gap-3">
+                        <div class="d-flex align-items-start gap-3">
+                            <div class="p-3 rounded-circle"
+                                 th:classappend="${n.priority == 'HIGH' or n.priority == 'URGENT' ? 'bg-danger-subtle text-danger' : (n.priority == 'MEDIUM' ? 'bg-warning-subtle text-warning' : 'bg-primary-subtle text-primary')}">
+                                <i class="fa-solid fs-4" 
+                                   th:classappend="${n.priority == 'HIGH' or n.priority == 'URGENT' ? 'fa-triangle-exclamation' : (n.priority == 'MEDIUM' ? 'fa-circle-info' : 'fa-bell')}"></i>
+                            </div>
+                            <div>
+                                <div class="d-flex align-items-center gap-2 mb-1">
+                                    <h6 class="fw-bold mb-0 text-navy" th:text="${n.title}">Notification Title</h6>
+                                    <span th:if="${n.priority == 'HIGH' or n.priority == 'URGENT'}" class="badge bg-danger">URGENT</span>
+                                    <span th:if="${n.priority == 'MEDIUM'}" class="badge bg-warning text-dark">ACTION REQUIRED</span>
+                                    <span th:if="${!n.isRead}" class="badge bg-primary">NEW</span>
+                                </div>
+                                <p class="text-secondary mb-2" th:text="${n.message}">Notification detailed message goes here.</p>
+                                <div class="text-muted small d-flex align-items-center gap-3">
+                                    <span><i class="fa-regular fa-clock me-1"></i> <span th:text="${n.createdAt != null ? #temporals.format(n.createdAt, 'dd-MM-yyyy HH:mm') : ''}">19-09-2026 10:00</span></span>
+                                    <span th:if="${n.notificationType != null}" class="badge bg-secondary opacity-75" th:text="${n.notificationType}">SYSTEM</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center gap-2">
+                            <a th:if="${n.actionUrl != null and !n.actionUrl.isBlank()}" 
+                               th:href="@{${n.actionUrl}}" 
+                               class="btn btn-sm btn-primary fw-semibold text-nowrap">
+                                View Details <i class="fa-solid fa-arrow-right ms-1"></i>
+                            </a>
+                            <form th:if="${!n.isRead}" th:action="@{/notifications/{id}/mark-read(id=${n.id})}" method="post">
+                                <button type="submit" class="btn btn-sm btn-outline-success text-nowrap" title="Mark as read">
+                                    <i class="fa-solid fa-check me-1"></i> Mark Read
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer class="bg-dark text-white text-center py-3 mt-5">
+    <small>&copy; 2026 Digital Subsidy & Grant Management Portal. All rights reserved.</small>
+</footer>
+</body>
+</html>

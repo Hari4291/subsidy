@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body class="bg-light">
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container-fluid py-4">
+    <div class="container">
+        <!-- Header Banner -->
+        <div class="p-4 bg-navy text-white rounded-3 mb-4 d-flex flex-column flex-md-row justify-content-between align-items-md-center shadow-sm gap-3">
+            <div>
+                <h4 class="mb-1 fw-bold"><i class="fa-solid fa-headset text-warning me-2"></i> Grievance & Complaint Redressal Portal</h4>
+                <p class="mb-0 text-light opacity-90 small">Submit complaints regarding application delay, document verification, officer review, or payment issues</p>
+            </div>
+            <div>
+                <a th:href="@{/beneficiary/dashboard}" class="btn btn-outline-light btn-sm fw-bold"><i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard</a>
+            </div>
+        </div>
+
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show shadow-sm p-3 mb-4" role="alert">
+            <i class="fa-solid fa-circle-check me-2 fs-5"></i> <strong th:text="${successMessage}">Your grievance has been submitted successfully.</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show shadow-sm p-3 mb-4" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2 fs-5"></i> <span th:text="${errorMessage}">Error occurred.</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- Submit New Grievance Card -->
+        <div class="card gov-card shadow-sm border-0 mb-4" id="submitFormCard">
+            <div class="card-header bg-navy text-white fw-bold py-3 px-4">
+                <i class="fa-solid fa-pen-to-square text-warning me-2"></i> File New Grievance Ticket
+            </div>
+            <div class="card-body p-4">
+                <form th:action="@{/beneficiary/grievances/submit}" method="post" enctype="multipart/form-data">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Select Related Application (Optional)</label>
+                            <select name="applicationId" class="form-select">
+                                <option value="">-- General Complaint / Unrelated to specific application --</option>
+                                <option th:each="app : ${applications}" 
+                                        th:value="${app.id}" 
+                                        th:text="${app.applicationNumber} + ' - ' + (${app.scheme != null ? app.scheme.name : 'Scheme'}) + ' (' + ${app.status} + ')'"></option>
+                            </select>
+                            <small class="text-muted">Select an application if your grievance pertains to a submitted application.</small>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label class="form-label fw-bold">Grievance Category <span class="text-danger">*</span></label>
+                            <select name="category" class="form-select" required>
+                                <option value="" disabled selected>-- Select Complaint Category --</option>
+                                <option value="APPLICATION_DELAY">Application delay / Pending inspection</option>
+                                <option value="DOCUMENT_VERIFICATION">Document verification issue</option>
+                                <option value="ELIGIBILITY_SCORE">Eligibility score issue</option>
+                                <option value="REJECTION_COMPLAINT">Rejection complaint / Dispute</option>
+                                <option value="DISBURSEMENT_ISSUE">Disbursement / Payment issue</option>
+                                <option value="FIELD_OFFICER_BEHAVIOUR">Field Officer behaviour complaint</option>
+                                <option value="DISTRICT_OFFICER_REVIEW">District Officer review issue</option>
+                                <option value="OTHER">Other complaint</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Subject <span class="text-danger">*</span></label>
+                            <input type="text" name="subject" class="form-control" placeholder="Brief subject line describing your complaint..." required>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Detailed Description <span class="text-danger">*</span></label>
+                            <textarea name="description" class="form-control" rows="4" placeholder="Explain your grievance or complaint in detail (include dates, officer names if applicable, details)..." required></textarea>
+                        </div>
+
+                        <div class="col-md-12">
+                            <label class="form-label fw-bold">Optional Supporting Document (Attachment)</label>
+                            <input type="file" name="supportingDocument" class="form-control" accept=".pdf,.jpg,.jpeg,.png,.doc,.docx">
+                            <small class="text-muted">Upload supporting evidence, receipts, or photos (PDF, PNG, JPG max 5MB).</small>
+                        </div>
+
+                        <div class="col-md-12 text-end mt-4">
+                            <button type="submit" class="btn btn-warning fw-bold text-dark px-4 shadow-sm">
+                                <i class="fa-solid fa-paper-plane me-1"></i> Submit Grievance Ticket
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- My Grievances History -->
+        <div class="card gov-card shadow-sm border-0 mb-5">
+            <div class="card-header bg-light fw-bold py-3 px-4 d-flex justify-content-between align-items-center">
+                <span class="text-navy fw-bold fs-6"><i class="fa-solid fa-clock-rotate-left text-primary me-2"></i> My Submitted Grievances History</span>
+                <span class="badge bg-secondary" th:text="${grievances != null ? #lists.size(grievances) : 0} + ' Tickets Recorded'">0 Tickets</span>
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="table-dark">
+                            <tr>
+                                <th class="ps-3">Grievance No</th>
+                                <th>Related App</th>
+                                <th>Category</th>
+                                <th>Subject</th>
+                                <th>Status</th>
+                                <th>Filed Date</th>
+                                <th class="pe-3 text-end">Action / Track</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(grievances)}">
+                                <td colspan="7" class="text-center text-muted py-5">
+                                    <i class="fa-solid fa-headset fs-1 text-secondary mb-3 d-block"></i>
+                                    <h5>No grievances filed yet</h5>
+                                    <p class="mb-0">You have not submitted any complaints or grievance tickets.</p>
+                                </td>
+                            </tr>
+                            <tr th:each="grv : ${grievances}">
+                                <td class="ps-3 fw-bold text-navy" th:text="${grv.grievanceNumber != null ? grv.grievanceNumber : 'GRV-' + grv.id}">GRV-10001</td>
+                                <td>
+                                    <span th:if="${grv.application != null}" class="fw-bold text-primary" th:text="${grv.application.applicationNumber}">APP-1001</span>
+                                    <span th:unless="${grv.application != null}" class="text-muted small">General</span>
+                                </td>
+                                <td>
+                                    <span class="badge bg-light text-dark border" th:text="${#strings.replace(grv.category, '_', ' ')}">APPLICATION DELAY</span>
+                                </td>
+                                <td class="fw-bold text-dark" th:text="${grv.subject}">Subject</td>
+                                <td>
+                                    <span th:if="${grv.status == 'SUBMITTED'}" class="badge bg-info text-dark"><i class="fa-solid fa-paper-plane me-1"></i> SUBMITTED</span>
+                                    <span th:if="${grv.status == 'UNDER_REVIEW' or grv.status == 'IN_PROGRESS'}" class="badge bg-primary"><i class="fa-solid fa-spinner fa-spin me-1"></i> UNDER REVIEW</span>
+                                    <span th:if="${grv.status == 'CLARIFICATION_REQUIRED' or grv.status == 'ACTION_REQUIRED'}" class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i> CLARIFICATION REQUIRED</span>
+                                    <span th:if="${grv.status == 'RESOLVED'}" class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i> RESOLVED</span>
+                                    <span th:if="${grv.status == 'REJECTED'}" class="badge bg-danger"><i class="fa-solid fa-circle-xmark me-1"></i> REJECTED</span>
+                                </td>
+                                <td th:text="${#temporals.format(grv.createdAt, 'dd-MMM-yyyy HH:mm')}">01-Jan-2026</td>
+                                <td class="pe-3 text-end">
+                                    <a th:href="@{'/beneficiary/grievances/' + ${grv.id}}" class="btn btn-sm btn-navy text-white fw-bold">
+                                        <i class="fa-solid fa-eye me-1"></i> Details & Track
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

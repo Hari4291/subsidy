@@ -47,11 +47,12 @@ public class EligibilityService {
             totalEarnedPoints += earned;
 
             if (!passed) {
-                // If it's a mandatory core criterion
-                if ("MIN_AGE".equalsIgnoreCase(criteria.getCriterionName()) || 
-                    "STATE_CHECK".equalsIgnoreCase(criteria.getCriterionName()) ||
-                    "MAX_INCOME".equalsIgnoreCase(criteria.getCriterionName()) ||
-                    "REQUIRED_DOCS".equalsIgnoreCase(criteria.getCriterionName())) {
+                // Hard mandatory core prerequisites that cause immediate disqualification
+                String cName = criteria.getCriterionName() != null ? criteria.getCriterionName().toUpperCase() : "";
+                if ("MAX_INCOME".equalsIgnoreCase(cName) || 
+                    "MIN_AGE".equalsIgnoreCase(cName) || 
+                    "MAX_AGE".equalsIgnoreCase(cName) || 
+                    "STATE_CHECK".equalsIgnoreCase(cName)) {
                     allMandatoryPassed = false;
                 }
             }
@@ -71,13 +72,15 @@ public class EligibilityService {
         response.setTotalScore(scorePercentage);
 
         int minQualifyingScore = scheme.getMinQualifyingScore() != null ? scheme.getMinQualifyingScore() : 60;
-        boolean isEligible = scorePercentage >= minQualifyingScore && allMandatoryPassed;
+        boolean isEligible = allMandatoryPassed && (scorePercentage >= minQualifyingScore);
         response.setEligible(isEligible);
 
         if (isEligible) {
             response.setStatusMessage("Congratulations! You satisfy the eligibility score requirement (" + scorePercentage + "% >= " + minQualifyingScore + "%) for " + scheme.getName() + ".");
+        } else if (!allMandatoryPassed) {
+            response.setStatusMessage("Based on system evaluation, your application does not meet the mandatory core prerequisites (e.g. Annual Income Ceiling) for " + scheme.getName() + ".");
         } else {
-            response.setStatusMessage("Based on system evaluation, your score (" + scorePercentage + "%) does not meet the required minimum score (" + minQualifyingScore + "%) for " + scheme.getName() + ".");
+            response.setStatusMessage("Based on system evaluation, your calculated score (" + scorePercentage + "%) does not meet the required minimum score (" + minQualifyingScore + "%) for " + scheme.getName() + ".");
         }
 
         return response;

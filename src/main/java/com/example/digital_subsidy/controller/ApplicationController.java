@@ -26,13 +26,16 @@ public class ApplicationController {
     private final ApplicationService applicationService;
     private final BeneficiaryService beneficiaryService;
     private final SchemeService schemeService;
+    private final com.example.digital_subsidy.repository.ApplicationRestrictionRepository applicationRestrictionRepository;
 
     public ApplicationController(ApplicationService applicationService,
                                  BeneficiaryService beneficiaryService,
-                                 SchemeService schemeService) {
+                                 SchemeService schemeService,
+                                 com.example.digital_subsidy.repository.ApplicationRestrictionRepository applicationRestrictionRepository) {
         this.applicationService = applicationService;
         this.beneficiaryService = beneficiaryService;
         this.schemeService = schemeService;
+        this.applicationRestrictionRepository = applicationRestrictionRepository;
     }
 
     @GetMapping("/beneficiary/apply")
@@ -43,6 +46,9 @@ public class ApplicationController {
         Beneficiary beneficiary = beneficiaryService.getBeneficiaryByEmail(email).orElseThrow();
         Scheme scheme = schemeService.getSchemeById(schemeId);
 
+        var activeRestrictions = applicationService.getActiveRestrictions(beneficiary.getId(), schemeId);
+        var activeRestriction = activeRestrictions.stream().filter(com.example.digital_subsidy.model.ApplicationRestriction::isActive).findFirst().orElse(null);
+
         ApplicationSubmissionDto dto = new ApplicationSubmissionDto();
         dto.setSchemeId(scheme.getId());
         dto.setRequestedAmount(scheme.getMaxAmount());
@@ -50,6 +56,7 @@ public class ApplicationController {
         model.addAttribute("dto", dto);
         model.addAttribute("beneficiary", beneficiary);
         model.addAttribute("scheme", scheme);
+        model.addAttribute("activeRestriction", activeRestriction);
         return "beneficiary/apply";
     }
 
@@ -92,13 +99,22 @@ public class ApplicationController {
             dto.setCriterionDisplayOrders(displayOrders);
         }
 
-        Application application = applicationService.submitApplication(beneficiary, dto);
+        try {
+            Application application = applicationService.submitApplication(beneficiary, dto);
 
-        // Clear session answers after successful submission
-        session.removeAttribute("pendingCriterionAnswers_" + schemeId);
-        session.removeAttribute("pendingQuestionSnapshots_" + schemeId);
-        session.removeAttribute("pendingDisplayOrders_" + schemeId);
+            // Clear session answers after successful submission
+            session.removeAttribute("pendingCriterionAnswers_" + schemeId);
+            session.removeAttribute("pendingQuestionSnapshots_" + schemeId);
+            session.removeAttribute("pendingDisplayOrders_" + schemeId);
 
-        return "redirect:/beneficiary/applications/" + application.getId() + "?submitted=true";
+            return "redirect:/beneficiary/applications/" + application.getId() + "?submitted=true";
+        } catch (Exception ex) {
+            model.addAttribute("errorMessage", ex.getMessage());
+            model.addAttribute("beneficiary", beneficiary);
+            model.addAttribute("scheme", scheme);
+            var activeRestrictions = applicationService.getActiveRestrictions(beneficiary.getId(), schemeId);
+            model.addAttribute("activeRestriction", activeRestrictions.stream().filter(com.example.digital_subsidy.model.ApplicationRestriction::isActive).findFirst().orElse(null));
+            return "beneficiary/apply";
+        }
     }
 }

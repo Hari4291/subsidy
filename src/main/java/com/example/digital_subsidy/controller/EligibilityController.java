@@ -38,19 +38,22 @@ public class EligibilityController {
     private final EligibilityCriteriaRepository criteriaRepository;
     private final RequiredDocumentRepository requiredDocumentRepository;
     private final DocumentService documentService;
+    private final com.example.digital_subsidy.service.ApplicationService applicationService;
 
     public EligibilityController(SchemeService schemeService,
                                   BeneficiaryService beneficiaryService,
                                   EligibilityService eligibilityService,
                                   EligibilityCriteriaRepository criteriaRepository,
                                   RequiredDocumentRepository requiredDocumentRepository,
-                                  DocumentService documentService) {
+                                  DocumentService documentService,
+                                  com.example.digital_subsidy.service.ApplicationService applicationService) {
         this.schemeService = schemeService;
         this.beneficiaryService = beneficiaryService;
         this.eligibilityService = eligibilityService;
         this.criteriaRepository = criteriaRepository;
         this.requiredDocumentRepository = requiredDocumentRepository;
         this.documentService = documentService;
+        this.applicationService = applicationService;
     }
 
     @GetMapping("/api/schemes/{schemeId}/criteria")
@@ -99,6 +102,12 @@ public class EligibilityController {
         if (schemeId != null) {
             criteria = criteriaRepository.findBySchemeIdAndActiveTrueOrderByDisplayOrderAsc(schemeId);
             requiredDocuments = requiredDocumentRepository.findBySchemeIdAndActiveTrueOrderByDisplayOrderAsc(schemeId);
+        }
+
+        if (schemeId != null && beneficiary != null) {
+            var resList = applicationService.getActiveRestrictions(beneficiary.getId(), schemeId);
+            var activeRes = resList.stream().filter(com.example.digital_subsidy.model.ApplicationRestriction::isActive).findFirst().orElse(null);
+            model.addAttribute("activeRestriction", activeRes);
         }
 
         model.addAttribute("requestDto", requestDto);
@@ -152,10 +161,13 @@ public class EligibilityController {
         List<EligibilityCriteria> criteria = criteriaRepository.findBySchemeIdAndActiveTrueOrderByDisplayOrderAsc(schemeId);
         List<RequiredDocument> requiredDocuments = requiredDocumentRepository.findBySchemeIdAndActiveTrueOrderByDisplayOrderAsc(schemeId);
 
-        // Bind submitted dynamic answers from HttpServletRequest
+        // Bind and validate submitted dynamic answers from HttpServletRequest
         if (requestDto.getCriterionAnswers() == null) {
             requestDto.setCriterionAnswers(new HashMap<>());
         }
+        Map<Long, String> criteriaErrors = new HashMap<>();
+        boolean isFormSubmission = request != null && request.getParameterMap() != null && !request.getParameterMap().isEmpty();
+
         if (request != null) {
             for (EligibilityCriteria c : criteria) {
                 String paramVal = request.getParameter("criterionAnswers[" + c.getId() + "]");
@@ -163,9 +175,71 @@ public class EligibilityController {
                     paramVal = request.getParameter("criterion_" + c.getId());
                 }
                 if (paramVal != null) {
+                    paramVal = paramVal.trim();
                     requestDto.getCriterionAnswers().put(c.getId(), paramVal);
                 }
+
+                if (c.isRequired() && (paramVal == null || paramVal.isBlank())) {
+                    boolean hasFallback = false;
+                    String cName = c.getCriterionName() != null ? c.getCriterionName().toUpperCase() : "";
+                    switch (cName) {
+                        case "MAX_INCOME":
+                            if (requestDto.getAnnualIncome() != null) hasFallback = true;
+                            break;
+                        case "FARMER_STATUS":
+                            if (requestDto.getFarmerStatus() != null) hasFallback = true;
+                            break;
+                        case "LAND_HOLDING":
+                            if (requestDto.getLandHoldingAcres() != null) hasFallback = true;
+                            break;
+                        case "PROPERTY_OWNERSHIP":
+                        case "ROOFTOP_OWNERSHIP":
+                        case "LAND_OWNERSHIP":
+                        case "IRRIGATION_REQUIREMENT":
+                            hasFallback = true;
+                            break;
+                        case "BUSINESS_TYPE":
+                            if (requestDto.getBusinessType() != null) hasFallback = true;
+                            break;
+                        case "MIN_AGE":
+                        case "MAX_AGE":
+                        case "STATE_CHECK":
+                        case "CATEGORY_CHECK":
+                        case "IDENTITY_VERIFIED":
+                        case "REQUIRED_DOCS":
+                            hasFallback = true;
+                            break;
+                    }
+                    if (isFormSubmission && !hasFallback) {
+                        criteriaErrors.put(c.getId(), c.getQuestionText() + " is required.");
+                        continue;
+                    }
+                }
+
+                if (paramVal != null && !paramVal.isBlank()) {
+                    String type = c.getAnswerType() != null ? c.getAnswerType().toUpperCase() :
+                                 (c.getCriterionType() != null ? c.getCriterionType().toUpperCase() : "TEXT");
+                    if ("NUMBER".equals(type) || "DECIMAL".equals(type) || "NUMERIC".equals(type) || "MAX_INCOME".equalsIgnoreCase(c.getCriterionName())) {
+                        try {
+                            java.math.BigDecimal numVal = new java.math.BigDecimal(paramVal);
+                            if (numVal.compareTo(java.math.BigDecimal.ZERO) < 0) {
+                                criteriaErrors.put(c.getId(), c.getQuestionText() + " cannot be negative.");
+                            } else if ("MAX_INCOME".equalsIgnoreCase(c.getCriterionName())) {
+                                requestDto.setAnnualIncome(numVal);
+                            }
+                        } catch (Exception e) {
+                            criteriaErrors.put(c.getId(), "Please enter a valid numeric value for " + c.getQuestionText());
+                        }
+                    }
+                }
             }
+        }
+
+        if (!criteriaErrors.isEmpty()) {
+            log.warn("Criteria validation failed for scheme {}: {}", schemeId, criteriaErrors);
+            model.addAttribute("criteriaErrors", criteriaErrors);
+            model.addAttribute("errorMessage", criteriaErrors.values().iterator().next());
+            return populateAndReturnForm(schemeId, requestDto, beneficiary, activeSchemes, model);
         }
 
         // Validate and Process Dynamic Required Documents
@@ -245,6 +319,12 @@ public class EligibilityController {
                 log.info("Stored {} criterion answers in session for scheme {}", criterionAnswers.size(), schemeId);
             }
 
+            if (schemeId != null && beneficiary != null) {
+                var resList = applicationService.getActiveRestrictions(beneficiary.getId(), schemeId);
+                var activeRes = resList.stream().filter(com.example.digital_subsidy.model.ApplicationRestriction::isActive).findFirst().orElse(null);
+                model.addAttribute("activeRestriction", activeRes);
+            }
+
             model.addAttribute("result", result);
             model.addAttribute("beneficiary", beneficiary);
             model.addAttribute("scheme", selectedScheme);
@@ -256,8 +336,6 @@ public class EligibilityController {
             return populateAndReturnForm(schemeId, requestDto, beneficiary, activeSchemes, model);
         }
     }
-
-
 
     private String validateDocumentFile(MultipartFile file, RequiredDocument reqDoc) {
         if (file.isEmpty()) {
@@ -307,6 +385,12 @@ public class EligibilityController {
                 criteria = criteriaRepository.findBySchemeIdAndActiveTrueOrderByDisplayOrderAsc(schemeId);
                 requiredDocuments = requiredDocumentRepository.findBySchemeIdAndActiveTrueOrderByDisplayOrderAsc(schemeId);
             } catch (Exception ignored) {}
+        }
+
+        if (schemeId != null && beneficiary != null) {
+            var resList = applicationService.getActiveRestrictions(beneficiary.getId(), schemeId);
+            var activeRes = resList.stream().filter(com.example.digital_subsidy.model.ApplicationRestriction::isActive).findFirst().orElse(null);
+            model.addAttribute("activeRestriction", activeRes);
         }
 
         model.addAttribute("requestDto", requestDto != null ? requestDto : new EligibilityCheckRequestDto());

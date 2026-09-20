@@ -12,9 +12,15 @@ public interface OfficerRepository extends JpaRepository<Officer, Long> {
 
     Optional<Officer> findByUserEmail(String email);
 
+    Optional<Officer> findByUserEmailIgnoreCase(String email);
+
+    Optional<Officer> findByEmailIgnoreCase(String email);
+
     Optional<Officer> findByUserId(Long userId);
 
     List<Officer> findByOfficerType(String officerType);
+
+    List<Officer> findByOfficerTypeAndState(String officerType, String state);
 
     List<Officer> findByOfficerTypeAndStateAndDistrict(String officerType, String state, String district);
 

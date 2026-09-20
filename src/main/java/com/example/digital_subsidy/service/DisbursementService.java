@@ -38,9 +38,11 @@ public class DisbursementService {
 
     @Transactional
     public Disbursement initializeDisbursement(Application application, User approver) {
+        BigDecimal total = application.getSanctionedAmount() != null ? application.getSanctionedAmount() : application.getRequestedAmount();
+
         Disbursement disbursement = new Disbursement();
         disbursement.setApplication(application);
-        disbursement.setTotalSanctionedAmount(application.getRequestedAmount());
+        disbursement.setTotalSanctionedAmount(total);
         disbursement.setDisbursedAmount(BigDecimal.ZERO);
         disbursement.setStatus("IN_PROGRESS");
         disbursement.setApprovedBy(approver);
@@ -50,8 +52,6 @@ public class DisbursementService {
         // Generate Staged Milestones based on Scheme Configuration
         List<com.example.digital_subsidy.model.DisbursementMilestone> schemeMilestones = 
                 schemeMilestoneRepository.findBySchemeIdAndActiveTrueOrderByDisplayOrderAsc(application.getScheme().getId());
-
-        BigDecimal total = application.getRequestedAmount();
 
         if (schemeMilestones != null && !schemeMilestones.isEmpty()) {
             BigDecimal allocated = BigDecimal.ZERO;

@@ -84,7 +84,12 @@ public class OfficerService {
     }
 
     public Optional<Officer> getOfficerByEmail(String email) {
-        return officerRepository.findByUserEmail(email);
+        if (email == null || email.isBlank()) {
+            return Optional.empty();
+        }
+        return officerRepository.findByUserEmailIgnoreCase(email.trim())
+                .or(() -> officerRepository.findByEmailIgnoreCase(email.trim()))
+                .or(() -> officerRepository.findByUserEmail(email));
     }
 
     public long countOfficers() {
@@ -93,5 +98,22 @@ public class OfficerService {
 
     public long countOfficersByType(String officerType) {
         return officerRepository.countByOfficerType(officerType);
+    }
+
+    public List<Officer> getFieldOfficersByDistrict(String state, String district) {
+        if (state != null && district != null && !district.isBlank()) {
+            return officerRepository.findByOfficerTypeAndStateAndDistrict("FIELD_OFFICER", state, district);
+        } else if (state != null && !state.isBlank()) {
+            return officerRepository.findByOfficerTypeAndState("FIELD_OFFICER", state);
+        }
+        return officerRepository.findByOfficerType("FIELD_OFFICER");
+    }
+
+    @Transactional
+    public void assignApplicationToOfficer(com.example.digital_subsidy.model.Application app, Officer officer, String assignedBy) {
+        app.setAssignedOfficer(officer);
+        app.setUpdatedAt(java.time.LocalDateTime.now());
+        auditLogger.log("APPLICATION_REASSIGNED", "Application", app.getId(),
+                "Application #" + app.getId() + " reassigned to Field Officer " + (officer != null ? officer.getEmail() : "UNASSIGNED") + " by " + assignedBy);
     }
 }

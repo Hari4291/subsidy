@@ -8,6 +8,9 @@
 <div class="container py-5">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h3 class="fw-bold text-navy mb-0"><i class="fa-solid fa-hand-holding-dollar text-success me-2"></i> My Grant Disbursements</h3>
+        <a th:href="@{/beneficiary/dashboard}" class="btn btn-outline-secondary fw-bold">
+            <i class="fa-solid fa-arrow-left me-1"></i> Back to Dashboard
+        </a>
     </div>
 
     <div class="card gov-card shadow-sm border-0">
@@ -19,27 +22,38 @@
             </div>
 
             <div th:if="${!#lists.isEmpty(disbursements)}" class="table-responsive">
-                <table class="table table-striped align-middle">
+                <table class="table table-striped align-middle border">
                     <thead class="table-dark">
                         <tr>
-                            <th>Disbursement ID</th>
+                            <th>Disbursement Ref</th>
                             <th>Application #</th>
                             <th>Scheme Name</th>
-                            <th>Total Approved</th>
+                            <th>Sanctioned Amount</th>
                             <th>Disbursed Amount</th>
                             <th>Remaining Balance</th>
                             <th>Status</th>
+                            <th>Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr th:each="d : ${disbursements}">
                             <td class="fw-bold" th:text="'DISB-' + ${d.id}">DISB-1</td>
                             <td class="fw-bold text-navy" th:text="${d.application.applicationNumber}">APP-1001</td>
-                            <td th:text="${d.application.scheme.name}">PM Krishi Vikas Scheme</td>
-                            <td class="fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(d.approvedAmount, 0, 'COMMA', 0, 'POINT')}">₹50,000</td>
-                            <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(d.disbursedAmount, 0, 'COMMA', 0, 'POINT')}">₹25,000</td>
-                            <td class="fw-bold text-primary" th:text="'₹' + ${#numbers.formatDecimal(d.approvedAmount - d.disbursedAmount, 0, 'COMMA', 0, 'POINT')}">₹25,000</td>
-                            <td><span class="badge bg-success" th:text="${d.disbursementStatus}">RELEASED</span></td>
+                            <td th:text="${d.application.scheme != null ? d.application.scheme.name : 'N/A'}">PM Krishi Vikas Scheme</td>
+                            <td class="fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(d.totalSanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹50,000</td>
+                            <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(d.disbursedAmount != null ? d.disbursedAmount : 0, 0, 'COMMA', 0, 'POINT')}">₹25,000</td>
+                            <td class="fw-bold text-primary" th:text="'₹' + ${#numbers.formatDecimal(d.remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹25,000</td>
+                            <td>
+                                <span th:if="${d.status == 'COMPLETED'}" class="badge bg-success"><i class="fa-solid fa-check-circle me-1"></i> COMPLETED</span>
+                                <span th:if="${d.status == 'PARTIALLY_RELEASED' or d.status == 'IN_PROGRESS'}" class="badge bg-info text-dark"><i class="fa-solid fa-spinner me-1"></i> IN PROGRESS</span>
+                                <span th:if="${d.status == 'PLANNED' or d.status == 'SCHEDULED'}" class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i> PLANNED</span>
+                                <span th:if="${d.status == 'ON_HOLD'}" class="badge bg-danger"><i class="fa-solid fa-pause me-1"></i> ON HOLD</span>
+                            </td>
+                            <td>
+                                <a th:href="@{'/disbursements/schedule/' + ${d.application.id}}" class="btn btn-sm btn-outline-primary fw-bold">
+                                    <i class="fa-solid fa-eye me-1"></i> Track Stages
+                                </a>
+                            </td>
                         </tr>
                     </tbody>
                 </table>

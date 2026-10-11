@@ -28,15 +28,18 @@ public class TrackingController {
     private final TimelineService timelineService;
     private final BeneficiaryService beneficiaryService;
     private final UserRepository userRepository;
+    private final com.example.digital_subsidy.repository.OfficerRepository officerRepository;
 
     public TrackingController(ApplicationService applicationService,
                               TimelineService timelineService,
                               BeneficiaryService beneficiaryService,
-                              UserRepository userRepository) {
+                              UserRepository userRepository,
+                              com.example.digital_subsidy.repository.OfficerRepository officerRepository) {
         this.applicationService = applicationService;
         this.timelineService = timelineService;
         this.beneficiaryService = beneficiaryService;
         this.userRepository = userRepository;
+        this.officerRepository = officerRepository;
     }
 
     @GetMapping({"/applications/{identifier}/tracking", "/beneficiary/applications/{identifier}/tracking"})
@@ -82,6 +85,24 @@ public class TrackingController {
             } else {
                 redirectAttributes.addFlashAttribute("errorMessage", "Application not found.");
                 return "redirect:/admin/dashboard";
+            }
+        }
+
+        if (isOfficer && !isAdmin) {
+            boolean isFO = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_FIELD_OFFICER"));
+            boolean isDO = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_DISTRICT_OFFICER"));
+            if (isFO || isDO) {
+                com.example.digital_subsidy.model.Officer officer = officerRepository.findByUserEmail(username).orElse(null);
+                if (officer != null && officer.getState() != null && application.getBeneficiary() != null && application.getBeneficiary().getState() != null) {
+                    if (!officer.getState().equalsIgnoreCase(application.getBeneficiary().getState())) {
+                        throw new AccessDeniedException("You are not authorized to view tracking for applications outside your state.");
+                    }
+                    if (isDO && officer.getDistrict() != null && !officer.getDistrict().isBlank() && application.getBeneficiary().getDistrict() != null) {
+                        if (!officer.getDistrict().equalsIgnoreCase(application.getBeneficiary().getDistrict())) {
+                            throw new AccessDeniedException("You are not authorized to view tracking for applications outside your district.");
+                        }
+                    }
+                }
             }
         }
 

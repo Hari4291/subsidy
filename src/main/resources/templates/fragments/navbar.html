@@ -151,30 +151,6 @@
                     </div>
                     <script>
                         document.addEventListener("DOMContentLoaded", function() {
-                            const bellBtn = document.getElementById('notifBellBtn');
-                            const menu = document.getElementById('notifDropdownMenu');
-
-                            if (bellBtn && menu) {
-                                bellBtn.addEventListener('click', function(e) {
-                                    e.preventDefault();
-                                    e.stopPropagation();
-                                    if (typeof bootstrap !== 'undefined' && bootstrap.Dropdown) {
-                                        try {
-                                            const bsDropdown = bootstrap.Dropdown.getOrCreateInstance(bellBtn);
-                                            bsDropdown.toggle();
-                                            return;
-                                        } catch(err) {}
-                                    }
-                                    menu.classList.toggle('show');
-                                });
-
-                                document.addEventListener('click', function(e) {
-                                    if (!bellBtn.contains(e.target) && !menu.contains(e.target)) {
-                                        menu.classList.remove('show');
-                                    }
-                                });
-                            }
-
                             function loadUnreadNotifs() {
                                 fetch('/api/notifications/unread-count')
                                     .then(res => res.json())
@@ -223,6 +199,14 @@
                                         }
                                     });
                             }
+
+                            const bellBtn = document.getElementById('notifBellBtn');
+                            if (bellBtn) {
+                                bellBtn.addEventListener('show.bs.dropdown', function() {
+                                    loadUnreadNotifs();
+                                });
+                            }
+
                             loadUnreadNotifs();
                             setInterval(loadUnreadNotifs, 30000);
                         });

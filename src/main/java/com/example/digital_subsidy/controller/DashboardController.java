@@ -16,15 +16,18 @@ public class DashboardController {
     private final SchemeService schemeService;
     private final ApplicationService applicationService;
     private final AuditLogRepository auditLogRepository;
+    private final com.example.digital_subsidy.service.FundUtilizationService fundUtilizationService;
 
     public DashboardController(ReportService reportService,
                                 SchemeService schemeService,
                                 ApplicationService applicationService,
-                                AuditLogRepository auditLogRepository) {
+                                AuditLogRepository auditLogRepository,
+                                com.example.digital_subsidy.service.FundUtilizationService fundUtilizationService) {
         this.reportService = reportService;
         this.schemeService = schemeService;
         this.applicationService = applicationService;
         this.auditLogRepository = auditLogRepository;
+        this.fundUtilizationService = fundUtilizationService;
     }
 
     @GetMapping("/admin/dashboard")
@@ -32,7 +35,7 @@ public class DashboardController {
         model.addAttribute("stats", reportService.getSystemStatistics());
         model.addAttribute("schemes", schemeService.getAllSchemes());
         model.addAttribute("recentApplications", applicationService.getAllApplications());
-        model.addAttribute("auditLogs", auditLogRepository.findTop50ByOrderByTimestampDesc());
+        model.addAttribute("auditLogs", auditLogRepository.findTop50OperationalAuditLogs());
 
         java.util.Map<String, Object> schemeMetrics = new java.util.HashMap<>();
         schemeMetrics.put("totalSchemes", schemeService.getAllSchemes().size());
@@ -41,6 +44,11 @@ public class DashboardController {
         schemeMetrics.put("totalCriteria", schemeService.countTotalCriteria());
         schemeMetrics.put("totalDocuments", schemeService.countTotalDocuments());
         model.addAttribute("schemeMetrics", schemeMetrics);
+
+        model.addAttribute("utilizationSummary", fundUtilizationService.getSystemFundUtilizationSummary(null, null, null));
+        model.addAttribute("schemeUtilizations", fundUtilizationService.getSchemeWiseFundUtilization(null, null));
+        model.addAttribute("stateUtilizations", fundUtilizationService.getStateWiseFundUtilization());
+        model.addAttribute("districtUtilizations", fundUtilizationService.getDistrictWiseFundUtilization(null));
 
         return "admin/dashboard";
     }

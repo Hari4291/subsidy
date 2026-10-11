@@ -68,6 +68,11 @@ public class VerificationService {
                     String status = entry.getValue();
                     if (docId == null || status == null || status.isBlank()) continue;
 
+                    Document targetDoc = documentService.getDocumentById(docId);
+                    if (targetDoc != null && targetDoc.getApplication() != null && !targetDoc.getApplication().getId().equals(app.getId())) {
+                        throw new org.springframework.security.access.AccessDeniedException("IDOR Attempt: Document #" + docId + " does not belong to Application #" + app.getId());
+                    }
+
                     String docRemarks = (remarks != null) ? remarks.get(docId) : null;
                     documentService.updateDocumentVerification(docId, status, docRemarks, officerEmail);
                     auditLogger.log("DOCUMENT_" + status, "Document", docId,

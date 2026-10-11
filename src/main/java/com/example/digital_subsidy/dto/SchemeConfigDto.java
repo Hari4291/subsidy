@@ -16,6 +16,7 @@ public class SchemeConfigDto {
     private String eligibleStates;
     private Integer minQualifyingScore = 60;
     private Integer rejectionCooldownDays = 30;
+    private BigDecimal singleReleaseThreshold = com.example.digital_subsidy.service.DisbursementService.DISBURSEMENT_SINGLE_RELEASE_THRESHOLD;
     
     @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE)
     private java.time.LocalDate startDate;
@@ -121,6 +122,14 @@ public class SchemeConfigDto {
 
     public void setRejectionCooldownDays(Integer rejectionCooldownDays) {
         this.rejectionCooldownDays = rejectionCooldownDays;
+    }
+
+    public BigDecimal getSingleReleaseThreshold() {
+        return singleReleaseThreshold != null ? singleReleaseThreshold : com.example.digital_subsidy.service.DisbursementService.DISBURSEMENT_SINGLE_RELEASE_THRESHOLD;
+    }
+
+    public void setSingleReleaseThreshold(BigDecimal singleReleaseThreshold) {
+        this.singleReleaseThreshold = singleReleaseThreshold;
     }
 
     public java.time.LocalDate getStartDate() {

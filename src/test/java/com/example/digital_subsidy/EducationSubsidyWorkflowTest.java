@@ -224,7 +224,7 @@ public class EducationSubsidyWorkflowTest {
         doAction.setAction("APPROVE");
         doAction.setRemarks("Sanctioned by District Collectorate after verifying student credentials and income certificate.");
 
-        verificationService.processVerification("district.officer@gmail.com", "ROLE_DISTRICT_OFFICER", doAction);
+        verificationService.processVerification("kalyanramvase377@gmail.com", "ROLE_DISTRICT_OFFICER", doAction);
 
         Application doApp = applicationService.getApplicationById(application.getId());
         assertEquals("FINANCE_APPROVAL", doApp.getCurrentStage(), "App approved by District Officer must transition to FINANCE_APPROVAL");

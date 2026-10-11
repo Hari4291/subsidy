@@ -6,11 +6,11 @@
 <div th:replace="~{fragments/navbar :: navbar}"></div>
 
 <div class="container py-4">
-    <!-- Header Card -->
+    <!-- Header Navigation Bar -->
     <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
         <div>
             <h4 class="mb-1 fw-bold"><i class="fa-solid fa-hand-holding-dollar text-warning me-2"></i> Staged Milestone Disbursement Schedule</h4>
-            <p class="mb-0 text-light small" th:text="'Application ID: ' + ${application.applicationNumber} + ' | Scheme: ' + ${application.scheme != null ? application.scheme.name : 'N/A'}">Application Details</p>
+            <p class="mb-0 text-light small" th:text="'Application Number: ' + ${application.applicationNumber} + ' | Scheme: ' + ${application.scheme != null ? application.scheme.name : 'N/A'}">Application Details</p>
         </div>
         <div>
             <a th:if="${isFinanceApprover}" th:href="@{/finance/dashboard}" class="btn btn-outline-light fw-bold">
@@ -25,16 +25,59 @@
         </div>
     </div>
 
-    <!-- Alert Message -->
-    <div th:if="${param.released}" class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fa-solid fa-circle-check me-2"></i> Milestone grant installment released successfully into beneficiary bank record.
+    <!-- Alert Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+        <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${successMessage}">Success</span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+        <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Error</span>
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <!-- Application Summary Card -->
+    <!-- Financial Summary Cards -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card gov-card shadow-sm border-0 border-start border-4 border-info">
+                <div class="card-body p-3">
+                    <small class="text-muted d-block fw-bold mb-1">Requested Amount</small>
+                    <h5 class="fw-bold text-navy mb-0" th:text="'₹' + ${application.requestedAmount != null ? #numbers.formatDecimal(application.requestedAmount, 0, 'COMMA', 0, 'POINT') : '0'}">₹1,00,000</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card gov-card shadow-sm border-0 border-start border-4 border-primary">
+                <div class="card-body p-3">
+                    <small class="text-muted d-block fw-bold mb-1">Sanctioned Amount</small>
+                    <h5 class="fw-bold text-primary mb-0" th:text="'₹' + ${#numbers.formatDecimal(totalSanctioned, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card gov-card shadow-sm border-0 border-start border-4 border-success">
+                <div class="card-body p-3">
+                    <small class="text-muted d-block fw-bold mb-1">Total Released Amount</small>
+                    <h5 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(totalDisbursed, 0, 'COMMA', 0, 'POINT')}">₹0</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card gov-card shadow-sm border-0 border-start border-4 border-warning">
+                <div class="card-body p-3">
+                    <small class="text-muted d-block fw-bold mb-1">Remaining Balance</small>
+                    <h5 class="fw-bold text-dark mb-0" th:text="'₹' + ${#numbers.formatDecimal(remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</h5>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Overview Card -->
     <div class="card gov-card shadow-sm border-0 mb-4">
-        <div class="card-header bg-light fw-bold py-3 text-navy">
-            <i class="fa-solid fa-info-circle me-2 text-primary"></i> Application &amp; Sanction Overview
+        <div class="card-header bg-light fw-bold py-3 text-navy d-flex justify-content-between align-items-center">
+            <span><i class="fa-solid fa-circle-info me-2 text-primary"></i> Application &amp; Beneficiary Profile</span>
+            <button th:if="${isFinanceApprover and (disbursement == null or totalDisbursed == 0)}" type="button" class="btn btn-sm btn-outline-primary fw-bold" data-bs-toggle="modal" data-bs-target="#configurePlanModal">
+                <i class="fa-solid fa-gear me-1"></i> Configure Staged Plan
+            </button>
         </div>
         <div class="card-body p-4">
             <div class="row g-3">
@@ -52,90 +95,171 @@
                     <h6 class="fw-bold text-navy mb-0" th:text="${application.scheme != null ? application.scheme.name : 'N/A'}">Scheme Name</h6>
                 </div>
                 <div class="col-md-3">
-                    <small class="text-muted d-block fw-bold mb-1">Total Grant Sanctioned</small>
-                    <h5 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(totalSanctioned, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</h5>
+                    <small class="text-muted d-block fw-bold mb-1">Disbursement Plan Status</small>
+                    <span th:if="${disbursement != null}" class="badge bg-success fs-6" th:text="${disbursement.status}">PLANNED</span>
+                    <span th:if="${disbursement == null}" class="badge bg-secondary fs-6">NOT_CREATED</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Disbursement & Milestone Schedule Card -->
+    <!-- Milestone Stages Card -->
     <div class="card gov-card shadow-sm border-0 mb-4">
         <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
-            <span><i class="fa-solid fa-list-check text-warning me-2"></i> Staged Milestone Disbursement Schedule</span>
-            <span th:if="${disbursement != null}" class="badge bg-success" th:text="'Status: ' + ${disbursement.status}">IN_PROGRESS</span>
+            <div>
+                <span><i class="fa-solid fa-list-check text-warning me-2"></i> Configurable Stage Disbursement Schedule</span>
+                <span th:if="${totalSanctioned != null and totalSanctioned.compareTo(new java.math.BigDecimal('40000')) <= 0}" class="badge bg-info text-dark font-weight-bold ms-2"><i class="fa-solid fa-circle-1 me-1"></i> Single-Phase Release Plan (100%)</span>
+                <span th:if="${totalSanctioned != null and totalSanctioned.compareTo(new java.math.BigDecimal('40000')) > 0}" class="badge bg-warning text-dark font-weight-bold ms-2"><i class="fa-solid fa-list-numeric me-1"></i> Three-Phase Release Plan</span>
+            </div>
+            <span class="badge bg-light text-navy fw-bold" th:text="${#lists.size(milestones)} + ' Configured Stages'">Stages</span>
         </div>
         <div class="card-body p-4">
-            <div th:if="${disbursement != null}">
-                <div class="row g-3 mb-4">
-                    <div class="col-md-4">
-                        <div class="p-3 bg-light rounded border">
-                            <small class="text-muted d-block fw-bold">Sanctioned Amount</small>
-                            <h6 class="fw-bold text-navy mb-0" th:text="'₹' + ${#numbers.formatDecimal(totalSanctioned, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</h6>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="p-3 bg-light rounded border">
-                            <small class="text-muted d-block fw-bold">Disbursed Amount</small>
-                            <h6 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(totalDisbursed, 0, 'COMMA', 0, 'POINT')}">₹0</h6>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="p-3 bg-light rounded border">
-                            <small class="text-muted d-block fw-bold">Remaining Balance</small>
-                            <h6 class="fw-bold text-primary mb-0" th:text="'₹' + ${#numbers.formatDecimal(remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</h6>
-                        </div>
-                    </div>
-                </div>
+            <div th:if="${milestones != null and !#lists.isEmpty(milestones)}" class="table-responsive">
+                <table class="table table-bordered table-hover align-middle border">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Stage #</th>
+                            <th>Stage Name &amp; Description</th>
+                            <th>Percentage</th>
+                            <th>Calculated Amount</th>
+                            <th>Due Date</th>
+                            <th>Required Compliance</th>
+                            <th>Compliance Verification</th>
+                            <th>Release Status</th>
+                            <th>Released Amount</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="m : ${milestones}">
+                            <td class="fw-bold text-center" th:text="${m.stageNumber != null ? m.stageNumber : m.id}">1</td>
+                            <td>
+                                <strong class="text-navy d-block" th:text="${m.milestoneName}">Stage 1</strong>
+                                <small class="text-muted d-block" th:text="${m.description}">Description</small>
+                            </td>
+                            <td class="fw-bold text-primary" th:text="${m.percentage != null ? m.percentage + '%' : '0%'}">30%</td>
+                            <td class="fw-bold text-success" th:text="${m.milestoneAmount != null ? '₹' + #numbers.formatDecimal(m.milestoneAmount, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹30,000</td>
+                            <td th:text="${m.dueDate != null ? m.dueDate : 'Pending'}">15-Sep-2026</td>
+                            <td>
+                                <small class="text-dark fw-bold d-block" th:text="${m.complianceCondition != null ? m.complianceCondition : 'Verification Completed'}">Proof</small>
+                                <span class="badge bg-light text-primary border mt-1" th:text="${T(com.example.digital_subsidy.service.DisbursementService).getDocumentTypeDisplayName(m.requiredDocumentType)}">Required Document</span>
+                            </td>
+                            <td>
+                                <!-- Compliance Badges -->
+                                <span th:if="${m.complianceVerificationStatus == 'VERIFIED'}" class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i> VERIFIED</span>
+                                <span th:if="${m.complianceVerificationStatus == 'SUBMITTED' or m.complianceVerificationStatus == 'UNDER_REVIEW'}" class="badge bg-info text-dark"><i class="fa-solid fa-file-arrow-up me-1"></i> SUBMITTED</span>
+                                <span th:if="${m.complianceVerificationStatus == 'REUPLOAD_REQUIRED' or m.complianceVerificationStatus == 'REJECTED'}" class="badge bg-danger"><i class="fa-solid fa-triangle-exclamation me-1"></i> REUPLOAD REQUIRED</span>
+                                <span th:if="${m.complianceVerificationStatus == 'OVERDUE' or m.complianceVerificationStatus == 'NON_COMPLIANT' or m.overdueFlag}" class="badge bg-danger"><i class="fa-solid fa-clock me-1"></i> OVERDUE</span>
+                                <span th:if="${m.complianceVerificationStatus == 'PENDING' or m.complianceVerificationStatus == 'DUE'}" class="badge bg-secondary"><i class="fa-solid fa-hourglass-start me-1"></i> PENDING</span>
 
-                <div th:if="${milestones != null and !#lists.isEmpty(milestones)}" class="table-responsive">
-                    <table class="table table-bordered align-middle border">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Milestone Name</th>
-                                <th>Percentage</th>
-                                <th>Sanction Amount</th>
-                                <th>Due Date</th>
-                                <th>Status</th>
-                                <th>Released Amount</th>
-                                <th th:if="${isFinanceApprover}">Action</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr th:each="m, iterStat : ${milestones}">
-                                <td th:text="${iterStat.count}">1</td>
-                                <td class="fw-bold text-navy" th:text="${m.milestoneName}">Milestone 1</td>
-                                <td th:text="${m.percentage != null ? m.percentage + '%' : '0%'}">30%</td>
-                                <td class="fw-bold text-success" th:text="${m.milestoneAmount != null ? '₹' + #numbers.formatDecimal(m.milestoneAmount, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹30,000</td>
-                                <td th:text="${m.dueDate != null ? m.dueDate : 'Pending'}">15-Sep-2026</td>
-                                <td>
-                                    <span th:if="${m.completionStatus == 'COMPLETED'}" class="badge bg-success"><i class="fa-solid fa-check me-1"></i> RELEASED</span>
-                                    <span th:if="${m.completionStatus != 'COMPLETED'}" class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i> PENDING RELEASE</span>
-                                </td>
-                                <td class="fw-bold text-success" th:text="${m.releasedAmount != null ? '₹' + #numbers.formatDecimal(m.releasedAmount, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹0</td>
-                                <td th:if="${isFinanceApprover}">
-                                    <form th:if="${m.completionStatus != 'COMPLETED'}" th:action="@{/finance/release-milestone}" method="post" class="d-inline">
+                                <!-- Document Proof Link -->
+                                <div th:if="${m.submittedDocument != null}" class="mt-1">
+                                    <a th:href="@{'/documents/' + ${m.submittedDocument.id} + '/view'}" target="_blank" class="btn btn-sm btn-link p-0 text-primary fw-bold small">
+                                        <i class="fa-solid fa-file-pdf me-1"></i> View Proof
+                                    </a>
+                                </div>
+                                <div th:if="${m.rejectionReason != null and !m.rejectionReason.isBlank()}" class="mt-1 text-danger small">
+                                    <strong>Reason:</strong> <span th:text="${m.rejectionReason}">Reason</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span th:if="${m.completionStatus == 'RELEASED' || m.completionStatus == 'COMPLETED'}" class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i> RELEASED</span>
+                                <span th:if="${m.completionStatus == 'PENDING'}" class="badge bg-warning text-dark"><i class="fa-solid fa-clock me-1"></i> PENDING</span>
+                                <span th:if="${m.completionStatus == 'ON_HOLD'}" class="badge bg-danger"><i class="fa-solid fa-pause me-1"></i> ON HOLD</span>
+                            </td>
+                            <td class="fw-bold text-success" th:text="${m.releasedAmount != null ? '₹' + #numbers.formatDecimal(m.releasedAmount, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹0</td>
+                            <td>
+                                <div class="d-flex gap-1 flex-wrap">
+                                    <!-- Beneficiary Upload / Re-upload Button -->
+                                    <button th:if="${isBeneficiary and m.completionStatus != 'RELEASED' and m.completionStatus != 'COMPLETED' and m.complianceVerificationStatus != 'VERIFIED'}"
+                                            type="button" class="btn btn-sm btn-primary fw-bold"
+                                            data-bs-toggle="modal" th:data-bs-target="'#uploadComplianceModal-' + ${m.id}">
+                                        <i class="fa-solid fa-upload me-1"></i> <span th:text="${m.complianceVerificationStatus == 'REUPLOAD_REQUIRED' ? 'Re-upload' : 'Upload Proof'}">Upload Proof</span>
+                                    </button>
+
+                                    <!-- Officer / Finance Verify Button -->
+                                    <button th:if="${!isBeneficiary and m.completionStatus != 'RELEASED' and m.completionStatus != 'COMPLETED'}"
+                                            type="button" class="btn btn-sm btn-outline-info text-dark fw-bold"
+                                            data-bs-toggle="modal" th:data-bs-target="'#verifyComplianceModal-' + ${m.id}">
+                                        <i class="fa-solid fa-shield-check me-1"></i> Review Compliance
+                                    </button>
+
+                                    <!-- Finance Release Button -->
+                                    <div th:if="${isFinanceApprover and m.completionStatus != 'RELEASED' and m.completionStatus != 'COMPLETED'}">
+                                        <button type="button" class="btn btn-sm btn-success fw-bold" 
+                                                data-bs-toggle="modal" 
+                                                th:data-bs-target="'#releaseModal-' + ${m.id}">
+                                            <i class="fa-solid fa-money-bill-transfer me-1"></i> Release
+                                        </button>
+                                    </div>
+
+                                    <!-- Finance Hold / Resume Form -->
+                                    <form th:if="${isFinanceApprover and m.completionStatus != 'RELEASED' and m.completionStatus != 'COMPLETED' and m.completionStatus != 'ON_HOLD'}" th:action="@{/finance/hold-stage}" method="post" class="d-inline">
                                         <input type="hidden" name="milestoneId" th:value="${m.id}">
                                         <input type="hidden" name="applicationId" th:value="${application.id}">
-                                        <button type="submit" class="btn btn-sm btn-success fw-bold">
-                                            <i class="fa-solid fa-money-bill-transfer me-1"></i> Release Grant
-                                        </button>
+                                        <input type="hidden" name="action" value="HOLD">
+                                        <input type="hidden" name="remarks" value="Held by Finance Officer">
+                                        <button type="submit" class="btn btn-sm btn-warning fw-bold text-dark"><i class="fa-solid fa-pause me-1"></i> Hold</button>
                                     </form>
-                                    <span th:if="${m.completionStatus == 'COMPLETED'}" class="text-muted small fw-bold">
-                                        <i class="fa-solid fa-check-double text-success me-1"></i> Disbursed
-                                    </span>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+
+                                    <form th:if="${isFinanceApprover and m.completionStatus == 'ON_HOLD'}" th:action="@{/finance/hold-stage}" method="post" class="d-inline">
+                                        <input type="hidden" name="milestoneId" th:value="${m.id}">
+                                        <input type="hidden" name="applicationId" th:value="${application.id}">
+                                        <input type="hidden" name="action" value="UNHOLD">
+                                        <button type="submit" class="btn btn-sm btn-info text-dark fw-bold"><i class="fa-solid fa-play me-1"></i> Resume</button>
+                                    </form>
+                                </div>
+                                <span th:if="${m.completionStatus == 'RELEASED' or m.completionStatus == 'COMPLETED'}" class="text-muted small fw-bold">
+                                    <i class="fa-solid fa-check-double text-success me-1"></i> Disbursed
+                                </span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
-            <div th:if="${disbursement == null || milestones == null || #lists.isEmpty(milestones)}" class="alert alert-info p-4 text-center rounded border shadow-sm">
+            <div th:if="${milestones == null || #lists.isEmpty(milestones)}" class="alert alert-info p-4 text-center rounded border shadow-sm">
                 <i class="fa-solid fa-circle-info fa-2x text-primary mb-2"></i>
                 <h5 class="fw-bold text-navy">No Milestone Schedule Configured</h5>
-                <p class="mb-0 text-muted">No milestone schedule has been configured for this application yet.</p>
+                <p class="mb-3 text-muted">No milestone schedule has been configured for this application yet.</p>
+                <button th:if="${isFinanceApprover}" type="button" class="btn btn-primary fw-bold" data-bs-toggle="modal" data-bs-target="#configurePlanModal">
+                    <i class="fa-solid fa-plus me-1"></i> Configure Staged Plan
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Release History Audit Table -->
+    <div th:if="${releaseHistory != null and !#lists.isEmpty(releaseHistory)}" class="card gov-card shadow-sm border-0 mb-4">
+        <div class="card-header bg-light fw-bold py-3 text-navy">
+            <i class="fa-solid fa-receipt text-success me-2"></i> Grant Payment &amp; Release Audit Log History
+        </div>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table table-striped align-middle border">
+                    <thead class="table-secondary">
+                        <tr>
+                            <th>Txn Reference</th>
+                            <th>Stage Name</th>
+                            <th>Released Amount</th>
+                            <th>Release Timestamp</th>
+                            <th>Payment Method</th>
+                            <th>Authorized By</th>
+                            <th>Remarks</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="r : ${releaseHistory}">
+                            <td class="fw-bold text-navy" th:text="${r.transactionReference}">TXN-12345</td>
+                            <td th:text="${r.milestone.milestoneName}">Stage 1</td>
+                            <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(r.releasedAmount, 0, 'COMMA', 0, 'POINT')}">₹30,000</td>
+                            <td th:text="${#temporals.format(r.releaseDate, 'yyyy-MM-dd HH:mm')}">2026-09-23</td>
+                            <td><span class="badge bg-secondary" th:text="${r.paymentMethod}">DBT</span></td>
+                            <td th:text="${r.releasedBy}">finance@gov.in</td>
+                            <td class="small text-muted" th:text="${r.remarks}">Verified</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -157,6 +281,296 @@
     </div>
 </div>
 
+<!-- TOP-LEVEL MODALS CONTAINER -->
+<th:block th:if="${milestones != null}">
+    <div th:each="m : ${milestones}">
+
+        <!-- Release Modal for Finance -->
+        <div th:if="${isFinanceApprover and m.completionStatus != 'RELEASED' and m.completionStatus != 'COMPLETED'}" 
+             class="modal fade" 
+             th:id="'releaseModal-' + ${m.id}" 
+             tabindex="-1" 
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/finance/release-milestone}" method="post">
+                        <div class="modal-header bg-navy text-white">
+                            <h5 class="modal-title fw-bold"><i class="fa-solid fa-money-bill-transfer me-2 text-warning"></i> Release Milestone Grant</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-start">
+                            <input type="hidden" name="milestoneId" th:value="${m.id}">
+                            <input type="hidden" name="applicationId" th:value="${application.id}">
+
+                            <!-- Compliance Release Warning Banner -->
+                            <div th:if="${(m.requiredFlag == null or m.requiredFlag) and m.complianceVerificationStatus != 'VERIFIED'}" class="alert alert-danger fw-bold small mb-3">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i> Release Blocked: Required compliance milestone has not been verified. Status: <span th:text="${m.complianceVerificationStatus != null ? m.complianceVerificationStatus : 'PENDING'}">PENDING</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Stage Name</label>
+                                <input type="text" class="form-control bg-light" th:value="${m.milestoneName}" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Calculated Stage Amount (₹)</label>
+                                <input type="number" name="releaseAmount" class="form-control fw-bold text-success" th:value="${m.milestoneAmount}" step="0.01" required>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Transaction / Reference Number</label>
+                                <input type="text" name="transactionReference" class="form-control" placeholder="e.g. UTR-9988776655" required th:value="'TXN-' + ${m.id} + '-' + ${m.stageNumber}">
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Payment Method</label>
+                                <select name="paymentMethod" class="form-select">
+                                    <option value="DBT_BANK_TRANSFER" selected>DBT Direct Bank Transfer</option>
+                                    <option value="NEFT">NEFT Payment</option>
+                                    <option value="RTGS">RTGS Treasury</option>
+                                    <option value="TREASURY_PAYMENT">State Treasury Portal</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Release Authorization Remarks</label>
+                                <textarea name="remarks" class="form-control" rows="2" placeholder="Remarks regarding fund release approval...">Compliance proof verified. Releasing grant tranche.</textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light">
+                            <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-success fw-bold" th:disabled="${(m.requiredFlag == null or m.requiredFlag) and m.complianceVerificationStatus != 'VERIFIED'}"><i class="fa-solid fa-check-circle me-1"></i> Authorize &amp; Release Fund</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Beneficiary Compliance Upload Modal -->
+        <div th:if="${isBeneficiary and m.completionStatus != 'RELEASED' and m.completionStatus != 'COMPLETED'}"
+             class="modal fade"
+             th:id="'uploadComplianceModal-' + ${m.id}"
+             tabindex="-1"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/compliance/submit}" method="post" enctype="multipart/form-data">
+                        <div class="modal-header bg-navy text-white">
+                            <h5 class="modal-title fw-bold"><i class="fa-solid fa-cloud-arrow-up me-2 text-warning"></i> <span th:text="${'UPLOAD TERM ' + (m.stageNumber != null ? m.stageNumber : '') + ' DOCUMENT'}">UPLOAD TERM DOCUMENT</span></h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-start">
+                            <input type="hidden" name="milestoneId" th:value="${m.id}">
+                            <input type="hidden" name="applicationId" th:value="${application.id}">
+
+                            <div th:if="${m.rejectionReason != null and !m.rejectionReason.isBlank()}" class="alert alert-danger fw-bold small mb-3">
+                                <i class="fa-solid fa-triangle-exclamation me-1"></i> Previous Rejection Reason: <span th:text="${m.rejectionReason}">Reason</span>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Stage &amp; Term</label>
+                                <input type="text" class="form-control bg-light" th:value="${m.milestoneName}" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Required Document Type</label>
+                                <input type="text" class="form-control bg-light fw-bold text-primary" th:value="${T(com.example.digital_subsidy.service.DisbursementService).getDocumentTypeDisplayName(m.requiredDocumentType)}" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Upload Document (PDF, JPG, JPEG, PNG - Max 5MB)</label>
+                                <input type="file" name="file" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+                                <small class="text-muted">Accepted formats: PDF, JPG, JPEG, PNG (Maximum size: 5 MB)</small>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Beneficiary Remarks / Notes</label>
+                                <textarea name="beneficiaryRemarks" class="form-control" rows="2" placeholder="Enter details regarding your document submission..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light">
+                            <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-primary fw-bold"><i class="fa-solid fa-paper-plane me-1"></i> Submit Proof for Verification</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Officer / Finance Compliance Verification Modal -->
+        <div th:if="${!isBeneficiary and m.completionStatus != 'RELEASED' and m.completionStatus != 'COMPLETED'}"
+             class="modal fade"
+             th:id="'verifyComplianceModal-' + ${m.id}"
+             tabindex="-1"
+             aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <form th:action="@{/compliance/verify}" method="post">
+                        <div class="modal-header bg-navy text-white">
+                            <h5 class="modal-title fw-bold"><i class="fa-solid fa-shield-check me-2 text-warning"></i> Review &amp; Verify Compliance Proof</h5>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body text-start">
+                            <input type="hidden" name="milestoneId" th:value="${m.id}">
+                            <input type="hidden" name="applicationId" th:value="${application.id}">
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Stage Name</label>
+                                <input type="text" class="form-control bg-light" th:value="${m.milestoneName}" readonly>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Submitted Document</label>
+                                <div th:if="${m.submittedDocument != null}">
+                                    <a th:href="@{'/documents/' + ${m.submittedDocument.id} + '/view'}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold">
+                                        <i class="fa-solid fa-file-pdf me-1"></i> View Submitted Proof (<span th:text="${m.submittedDocument.fileName}">File</span>)
+                                    </a>
+                                </div>
+                                <div th:if="${m.submittedDocument == null}" class="text-muted small">
+                                    No document uploaded yet.
+                                </div>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Verification Decision</label>
+                                <select name="action" class="form-select fw-bold">
+                                    <option value="VERIFY" selected class="text-success">APPROVE &amp; MARK VERIFIED</option>
+                                    <option value="REUPLOAD_REQUIRED" class="text-danger">REJECT &amp; REQUEST RE-UPLOAD</option>
+                                </select>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label fw-bold small text-navy">Officer Remarks / Rejection Reason (Mandatory if Rejecting)</label>
+                                <textarea name="remarks" class="form-control" rows="3" placeholder="Enter verification review remarks or mandatory rejection reason if requesting re-upload..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer bg-light">
+                            <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
+                            <button type="submit" class="btn btn-navy text-white fw-bold"><i class="fa-solid fa-floppy-disk me-1"></i> Submit Compliance Review</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</th:block>
+
+<!-- Modal: Configure Custom Disbursement Plan -->
+<div th:if="${isFinanceApprover}" class="modal fade" id="configurePlanModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <form th:action="@{/finance/configure-plan}" method="post">
+                <div class="modal-header bg-navy text-white">
+                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-sliders me-2 text-warning"></i> Configure Staged Disbursement Plan</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="applicationId" th:value="${application.id}">
+                    <input type="hidden" name="calculationType" value="PERCENTAGE">
+
+                    <div class="alert alert-info py-2 small mb-3">
+                        <i class="fa-solid fa-circle-info me-1"></i> Total percentage across all stages must equal exactly 100%. Stage amounts will be calculated automatically based on the Sanctioned Amount (₹<span th:text="${#numbers.formatDecimal(totalSanctioned, 0, 'COMMA', 0, 'POINT')}">1,00,000</span>).
+                    </div>
+
+                    <!-- Stage 1 -->
+                    <div class="card mb-3 border">
+                        <div class="card-header bg-light fw-bold py-2 small text-navy">Stage 1 Configuration</div>
+                        <div class="card-body p-3">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Stage Name</label>
+                                    <input type="text" name="stageNames" class="form-control form-control-sm" value="Stage 1 - Initial Advance" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold">Percentage (%)</label>
+                                    <input type="number" name="percentages" class="form-control form-control-sm" value="30" min="1" max="100" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold">Due Date</label>
+                                    <input type="date" name="dueDates" class="form-control form-control-sm" required th:value="${#temporals.format(#temporals.createNow().plusDays(15), 'yyyy-MM-dd')}">
+                                </div>
+                                <div class="col-md-12 mt-2">
+                                    <label class="form-label small fw-bold">Required Compliance / Proof Condition</label>
+                                    <input type="text" name="complianceConditions" class="form-control form-control-sm" value="Initial Document & Sanction Order Verification">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 2 -->
+                    <div class="card mb-3 border">
+                        <div class="card-header bg-light fw-bold py-2 small text-navy">Stage 2 Configuration</div>
+                        <div class="card-body p-3">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Stage Name</label>
+                                    <input type="text" name="stageNames" class="form-control form-control-sm" value="Stage 2 - Mid-Term Milestone" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold">Percentage (%)</label>
+                                    <input type="number" name="percentages" class="form-control form-control-sm" value="40" min="1" max="100" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold">Due Date</label>
+                                    <input type="date" name="dueDates" class="form-control form-control-sm" required th:value="${#temporals.format(#temporals.createNow().plusDays(45), 'yyyy-MM-dd')}">
+                                </div>
+                                <div class="col-md-12 mt-2">
+                                    <label class="form-label small fw-bold">Required Compliance / Proof Condition</label>
+                                    <input type="text" name="complianceConditions" class="form-control form-control-sm" value="50% Utilization Certificate & Field Officer Inspection">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Stage 3 -->
+                    <div class="card mb-3 border">
+                        <div class="card-header bg-light fw-bold py-2 small text-navy">Stage 3 Configuration</div>
+                        <div class="card-body p-3">
+                            <div class="row g-2">
+                                <div class="col-md-6">
+                                    <label class="form-label small fw-bold">Stage Name</label>
+                                    <input type="text" name="stageNames" class="form-control form-control-sm" value="Stage 3 - Final Completion" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold">Percentage (%)</label>
+                                    <input type="number" name="percentages" class="form-control form-control-sm" value="30" min="1" max="100" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label small fw-bold">Due Date</label>
+                                    <input type="date" name="dueDates" class="form-control form-control-sm" required th:value="${#temporals.format(#temporals.createNow().plusDays(90), 'yyyy-MM-dd')}">
+                                </div>
+                                <div class="col-md-12 mt-2">
+                                    <label class="form-label small fw-bold">Required Compliance / Proof Condition</label>
+                                    <input type="text" name="complianceConditions" class="form-control form-control-sm" value="Final Completion Certificate & Geo-tagged Proof">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer bg-light">
+                    <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary fw-bold"><i class="fa-solid fa-save me-1"></i> Save Staged Plan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script th:inline="javascript">
+    document.addEventListener("DOMContentLoaded", function() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const milestoneId = urlParams.get('milestoneId');
+        if (milestoneId) {
+            const modalEl = document.getElementById('uploadComplianceModal-' + milestoneId);
+            if (modalEl) {
+                const modal = new bootstrap.Modal(modalEl);
+                modal.show();
+            }
+        }
+    });
+</script>
 <footer th:replace="~{fragments/footer :: footer}"></footer>
 </body>
 </html>

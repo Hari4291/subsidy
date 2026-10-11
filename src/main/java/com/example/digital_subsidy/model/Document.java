@@ -19,6 +19,10 @@ public class Document {
     @JoinColumn(name = "application_id")
     private Application application;
 
+    @ManyToOne
+    @JoinColumn(name = "milestone_id")
+    private Milestone milestone;
+
     @Column(name = "document_type", nullable = false, length = 50)
     private String documentType; // AADHAAR, BANK_PASSBOOK, INCOME_CERTIFICATE, CASTE_CERTIFICATE, LAND_DOCUMENT, OTHER
 
@@ -164,5 +168,13 @@ public class Document {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public Milestone getMilestone() {
+        return milestone;
+    }
+
+    public void setMilestone(Milestone milestone) {
+        this.milestone = milestone;
     }
 }

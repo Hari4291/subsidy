@@ -29,6 +29,9 @@ public class DisbursementMilestone {
     @Column(length = 255)
     private String description;
 
+    @Column(name = "required_document_type", length = 100)
+    private String requiredDocumentType;
+
     public DisbursementMilestone() {}
 
     public DisbursementMilestone(Scheme scheme, String milestoneName, Integer percentage, Integer displayOrder, Boolean active, String description) {
@@ -38,6 +41,16 @@ public class DisbursementMilestone {
         this.displayOrder = displayOrder;
         this.active = active;
         this.description = description;
+    }
+
+    public DisbursementMilestone(Scheme scheme, String milestoneName, Integer percentage, Integer displayOrder, Boolean active, String description, String requiredDocumentType) {
+        this.scheme = scheme;
+        this.milestoneName = milestoneName;
+        this.percentage = percentage;
+        this.displayOrder = displayOrder;
+        this.active = active;
+        this.description = description;
+        this.requiredDocumentType = requiredDocumentType;
     }
 
     public Long getId() {
@@ -94,5 +107,13 @@ public class DisbursementMilestone {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getRequiredDocumentType() {
+        return requiredDocumentType;
+    }
+
+    public void setRequiredDocumentType(String requiredDocumentType) {
+        this.requiredDocumentType = requiredDocumentType;
     }
 }

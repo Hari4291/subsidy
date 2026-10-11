@@ -34,6 +34,9 @@ public class Disbursement {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
     @OneToMany(mappedBy = "disbursement", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Milestone> milestones = new ArrayList<>();
 
@@ -64,11 +67,18 @@ public class Disbursement {
     }
 
     public BigDecimal getDisbursedAmount() {
-        return disbursedAmount;
+        return disbursedAmount != null ? disbursedAmount : BigDecimal.ZERO;
     }
 
     public void setDisbursedAmount(BigDecimal disbursedAmount) {
         this.disbursedAmount = disbursedAmount;
+    }
+
+    public BigDecimal getRemainingAmount() {
+        BigDecimal total = getTotalSanctionedAmount() != null ? getTotalSanctionedAmount() : BigDecimal.ZERO;
+        BigDecimal disbursed = getDisbursedAmount();
+        BigDecimal remaining = total.subtract(disbursed);
+        return remaining.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : remaining;
     }
 
     public String getStatus() {
@@ -93,6 +103,14 @@ public class Disbursement {
 
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 
     public List<Milestone> getMilestones() {

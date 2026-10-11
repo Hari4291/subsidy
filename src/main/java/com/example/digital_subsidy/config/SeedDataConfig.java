@@ -9,6 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Configuration
@@ -34,15 +35,18 @@ public class SeedDataConfig {
             Role roleBeneficiary = createRoleIfNotFound(roleRepository, "ROLE_BENEFICIARY");
 
             // 2. Users & Officers
-            createUserIfNotFound(userRepository, passwordEncoder, "admin@gov.in", "9876543210", "System Administrator", "Admin@123", roleAdmin);
+            createUserIfNotFound(userRepository, passwordEncoder, "johnmekala4277@gmail.com", "9876543210", "System Administrator", "Admin@123", roleAdmin);
 
-            User fieldUser = createUserIfNotFound(userRepository, passwordEncoder, "field.officer@gmail.com", "8123456789", "Ravi Kumar (Field Officer)", "Field@123", roleField);
-            createOfficerIfNotFound(officerRepository, fieldUser, "FIELD_OFFICER", "Andhra Pradesh", "Kakinada");
+            // Field Officer
+            User fieldUser1 = createUserIfNotFound(userRepository, passwordEncoder, "pabbuletihari4291@gmail.com", "8123456789", "Hari Pabbuleti (Field Officer)", "Field@123", roleField);
+            createOfficerIfNotFound(officerRepository, fieldUser1, "FIELD_OFFICER", "Andhra Pradesh", "Kakinada");
 
-            User districtUser = createUserIfNotFound(userRepository, passwordEncoder, "district.officer@gmail.com", "7890123456", "Sita Sharma (District Collectorate)", "District@123", roleDistrict);
+            // District Officer
+            User districtUser = createUserIfNotFound(userRepository, passwordEncoder, "kalyanramvase377@gmail.com", "7890123456", "Sita Sharma (District Collectorate)", "District@123", roleDistrict);
             createOfficerIfNotFound(officerRepository, districtUser, "DISTRICT_OFFICER", "Andhra Pradesh", "Kakinada");
 
-            User financeUser = createUserIfNotFound(userRepository, passwordEncoder, "finance.approver@gmail.com", "9123456780", "Anil Mehta (Finance Approver)", "Finance@123", roleFinance);
+            // Finance Approver
+            User financeUser = createUserIfNotFound(userRepository, passwordEncoder, "pabbuletihari0@gmail.com", "9123456780", "Anil Mehta (Finance Approver)", "Finance@123", roleFinance);
             createOfficerIfNotFound(officerRepository, financeUser, "FINANCE_APPROVER", "Andhra Pradesh", "Kakinada");
 
             if (userRepository.findByEmail("hari.pabbu@gmail.com").isEmpty()) {
@@ -52,10 +56,9 @@ public class SeedDataConfig {
                 benUser.setMobileNumber("9988776655");
                 benUser.setPassword(passwordEncoder.encode("Hari@1234"));
                 benUser.getRoles().add(roleBeneficiary);
-                User savedUser = userRepository.save(benUser);
 
                 Beneficiary ben = new Beneficiary();
-                ben.setUser(savedUser);
+                ben.setUser(benUser);
                 ben.setAge(28);
                 ben.setGender("Male");
                 ben.setCategory("OBC");
@@ -82,16 +85,39 @@ public class SeedDataConfig {
     }
 
     private User createUserIfNotFound(UserRepository repo, PasswordEncoder encoder, String email, String mobile, String name, String rawPwd, Role role) {
-        return repo.findByEmail(email).orElseGet(() -> {
-            User user = new User();
-            user.setEmail(email);
-            user.setMobileNumber(mobile);
-            user.setFullName(name);
-            user.setPassword(encoder.encode(rawPwd));
-            user.getRoles().add(role);
-            return repo.save(user);
-        });
+        Optional<User> byEmail = repo.findByEmail(email);
+        if (byEmail.isPresent()) {
+            return byEmail.get();
+        }
+
+        if ("ROLE_ADMIN".equals(role.getName())) {
+            List<User> admins = repo.findByRolesName("ROLE_ADMIN");
+            if (!admins.isEmpty()) {
+                User existingAdmin = admins.get(0);
+                existingAdmin.setEmail(email);
+                return repo.save(existingAdmin);
+            }
+        }
+
+        Optional<User> byMobile = repo.findAll().stream()
+                .filter(u -> mobile != null && mobile.equals(u.getMobileNumber()))
+                .findFirst();
+        if (byMobile.isPresent()) {
+            User existingUser = byMobile.get();
+            existingUser.setEmail(email);
+            return repo.save(existingUser);
+        }
+
+        User user = new User();
+        user.setEmail(email);
+        user.setMobileNumber(mobile);
+        user.setFullName(name);
+        user.setPassword(encoder.encode(rawPwd));
+        user.getRoles().add(role);
+        return repo.save(user);
     }
+
+
 
     private void createOfficerIfNotFound(OfficerRepository repo, User user, String type, String state, String district) {
         if (repo.findByUserEmail(user.getEmail()).isEmpty()) {
@@ -99,6 +125,7 @@ public class SeedDataConfig {
             repo.save(officer);
         }
     }
+
 
     private void seedRegions(RegionRepository repo) {
         // 1. Andhra Pradesh - 26 districts
@@ -480,9 +507,9 @@ public class SeedDataConfig {
         createOrUpdateRequiredDoc(reqDocRepo, s, "Income Certificate", "INCOME_CERTIFICATE", true, "PDF, JPG, JPEG, PNG", 5, 4);
 
         seedSchemeMilestoneIfEmpty(milestoneRepo, s, List.of(
-            new MilestoneSeed("Initial Equipment Sanction", 30, 1, "First tranche upon equipment sanction approval"),
-            new MilestoneSeed("Installation Verification", 40, 2, "Second tranche upon drip/pump installation proof"),
-            new MilestoneSeed("Final Field Operational Sign-off", 30, 3, "Final tranche upon field officer verification")
+            new MilestoneSeed("Initial Equipment Sanction", 30, 1, "First tranche upon equipment sanction approval", "EQUIPMENT_PURCHASE_INVOICE"),
+            new MilestoneSeed("Installation Verification", 40, 2, "Second tranche upon drip/pump installation proof", "UTILIZATION_CERTIFICATE"),
+            new MilestoneSeed("Final Field Operational Sign-off", 30, 3, "Final tranche upon field officer verification", "FINAL_UTILIZATION_CERTIFICATE")
         ));
     }
 
@@ -495,14 +522,17 @@ public class SeedDataConfig {
         createCriteria(criteriaRepo, s, "SOLAR_CAPACITY", "NUMERIC", "GTE", "1", 20, "Proposed solar plant capacity (1 to 5 kW)", "What solar capacity are you applying for? (kW)", "NUMBER", null, 4);
         createCriteria(criteriaRepo, s, "MAX_INCOME", "NUMERIC", "LTE", "600000", 20, "Annual household income limit ₹6,00,000", "What is your annual household income? (₹)", "NUMBER", null, 5);
 
+        reqDocRepo.deleteByScheme(s);
+
         createOrUpdateRequiredDoc(reqDocRepo, s, "Aadhaar Card", "AADHAAR", true, "PDF, JPG, JPEG, PNG", 5, 1);
-        createOrUpdateRequiredDoc(reqDocRepo, s, "Electricity Bill", "ELECTRICITY_BILL", true, "PDF, JPG, JPEG, PNG", 5, 2);
-        createOrUpdateRequiredDoc(reqDocRepo, s, "Property Ownership Proof", "PROPERTY_OWNERSHIP", true, "PDF, JPG, JPEG, PNG", 5, 3);
+        createOrUpdateRequiredDoc(reqDocRepo, s, "Bank Passbook", "BANK_PASSBOOK", true, "PDF, JPG, JPEG, PNG", 5, 2);
+        createOrUpdateRequiredDoc(reqDocRepo, s, "Latest Electricity Bill", "ELECTRICITY_BILL", true, "PDF, JPG, JPEG, PNG", 5, 3);
+        createOrUpdateRequiredDoc(reqDocRepo, s, "Income Certificate", "INCOME_CERTIFICATE", true, "PDF, JPG, JPEG, PNG", 5, 4);
 
         seedSchemeMilestoneIfEmpty(milestoneRepo, s, List.of(
-            new MilestoneSeed("Rooftop Structure Inspection", 30, 1, "First tranche upon structural feasibility approval"),
-            new MilestoneSeed("Solar Panel & Inverter Installation", 40, 2, "Second tranche upon panel mounting and wiring"),
-            new MilestoneSeed("Grid Synchronization & Commissioning", 30, 3, "Final tranche upon net metering activation")
+            new MilestoneSeed("Rooftop Structure Inspection", 30, 1, "First tranche upon structural feasibility approval", "INSTALLATION_WORK_ORDER"),
+            new MilestoneSeed("Solar Panel & Inverter Installation", 40, 2, "Second tranche upon panel mounting and wiring", "INSTALLATION_PROGRESS_REPORT"),
+            new MilestoneSeed("Grid Synchronization & Commissioning", 30, 3, "Final tranche upon net metering activation", "COMMISSIONING_CERTIFICATE")
         ));
     }
 
@@ -520,9 +550,9 @@ public class SeedDataConfig {
         createOrUpdateRequiredDoc(reqDocRepo, s, "Enterprise Proof", "ENTERPRISE_PROOF", true, "PDF, JPG, JPEG, PNG", 5, 3);
 
         seedSchemeMilestoneIfEmpty(milestoneRepo, s, List.of(
-            new MilestoneSeed("Equipment Procurement Order", 40, 1, "First tranche upon equipment PO submission"),
-            new MilestoneSeed("Technology Integration Audit", 30, 2, "Second tranche upon software/tool integration"),
-            new MilestoneSeed("Production & Commercial Go-Live", 30, 3, "Final tranche upon successful commercial operation")
+            new MilestoneSeed("Equipment Procurement Order", 40, 1, "First tranche upon equipment PO submission", "EQUIPMENT_PURCHASE_INVOICE"),
+            new MilestoneSeed("Technology Integration Audit", 30, 2, "Second tranche upon software/tool integration", "UTILIZATION_CERTIFICATE"),
+            new MilestoneSeed("Production & Commercial Go-Live", 30, 3, "Final tranche upon successful commercial operation", "FINAL_UTILIZATION_CERTIFICATE")
         ));
     }
 
@@ -546,19 +576,28 @@ public class SeedDataConfig {
         createOrUpdateRequiredDoc(reqDocRepo, s, "Bank Passbook", "BANK_PASSBOOK", true, "PDF, JPG, JPEG, PNG", 5, 6);
 
         seedSchemeMilestoneIfEmpty(milestoneRepo, s, List.of(
-            new MilestoneSeed("Admission Verification", 30, 1, "First tranche upon admission verification"),
-            new MilestoneSeed("Fee Verification", 40, 2, "Second tranche upon fee receipt submission"),
-            new MilestoneSeed("Academic Continuation", 30, 3, "Final tranche upon mid-term continuation proof")
+            new MilestoneSeed("Admission Verification", 30, 1, "First tranche upon admission verification", "ADMISSION_PROOF"),
+            new MilestoneSeed("Fee Verification", 40, 2, "Second tranche upon fee receipt submission", "FEE_PAYMENT_RECEIPT"),
+            new MilestoneSeed("Academic Continuation", 30, 3, "Final tranche upon mid-term continuation proof", "COURSE_PROGRESS_CERTIFICATE")
         ));
     }
 
-    private static record MilestoneSeed(String name, int pct, int order, String desc) {}
+    private static record MilestoneSeed(String name, int pct, int order, String desc, String requiredDocumentType) {}
 
     private void seedSchemeMilestoneIfEmpty(com.example.digital_subsidy.repository.DisbursementMilestoneRepository repo, Scheme scheme, List<MilestoneSeed> seeds) {
         List<com.example.digital_subsidy.model.DisbursementMilestone> existing = repo.findBySchemeIdOrderByDisplayOrderAsc(scheme.getId());
         if (existing.isEmpty()) {
             for (MilestoneSeed seed : seeds) {
-                repo.save(new com.example.digital_subsidy.model.DisbursementMilestone(scheme, seed.name(), seed.pct(), seed.order(), true, seed.desc()));
+                repo.save(new com.example.digital_subsidy.model.DisbursementMilestone(scheme, seed.name(), seed.pct(), seed.order(), true, seed.desc(), seed.requiredDocumentType()));
+            }
+        } else {
+            for (int i = 0; i < existing.size() && i < seeds.size(); i++) {
+                com.example.digital_subsidy.model.DisbursementMilestone dm = existing.get(i);
+                MilestoneSeed seed = seeds.get(i);
+                if (dm.getRequiredDocumentType() == null || dm.getRequiredDocumentType().isBlank()) {
+                    dm.setRequiredDocumentType(seed.requiredDocumentType());
+                    repo.save(dm);
+                }
             }
         }
     }

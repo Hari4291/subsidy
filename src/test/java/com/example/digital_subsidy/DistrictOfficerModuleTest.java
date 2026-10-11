@@ -67,13 +67,13 @@ public class DistrictOfficerModuleTest {
                 .apply(springSecurity())
                 .build();
 
-        districtUser = userRepository.findByEmail("district.officer@gmail.com")
+        districtUser = userRepository.findByEmail("kalyanramvase377@gmail.com")
                 .or(() -> userRepository.findByEmail("district@gov.in"))
                 .orElseGet(() -> {
                     long ts = System.currentTimeMillis();
                     User u = new User();
                     u.setFullName("District Collector");
-                    u.setEmail("district.officer@gmail.com");
+                    u.setEmail("kalyanramvase377@gmail.com");
                     u.setPassword("password");
                     u.setMobileNumber("987" + (ts % 10000000L));
                     return userRepository.save(u);
@@ -96,7 +96,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("District Officer Dashboard renders with district metrics and no nulls")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testDistrictOfficerDashboard() throws Exception {
         mockMvc.perform(get("/district-officer/dashboard"))
                 .andExpect(status().isOk())
@@ -106,7 +106,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("District Officer Escalations page renders successfully")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testEscalationsPage() throws Exception {
         mockMvc.perform(get("/district-officer/escalations"))
                 .andExpect(status().isOk())
@@ -116,7 +116,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("District Officer Anomalies page renders successfully")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testAnomaliesPage() throws Exception {
         mockMvc.perform(get("/district-officer/anomalies"))
                 .andExpect(status().isOk())
@@ -126,7 +126,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("District Officer Budget page renders successfully")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testBudgetPage() throws Exception {
         mockMvc.perform(get("/district-officer/budget"))
                 .andExpect(status().isOk())
@@ -136,7 +136,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("District Officer Grievances page renders successfully")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testGrievancesPage() throws Exception {
         mockMvc.perform(get("/district-officer/grievances"))
                 .andExpect(status().isOk())
@@ -146,7 +146,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("District Officer Field Officers page renders successfully")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testOfficersPage() throws Exception {
         mockMvc.perform(get("/district-officer/officers"))
                 .andExpect(status().isOk())
@@ -156,7 +156,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("District Officer Reports & Analytics page renders successfully")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testReportsPage() throws Exception {
         mockMvc.perform(get("/district-officer/reports"))
                 .andExpect(status().isOk())
@@ -166,7 +166,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("District Officer Audit page renders successfully")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testAuditPage() throws Exception {
         mockMvc.perform(get("/district-officer/audit"))
                 .andExpect(status().isOk())
@@ -176,7 +176,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("Resolve Escalation action redirects to escalations with success message")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testResolveEscalationAction() throws Exception {
         Application app = createTestApplication();
         ApplicationEscalation escalation = new ApplicationEscalation(app, 5, 7, "ESCALATED", "Ground signature discrepancy");
@@ -193,7 +193,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("Resolve Anomaly action redirects to anomalies with success message")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testResolveAnomalyAction() throws Exception {
         Application app = createTestApplication();
         AnomalyFlag flag = new AnomalyFlag(app, "INCOME_GRANT_MISMATCH", "High requested amount flagged", "HIGH");
@@ -210,7 +210,7 @@ public class DistrictOfficerModuleTest {
 
     @Test
     @DisplayName("Resolve Grievance action redirects to grievances with success message")
-    @WithMockUser(username = "district.officer@gmail.com", roles = {"DISTRICT_OFFICER"})
+    @WithMockUser(username = "kalyanramvase377@gmail.com", roles = {"DISTRICT_OFFICER"})
     void testResolveGrievanceAction() throws Exception {
         Application app = createTestApplication();
         Grievance grievance = new Grievance();

@@ -206,7 +206,7 @@ public class DistrictOfficerReverificationTest {
 
         // Verify Audit Log
         List<AuditLog> auditLogs = auditLogRepository.findAll();
-        boolean auditExists = auditLogs.stream().anyMatch(l -> l.getEntityId().equals(appId) && "RE_VERIFICATION_REQUESTED".equalsIgnoreCase(l.getAction()));
+        boolean auditExists = auditLogs.stream().anyMatch(l -> l.getEntityId() != null && l.getEntityId().equals(appId) && "RE_VERIFICATION_REQUESTED".equalsIgnoreCase(l.getAction()));
         assertTrue(auditExists, "Audit log for RE_VERIFICATION_REQUESTED must be logged.");
 
         // Verify Notification for Field Officer

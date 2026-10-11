@@ -7,52 +7,759 @@
 
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-6 col-lg-5">
-            <div class="card gov-card shadow-sm border-0">
-                <div class="card-header gov-card-header bg-navy text-white text-center py-3">
-                    <h4 class="mb-0 fw-bold"><i class="fa-solid fa-shield-halved me-2 text-warning"></i> Portal Authentication</h4>
-                    <small class="text-light">Official Government Single Sign-On Service</small>
-                </div>
-                <div class="card-body p-4">
+        <div class="col-md-9 col-lg-7">
 
-                    <!-- Alert Banners -->
-                    <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}">Invalid credentials</div>
-                    <div th:if="${infoMessage}" class="alert alert-info" role="alert" th:text="${infoMessage}">Logged out</div>
-                    <div th:if="${param.logout != null and infoMessage == null}" class="alert alert-info" role="alert">You have been logged out successfully.</div>
-                    <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">Registration successful</div>
+            <!-- ─── TAB SELECTION ──────────────────────────── -->
+            <ul class="nav nav-pills mb-4 justify-content-center gap-1" id="loginTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active fw-semibold px-3 py-2 small" id="beneficiary-tab"
+                            data-bs-toggle="pill" data-bs-target="#beneficiaryLogin"
+                            type="button" role="tab" aria-selected="true">
+                        <i class="fa-solid fa-user me-1"></i> Beneficiary
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold px-3 py-2 small" id="admin-tab"
+                            data-bs-toggle="pill" data-bs-target="#adminLogin"
+                            type="button" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-user-shield me-1"></i> Admin OTP
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold px-3 py-2 small" id="officer-tab"
+                            data-bs-toggle="pill" data-bs-target="#officerLogin"
+                            type="button" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-id-badge me-1"></i> Field Officer
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold px-3 py-2 small" id="district-tab"
+                            data-bs-toggle="pill" data-bs-target="#districtOfficerLogin"
+                            type="button" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-building-user me-1"></i> District Officer
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link fw-semibold px-3 py-2 small" id="finance-tab"
+                            data-bs-toggle="pill" data-bs-target="#financeApproverLogin"
+                            type="button" role="tab" aria-selected="false">
+                        <i class="fa-solid fa-coins me-1"></i> Finance Approver
+                    </button>
+                </li>
+            </ul>
 
-                    <form th:action="@{/login}" method="post">
-                        <div class="mb-3">
-                            <label for="email" class="form-label fw-bold">Gmail / Official Email ID</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
-                                <input type="email" id="email" name="email" class="form-control" placeholder="name@gmail.com" required autofocus>
+            <div class="tab-content" id="loginTabContent">
+
+                <!-- ─── TAB 1: Beneficiary Login (Password) ─── -->
+                <div class="tab-pane fade show active" id="beneficiaryLogin" role="tabpanel">
+                    <div class="card gov-card shadow-sm border-0">
+                        <div class="card-header gov-card-header bg-navy text-white text-center py-3">
+                            <h4 class="mb-0 fw-bold">
+                                <i class="fa-solid fa-shield-halved me-2 text-warning"></i>
+                                Beneficiary Portal Sign-In
+                            </h4>
+                            <small class="text-light">Official Password Authentication for Beneficiaries</small>
+                        </div>
+                        <div class="card-body p-4">
+
+                            <!-- Alerts -->
+                            <div th:if="${errorMessage}" class="alert alert-danger" role="alert" th:text="${errorMessage}">Invalid credentials</div>
+                            <div th:if="${infoMessage}" class="alert alert-info" role="alert" th:text="${infoMessage}">Logged out</div>
+                            <div th:if="${param.logout != null and infoMessage == null}" class="alert alert-info" role="alert">You have been logged out successfully.</div>
+                            <div th:if="${successMessage}" class="alert alert-success" role="alert" th:text="${successMessage}">Registration successful</div>
+
+                            <form th:action="@{/login}" method="post">
+                                <div class="mb-3">
+                                    <label for="email" class="form-label fw-bold">Beneficiary Email ID</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                                        <input type="email" id="email" name="email" class="form-control" placeholder="name@gmail.com" required autofocus>
+                                    </div>
+                                </div>
+
+                                <div class="mb-4">
+                                    <label for="password" class="form-label fw-bold">Password</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
+                                        <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mb-3">
+                                    <button type="submit" class="btn btn-navy btn-lg fw-bold text-white">
+                                        <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In to Portal
+                                    </button>
+                                </div>
+                            </form>
+
+                            <div class="text-center mt-3 pt-3 border-top">
+                                <p class="small text-muted mb-0">
+                                    Don't have a beneficiary account?
+                                    <a th:href="@{/register}" class="fw-bold text-primary">Register Here</a>
+                                </p>
                             </div>
                         </div>
-
-                        <div class="mb-4">
-                            <label for="password" class="form-label fw-bold">Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fa-solid fa-key"></i></span>
-                                <input type="password" id="password" name="password" class="form-control" placeholder="••••••••" required>
-                            </div>
-                        </div>
-
-                        <div class="d-grid mb-3">
-                            <button type="submit" class="btn btn-navy btn-lg fw-bold text-white"><i class="fa-solid fa-right-to-bracket me-2"></i> Sign In to Portal</button>
-                        </div>
-                    </form>
-
-                    <div class="text-center mt-3 pt-3 border-top">
-                        <p class="small text-muted mb-0">Don't have a beneficiary account? <a th:href="@{/register}" class="fw-bold text-primary">Register Here</a></p>
                     </div>
                 </div>
-            </div>
 
+                <!-- ─── TAB 2: Admin OTP Login ────────────────────── -->
+                <div class="tab-pane fade" id="adminLogin" role="tabpanel"
+                     th:classappend="${adminOtpStep != null and adminOtpStep} ? 'show active' : ''">
+                    <div class="card gov-card shadow-sm border-0">
+                        <div class="card-header bg-navy text-white text-center py-3">
+                            <h4 class="mb-0 fw-bold">
+                                <i class="fa-solid fa-user-shield me-2 text-warning"></i>
+                                System Administrator Login
+                            </h4>
+                            <small class="text-light">Secure Email OTP Authentication</small>
+                        </div>
+                        <div class="card-body p-4">
+
+                            <!-- OTP error -->
+                            <div th:if="${adminOtpError}" class="alert alert-danger" role="alert" th:text="${adminOtpError}"></div>
+
+                            <!-- STEP 1: Email -->
+                            <div id="adminStep1" th:class="${adminOtpStep != null and adminOtpStep} ? 'd-none' : ''">
+                                <p class="text-muted small mb-3">
+                                    Enter your registered System Administrator email address to receive a login OTP.
+                                </p>
+
+                                <div class="mb-3">
+                                    <label for="adminOtpEmail" class="form-label fw-bold">Registered Admin Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                                        <input type="email" id="adminOtpEmail" class="form-control"
+                                               placeholder="johnmekala4277@gmail.com"
+                                               th:value="${adminOtpEmail}"
+                                               required>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mb-3">
+                                    <button type="button" id="adminSendBtn" class="btn btn-navy btn-lg fw-bold text-white"
+                                            onclick="sendOfficerOtp('/admin-login', 'adminOtpEmail', 'adminSendBtn', 'adminSendAlert', 'adminStep1', 'adminStep2', 'adminVerifyEmail', 'adminDisplayEmail')">
+                                        <i class="fa-solid fa-paper-plane me-2"></i> Send OTP
+                                    </button>
+                                </div>
+                                <div id="adminSendAlert" class="d-none"></div>
+                            </div>
+
+                            <!-- STEP 2: OTP Entry -->
+                            <div id="adminStep2" th:class="${adminOtpStep != null and adminOtpStep} ? '' : 'd-none'">
+                                <p class="text-muted small mb-1">
+                                    OTP sent to: <strong id="adminDisplayEmail" th:text="${adminOtpEmail}">—</strong>
+                                </p>
+
+                                <div class="alert alert-info py-2 mb-3" id="adminOtpCountdownAlert">
+                                    <i class="fa-solid fa-clock me-1"></i>
+                                    OTP expires in: <strong id="adminOtpCountdown">05:00</strong>
+                                </div>
+
+                                <form th:action="@{/admin-login/verify-otp}" method="post" id="adminVerifyForm">
+                                    <input type="hidden" name="email" id="adminVerifyEmail" th:value="${adminOtpEmail}">
+
+                                    <div class="mb-3">
+                                        <label for="adminOtpInput" class="form-label fw-bold">One-Time Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                                            <input type="text" id="adminOtpInput" name="otp"
+                                                   class="form-control form-control-lg text-center fw-bold fs-4 numeric-otp"
+                                                   maxlength="6" minlength="6"
+                                                   placeholder="○ ○ ○ ○ ○ ○"
+                                                   autocomplete="one-time-code"
+                                                   inputmode="numeric"
+                                                   pattern="[0-9]{6}"
+                                                   required>
+                                        </div>
+                                        <div class="form-text">Enter the 6-digit code sent to your admin email.</div>
+                                    </div>
+
+                                    <div class="d-grid mb-3">
+                                        <button type="submit" class="btn btn-success btn-lg fw-bold">
+                                            <i class="fa-solid fa-check-circle me-2"></i> Verify &amp; Login
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="text-center mt-2">
+                                    <small class="text-muted" id="adminResendCooldownMsg">
+                                        <i class="fa-solid fa-hourglass-half me-1"></i>
+                                        Resend available in <strong id="adminResendCountdown">01:00</strong>
+                                    </small>
+                                    <div id="adminResendBtnWrapper" class="d-none">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                onclick="resendOfficerOtp('/admin-login', 'adminVerifyEmail', 'adminResendBtnWrapper', 'adminVerifyForm')">
+                                            <i class="fa-solid fa-rotate-right me-1"></i> Resend OTP
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-3 pt-3 border-top">
+                                    <a href="#" class="small text-muted" onclick="resetStep('adminStep1', 'adminStep2', 'adminOtpInput'); return false;">
+                                        <i class="fa-solid fa-arrow-left me-1"></i> Use a different email
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── TAB 3: Field Officer OTP Login ─────────────── -->
+                <div class="tab-pane fade" id="officerLogin" role="tabpanel"
+                     th:classappend="${otpStep != null and otpStep} ? 'show active' : ''">
+                    <div class="card gov-card shadow-sm border-0">
+                        <div class="card-header bg-navy text-white text-center py-3">
+                            <h4 class="mb-0 fw-bold">
+                                <i class="fa-solid fa-shield-halved me-2 text-warning"></i>
+                                Field Officer Login
+                            </h4>
+                            <small class="text-light">Secure OTP Authentication</small>
+                        </div>
+                        <div class="card-body p-4">
+
+                            <!-- OTP error -->
+                            <div th:if="${otpError}" class="alert alert-danger" role="alert" th:text="${otpError}"></div>
+
+                            <!-- STEP 1: Email -->
+                            <div id="otpStep1" th:class="${otpStep != null and otpStep} ? 'd-none' : ''">
+                                <p class="text-muted small mb-3">
+                                    Enter your registered Field Officer email address to receive a login OTP.
+                                </p>
+
+                                <div class="mb-3">
+                                    <label for="otpEmail" class="form-label fw-bold">Registered Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                                        <input type="email" id="otpEmail" class="form-control"
+                                               placeholder="pabbuletihari4291@gmail.com"
+                                               th:value="${otpEmail}"
+                                               required>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mb-3">
+                                    <button type="button" id="sendOtpBtn" class="btn btn-navy btn-lg fw-bold text-white"
+                                            onclick="sendOfficerOtp('/field-officer-login', 'otpEmail', 'sendOtpBtn', 'sendOtpAlert', 'otpStep1', 'otpStep2', 'verifyEmail', 'displayEmail')">
+                                        <i class="fa-solid fa-paper-plane me-2"></i> Send OTP
+                                    </button>
+                                </div>
+                                <div id="sendOtpAlert" class="d-none"></div>
+                            </div>
+
+                            <!-- STEP 2: OTP Entry -->
+                            <div id="otpStep2" th:class="${otpStep != null and otpStep} ? '' : 'd-none'">
+                                <p class="text-muted small mb-1">
+                                    OTP sent to: <strong id="displayEmail" th:text="${otpEmail}">—</strong>
+                                </p>
+
+                                <div class="alert alert-info py-2 mb-3" id="otpCountdownAlert">
+                                    <i class="fa-solid fa-clock me-1"></i>
+                                    OTP expires in: <strong id="otpCountdown">05:00</strong>
+                                </div>
+
+                                <form th:action="@{/field-officer-login/verify-otp}" method="post" id="verifyOtpForm">
+                                    <input type="hidden" name="email" id="verifyEmail" th:value="${otpEmail}">
+
+                                    <div class="mb-3">
+                                        <label for="otpInput" class="form-label fw-bold">One-Time Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                                            <input type="text" id="otpInput" name="otp"
+                                                   class="form-control form-control-lg text-center fw-bold fs-4 numeric-otp"
+                                                   maxlength="6" minlength="6"
+                                                   placeholder="○ ○ ○ ○ ○ ○"
+                                                   autocomplete="one-time-code"
+                                                   inputmode="numeric"
+                                                   pattern="[0-9]{6}"
+                                                   required>
+                                        </div>
+                                        <div class="form-text">Enter the 6-digit code sent to your email.</div>
+                                    </div>
+
+                                    <div class="d-grid mb-3">
+                                        <button type="submit" class="btn btn-success btn-lg fw-bold">
+                                            <i class="fa-solid fa-check-circle me-2"></i> Verify &amp; Login
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="text-center mt-2">
+                                    <small class="text-muted" id="resendCooldownMsg">
+                                        <i class="fa-solid fa-hourglass-half me-1"></i>
+                                        Resend available in <strong id="resendCountdown">01:00</strong>
+                                    </small>
+                                    <div id="resendBtnWrapper" class="d-none">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                onclick="resendOfficerOtp('/field-officer-login', 'verifyEmail', 'resendBtnWrapper', 'verifyOtpForm')">
+                                            <i class="fa-solid fa-rotate-right me-1"></i> Resend OTP
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-3 pt-3 border-top">
+                                    <a href="#" class="small text-muted" onclick="resetStep('otpStep1', 'otpStep2', 'otpInput'); return false;">
+                                        <i class="fa-solid fa-arrow-left me-1"></i> Use a different email
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── TAB 4: District Officer OTP Login ─────────── -->
+                <div class="tab-pane fade" id="districtOfficerLogin" role="tabpanel"
+                     th:classappend="${districtOtpStep != null and districtOtpStep} ? 'show active' : ''">
+                    <div class="card gov-card shadow-sm border-0">
+                        <div class="card-header bg-navy text-white text-center py-3">
+                            <h4 class="mb-0 fw-bold">
+                                <i class="fa-solid fa-building-user me-2 text-warning"></i>
+                                District Officer Login
+                            </h4>
+                            <small class="text-light">Secure District Portal OTP Sign-In</small>
+                        </div>
+                        <div class="card-body p-4">
+
+                            <!-- OTP error -->
+                            <div th:if="${districtOtpError}" class="alert alert-danger" role="alert" th:text="${districtOtpError}"></div>
+
+                            <!-- STEP 1: Email -->
+                            <div id="districtStep1" th:class="${districtOtpStep != null and districtOtpStep} ? 'd-none' : ''">
+                                <p class="text-muted small mb-3">
+                                    Enter your registered District Officer email address to receive a login OTP.
+                                </p>
+
+                                <div class="mb-3">
+                                    <label for="districtOtpEmail" class="form-label fw-bold">Registered District Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                                        <input type="email" id="districtOtpEmail" class="form-control"
+                                               placeholder="kalyanramvase377@gmail.com"
+                                               th:value="${districtOtpEmail}"
+                                               required>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mb-3">
+                                    <button type="button" id="districtSendBtn" class="btn btn-navy btn-lg fw-bold text-white"
+                                            onclick="sendOfficerOtp('/district-officer-login', 'districtOtpEmail', 'districtSendBtn', 'districtSendAlert', 'districtStep1', 'districtStep2', 'districtVerifyEmail', 'districtDisplayEmail')">
+                                        <i class="fa-solid fa-paper-plane me-2"></i> Send OTP
+                                    </button>
+                                </div>
+                                <div id="districtSendAlert" class="d-none"></div>
+                            </div>
+
+                            <!-- STEP 2: OTP Entry -->
+                            <div id="districtStep2" th:class="${districtOtpStep != null and districtOtpStep} ? '' : 'd-none'">
+                                <p class="text-muted small mb-1">
+                                    OTP sent to: <strong id="districtDisplayEmail" th:text="${districtOtpEmail}">—</strong>
+                                </p>
+
+                                <div class="alert alert-info py-2 mb-3" id="districtOtpCountdownAlert">
+                                    <i class="fa-solid fa-clock me-1"></i>
+                                    OTP expires in: <strong id="districtOtpCountdown">05:00</strong>
+                                </div>
+
+                                <form th:action="@{/district-officer-login/verify-otp}" method="post" id="districtVerifyForm">
+                                    <input type="hidden" name="email" id="districtVerifyEmail" th:value="${districtOtpEmail}">
+
+                                    <div class="mb-3">
+                                        <label for="districtOtpInput" class="form-label fw-bold">One-Time Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                                            <input type="text" id="districtOtpInput" name="otp"
+                                                   class="form-control form-control-lg text-center fw-bold fs-4 numeric-otp"
+                                                   maxlength="6" minlength="6"
+                                                   placeholder="○ ○ ○ ○ ○ ○"
+                                                   autocomplete="one-time-code"
+                                                   inputmode="numeric"
+                                                   pattern="[0-9]{6}"
+                                                   required>
+                                        </div>
+                                        <div class="form-text">Enter the 6-digit code sent to your email.</div>
+                                    </div>
+
+                                    <div class="d-grid mb-3">
+                                        <button type="submit" class="btn btn-success btn-lg fw-bold">
+                                            <i class="fa-solid fa-check-circle me-2"></i> Verify &amp; Login
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="text-center mt-2">
+                                    <small class="text-muted" id="districtResendCooldownMsg">
+                                        <i class="fa-solid fa-hourglass-half me-1"></i>
+                                        Resend available in <strong id="districtResendCountdown">01:00</strong>
+                                    </small>
+                                    <div id="districtResendBtnWrapper" class="d-none">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                onclick="resendOfficerOtp('/district-officer-login', 'districtVerifyEmail', 'districtResendBtnWrapper', 'districtVerifyForm')">
+                                            <i class="fa-solid fa-rotate-right me-1"></i> Resend OTP
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-3 pt-3 border-top">
+                                    <a href="#" class="small text-muted" onclick="resetStep('districtStep1', 'districtStep2', 'districtOtpInput'); return false;">
+                                        <i class="fa-solid fa-arrow-left me-1"></i> Use a different email
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ─── TAB 5: Finance Approver OTP Login ─────────── -->
+                <div class="tab-pane fade" id="financeApproverLogin" role="tabpanel"
+                     th:classappend="${financeOtpStep != null and financeOtpStep} ? 'show active' : ''">
+                    <div class="card gov-card shadow-sm border-0">
+                        <div class="card-header bg-navy text-white text-center py-3">
+                            <h4 class="mb-0 fw-bold">
+                                <i class="fa-solid fa-coins me-2 text-warning"></i>
+                                Finance Approver Login
+                            </h4>
+                            <small class="text-light">Secure Finance Portal OTP Sign-In</small>
+                        </div>
+                        <div class="card-body p-4">
+
+                            <!-- OTP error -->
+                            <div th:if="${financeOtpError}" class="alert alert-danger" role="alert" th:text="${financeOtpError}"></div>
+
+                            <!-- STEP 1: Email -->
+                            <div id="financeStep1" th:class="${financeOtpStep != null and financeOtpStep} ? 'd-none' : ''">
+                                <p class="text-muted small mb-3">
+                                    Enter your registered Finance Approver email address to receive a login OTP.
+                                </p>
+
+                                <div class="mb-3">
+                                    <label for="financeOtpEmail" class="form-label fw-bold">Registered Finance Email</label>
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="fa-solid fa-envelope"></i></span>
+                                        <input type="email" id="financeOtpEmail" class="form-control"
+                                               placeholder="pabbuletihari0@gmail.com"
+                                               th:value="${financeOtpEmail}"
+                                               required>
+                                    </div>
+                                </div>
+
+                                <div class="d-grid mb-3">
+                                    <button type="button" id="financeSendBtn" class="btn btn-navy btn-lg fw-bold text-white"
+                                            onclick="sendOfficerOtp('/finance-login', 'financeOtpEmail', 'financeSendBtn', 'financeSendAlert', 'financeStep1', 'financeStep2', 'financeVerifyEmail', 'financeDisplayEmail')">
+                                        <i class="fa-solid fa-paper-plane me-2"></i> Send OTP
+                                    </button>
+                                </div>
+                                <div id="financeSendAlert" class="d-none"></div>
+                            </div>
+
+                            <!-- STEP 2: OTP Entry -->
+                            <div id="financeStep2" th:class="${financeOtpStep != null and financeOtpStep} ? '' : 'd-none'">
+                                <p class="text-muted small mb-1">
+                                    OTP sent to: <strong id="financeDisplayEmail" th:text="${financeOtpEmail}">—</strong>
+                                </p>
+
+                                <div class="alert alert-info py-2 mb-3" id="financeOtpCountdownAlert">
+                                    <i class="fa-solid fa-clock me-1"></i>
+                                    OTP expires in: <strong id="financeOtpCountdown">05:00</strong>
+                                </div>
+
+                                <form th:action="@{/finance-login/verify-otp}" method="post" id="financeVerifyForm">
+                                    <input type="hidden" name="email" id="financeVerifyEmail" th:value="${financeOtpEmail}">
+
+                                    <div class="mb-3">
+                                        <label for="financeOtpInput" class="form-label fw-bold">One-Time Password</label>
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fa-solid fa-hashtag"></i></span>
+                                            <input type="text" id="financeOtpInput" name="otp"
+                                                   class="form-control form-control-lg text-center fw-bold fs-4 numeric-otp"
+                                                   maxlength="6" minlength="6"
+                                                   placeholder="○ ○ ○ ○ ○ ○"
+                                                   autocomplete="one-time-code"
+                                                   inputmode="numeric"
+                                                   pattern="[0-9]{6}"
+                                                   required>
+                                        </div>
+                                        <div class="form-text">Enter the 6-digit code sent to your email.</div>
+                                    </div>
+
+                                    <div class="d-grid mb-3">
+                                        <button type="submit" class="btn btn-success btn-lg fw-bold">
+                                            <i class="fa-solid fa-check-circle me-2"></i> Verify &amp; Login
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <div class="text-center mt-2">
+                                    <small class="text-muted" id="financeResendCooldownMsg">
+                                        <i class="fa-solid fa-hourglass-half me-1"></i>
+                                        Resend available in <strong id="financeResendCountdown">01:00</strong>
+                                    </small>
+                                    <div id="financeResendBtnWrapper" class="d-none">
+                                        <button type="button" class="btn btn-outline-secondary btn-sm"
+                                                onclick="resendOfficerOtp('/finance-login', 'financeVerifyEmail', 'financeResendBtnWrapper', 'financeVerifyForm')">
+                                            <i class="fa-solid fa-rotate-right me-1"></i> Resend OTP
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="text-center mt-3 pt-3 border-top">
+                                    <a href="#" class="small text-muted" onclick="resetStep('financeStep1', 'financeStep2', 'financeOtpInput'); return false;">
+                                        <i class="fa-solid fa-arrow-left me-1"></i> Use a different email
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div><!-- /.tab-content -->
         </div>
     </div>
 </div>
 
 <footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<script th:inline="javascript">
+/* ── State Timers ── */
+let activeTimers = {};
+
+/* ── Bootstrap tab auto-switch on verify error ── */
+(function () {
+    const isFieldStep = /*[[${otpStep}]]*/ false;
+    const isDistrictStep = /*[[${districtOtpStep}]]*/ false;
+    const isFinanceStep = /*[[${financeOtpStep}]]*/ false;
+    const isAdminStep = /*[[${adminOtpStep}]]*/ false;
+
+    if (isAdminStep) {
+        showTab('admin-tab');
+        startExpiryTimer('adminOtpCountdown', 'adminOtpCountdownAlert', 300);
+        startCooldownTimer('adminResendCountdown', 'adminResendCooldownMsg', 'adminResendBtnWrapper', 60);
+    } else if (isFieldStep) {
+        showTab('officer-tab');
+        startExpiryTimer('otpCountdown', 'otpCountdownAlert', 300);
+        startCooldownTimer('resendCountdown', 'resendCooldownMsg', 'resendBtnWrapper', 60);
+    } else if (isDistrictStep) {
+        showTab('district-tab');
+        startExpiryTimer('districtOtpCountdown', 'districtOtpCountdownAlert', 300);
+        startCooldownTimer('districtResendCountdown', 'districtResendCooldownMsg', 'districtResendBtnWrapper', 60);
+    } else if (isFinanceStep) {
+        showTab('finance-tab');
+        startExpiryTimer('financeOtpCountdown', 'financeOtpCountdownAlert', 300);
+        startCooldownTimer('financeResendCountdown', 'financeResendCooldownMsg', 'financeResendBtnWrapper', 60);
+    }
+})();
+
+function showTab(tabId) {
+    const tabEl = document.getElementById(tabId);
+    if (tabEl) {
+        const bsTab = new bootstrap.Tab(tabEl);
+        bsTab.show();
+    }
+}
+
+/* ── Generic Send OTP ── */
+function sendOfficerOtp(basePath, emailInputId, btnId, alertId, step1Id, step2Id, verifyEmailId, displayEmailId) {
+    const emailInput = document.getElementById(emailInputId);
+    const email = emailInput ? emailInput.value.trim() : '';
+    if (!email) {
+        showAlert(alertId, 'danger', 'Please enter your email address.');
+        return;
+    }
+
+    const btn = document.getElementById(btnId);
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Sending…';
+
+    fetch(basePath + '/send-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'email=' + encodeURIComponent(email)
+    })
+    .then(r => r.json())
+    .then(data => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> Send OTP';
+
+        if (data.success) {
+            document.getElementById(verifyEmailId).value = email;
+            document.getElementById(displayEmailId).textContent = email;
+
+            document.getElementById(step1Id).classList.add('d-none');
+            document.getElementById(step2Id).classList.remove('d-none');
+
+            // Find countdown elements based on step2Id prefix
+            let prefix = step2Id.replace('Step2', '').replace('otpStep2', 'otp');
+            if (prefix === 'admin') {
+                startExpiryTimer('adminOtpCountdown', 'adminOtpCountdownAlert', 300);
+                startCooldownTimer('adminResendCountdown', 'adminResendCooldownMsg', 'adminResendBtnWrapper', 60);
+            } else if (prefix === 'district') {
+                startExpiryTimer('districtOtpCountdown', 'districtOtpCountdownAlert', 300);
+                startCooldownTimer('districtResendCountdown', 'districtResendCooldownMsg', 'districtResendBtnWrapper', 60);
+            } else if (prefix === 'finance') {
+                startExpiryTimer('financeOtpCountdown', 'financeOtpCountdownAlert', 300);
+                startCooldownTimer('financeResendCountdown', 'financeResendCooldownMsg', 'financeResendBtnWrapper', 60);
+            } else {
+                startExpiryTimer('otpCountdown', 'otpCountdownAlert', 300);
+                startCooldownTimer('resendCountdown', 'resendCooldownMsg', 'resendBtnWrapper', 60);
+            }
+        } else {
+            showAlert(alertId, 'warning', data.message || 'Unable to send OTP. Please try again.');
+        }
+    })
+    .catch(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fa-solid fa-paper-plane me-2"></i> Send OTP';
+        showAlert(alertId, 'danger', 'An error occurred. Please try again.');
+    });
+}
+
+/* ── Generic Resend OTP ── */
+function resendOfficerOtp(basePath, verifyEmailId, resendWrapperId, formId) {
+    const email = document.getElementById(verifyEmailId).value;
+    const btn = document.querySelector('#' + resendWrapperId + ' button');
+    if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Sending…';
+    }
+
+    fetch(basePath + '/send-otp', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: 'email=' + encodeURIComponent(email)
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-rotate-right me-1"></i> Resend OTP';
+        }
+        if (data.success) {
+            let prefix = verifyEmailId.replace('VerifyEmail', '').replace('verifyEmail', 'otp');
+            if (prefix === 'admin') {
+                document.getElementById('adminOtpInput').value = '';
+                startExpiryTimer('adminOtpCountdown', 'adminOtpCountdownAlert', 300);
+                startCooldownTimer('adminResendCountdown', 'adminResendCooldownMsg', 'adminResendBtnWrapper', 60);
+            } else if (prefix === 'district') {
+                document.getElementById('districtOtpInput').value = '';
+                startExpiryTimer('districtOtpCountdown', 'districtOtpCountdownAlert', 300);
+                startCooldownTimer('districtResendCountdown', 'districtResendCooldownMsg', 'districtResendBtnWrapper', 60);
+            } else if (prefix === 'finance') {
+                document.getElementById('financeOtpInput').value = '';
+                startExpiryTimer('financeOtpCountdown', 'financeOtpCountdownAlert', 300);
+                startCooldownTimer('financeResendCountdown', 'financeResendCooldownMsg', 'financeResendBtnWrapper', 60);
+            } else {
+                document.getElementById('otpInput').value = '';
+                startExpiryTimer('otpCountdown', 'otpCountdownAlert', 300);
+                startCooldownTimer('resendCountdown', 'resendCooldownMsg', 'resendBtnWrapper', 60);
+            }
+            injectFeedback(formId, 'success', 'A new OTP has been sent to your email.');
+        } else {
+            injectFeedback(formId, 'warning', data.message || 'Could not resend OTP. Please wait before retrying.');
+        }
+    })
+    .catch(() => {
+        if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = '<i class="fa-solid fa-rotate-right me-1"></i> Resend OTP';
+        }
+        injectFeedback(formId, 'danger', 'An error occurred. Please try again.');
+    });
+}
+
+function resetStep(step1Id, step2Id, inputId) {
+    document.getElementById(step2Id).classList.add('d-none');
+    document.getElementById(step1Id).classList.remove('d-none');
+    if (inputId && document.getElementById(inputId)) {
+        document.getElementById(inputId).value = '';
+    }
+}
+
+function showAlert(alertId, type, msg) {
+    const el = document.getElementById(alertId);
+    if (el) {
+        el.className = 'alert alert-' + type + ' mt-3';
+        el.textContent = msg;
+        el.classList.remove('d-none');
+    }
+}
+
+function injectFeedback(formId, type, msg) {
+    const form = document.getElementById(formId);
+    if (!form) return;
+    const existing = form.parentNode.querySelector('.resend-fb');
+    if (existing) existing.remove();
+    const div = document.createElement('div');
+    div.className = 'resend-fb alert alert-' + type + ' alert-dismissible fade show mt-2';
+    div.innerHTML = msg + '<button type="button" class="btn-close" data-bs-dismiss="alert"></button>';
+    form.parentNode.insertBefore(div, form);
+}
+
+/* ── Timers ── */
+function startExpiryTimer(displayId, alertId, seconds) {
+    if (activeTimers[displayId]) clearInterval(activeTimers[displayId]);
+    const display = document.getElementById(displayId);
+    const alertBox = document.getElementById(alertId);
+    let remaining = seconds;
+
+    function tick() {
+        if (!display) return;
+        const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const s = String(remaining % 60).padStart(2, '0');
+        display.textContent = m + ':' + s;
+        if (remaining <= 60 && alertBox) {
+            alertBox.className = 'alert alert-warning py-2 mb-3';
+        }
+        if (remaining <= 0) {
+            clearInterval(activeTimers[displayId]);
+            display.textContent = 'Expired';
+            if (alertBox) {
+                alertBox.className = 'alert alert-danger py-2 mb-3';
+                alertBox.innerHTML = '<i class="fa-solid fa-triangle-exclamation me-1"></i> OTP has expired. Please request a new OTP.';
+            }
+        }
+        remaining--;
+    }
+    tick();
+    activeTimers[displayId] = setInterval(tick, 1000);
+}
+
+function startCooldownTimer(displayId, msgId, wrapperId, seconds) {
+    if (activeTimers[displayId]) clearInterval(activeTimers[displayId]);
+    const msgEl = document.getElementById(msgId);
+    const wrapEl = document.getElementById(wrapperId);
+    if (msgEl) msgEl.classList.remove('d-none');
+    if (wrapEl) wrapEl.classList.add('d-none');
+
+    const display = document.getElementById(displayId);
+    let remaining = seconds;
+
+    function tick() {
+        if (!display) return;
+        const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+        const s = String(remaining % 60).padStart(2, '0');
+        display.textContent = m + ':' + s;
+        if (remaining <= 0) {
+            clearInterval(activeTimers[displayId]);
+            if (msgEl) msgEl.classList.add('d-none');
+            if (wrapEl) wrapEl.classList.remove('d-none');
+        }
+        remaining--;
+    }
+    tick();
+    activeTimers[displayId] = setInterval(tick, 1000);
+}
+
+/* ── Format numeric input ── */
+document.querySelectorAll('.numeric-otp').forEach(el => {
+    el.addEventListener('input', function() {
+        this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6);
+    });
+});
+</script>
+
 </body>
 </html>

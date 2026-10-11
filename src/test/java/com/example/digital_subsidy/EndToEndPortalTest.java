@@ -154,7 +154,7 @@ public class EndToEndPortalTest {
         districtAction.setAction("APPROVE");
         districtAction.setRemarks("District collectorate sanction approved");
 
-        verificationService.processVerification("district.officer@gmail.com", "ROLE_DISTRICT_OFFICER", districtAction);
+        verificationService.processVerification("kalyanramvase377@gmail.com", "ROLE_DISTRICT_OFFICER", districtAction);
 
         Application districtApprovedApp = applicationService.getApplicationById(application.getId());
         assertEquals("FINANCE_APPROVAL", districtApprovedApp.getCurrentStage(), "Stage should move to FINANCE_APPROVAL");
@@ -166,7 +166,7 @@ public class EndToEndPortalTest {
         financeAction.setAction("APPROVE");
         financeAction.setRemarks("Treasury sanction approved for milestone disbursement");
 
-        verificationService.processVerification("finance.approver@gmail.com", "ROLE_FINANCE_APPROVER", financeAction);
+        verificationService.processVerification("pabbuletihari0@gmail.com", "ROLE_FINANCE_APPROVER", financeAction);
 
         Application financeApprovedApp = applicationService.getApplicationById(application.getId());
         assertEquals("DISBURSEMENT", financeApprovedApp.getCurrentStage());
@@ -182,6 +182,8 @@ public class EndToEndPortalTest {
 
         // 9. Release Milestone 1
         Milestone m1 = milestones.get(0);
+        m1.setComplianceVerificationStatus("VERIFIED");
+        milestoneRepository.save(m1);
         disbursementService.releaseMilestone(m1.getId());
 
         Milestone releasedM1 = milestoneRepository.findById(m1.getId()).orElseThrow();

@@ -76,7 +76,9 @@ public class AuthController {
     public String showLoginForm(@RequestParam(value = "error", required = false) String error,
                                 @RequestParam(value = "logout", required = false) String logout,
                                 @RequestParam(value = "registered", required = false) String registered,
+                                jakarta.servlet.http.HttpServletRequest request,
                                 Model model) {
+        request.getSession(true);
         if (error != null) {
             model.addAttribute("errorMessage", "Invalid email address or password. Please verify credentials.");
         }

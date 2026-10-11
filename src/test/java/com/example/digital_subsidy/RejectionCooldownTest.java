@@ -395,7 +395,7 @@ public class RejectionCooldownTest {
         configDto.setMinQualifyingScore(60);
         configDto.setRejectionCooldownDays(45); // Admin updates to 45 days
 
-        Scheme updated = schemeService.saveSchemeConfig(configDto, "admin@gov.in");
+        Scheme updated = schemeService.saveSchemeConfig(configDto, "johnmekala4277@gmail.com");
         assertEquals(45, updated.getRejectionCooldownDays());
 
         List<AuditLog> logs = auditLogRepository.findAll();

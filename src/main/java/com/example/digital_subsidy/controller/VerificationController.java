@@ -41,6 +41,8 @@ public class VerificationController {
     private final OfficerService officerService;
     private final AuditLogRepository auditLogRepository;
     private final PriorityService priorityService;
+    private final com.example.digital_subsidy.service.FundUtilizationService fundUtilizationService;
+    private final DisbursementService disbursementService;
 
     public VerificationController(ApplicationService applicationService,
                                   VerificationService verificationService,
@@ -55,7 +57,9 @@ public class VerificationController {
                                   GrievanceService grievanceService,
                                   OfficerService officerService,
                                   AuditLogRepository auditLogRepository,
-                                  PriorityService priorityService) {
+                                  PriorityService priorityService,
+                                  com.example.digital_subsidy.service.FundUtilizationService fundUtilizationService,
+                                  DisbursementService disbursementService) {
         this.applicationService = applicationService;
         this.verificationService = verificationService;
         this.documentService = documentService;
@@ -70,6 +74,8 @@ public class VerificationController {
         this.officerService = officerService;
         this.auditLogRepository = auditLogRepository;
         this.priorityService = priorityService;
+        this.fundUtilizationService = fundUtilizationService;
+        this.disbursementService = disbursementService;
     }
 
     // ═══════════════════════════════════════════════════════
@@ -151,10 +157,14 @@ public class VerificationController {
         List<Verification> myHistory = verificationRepository.findByOfficerUserEmailOrderByIdDesc(email);
         List<Grievance> assignedGrievances = officer != null ? grievanceService.getGrievancesAssignedToOfficer(officer.getId()) : List.of();
 
+        List<Milestone> pendingTermDocumentMilestones = documentService != null ? 
+                disbursementService.getPendingTermDocumentVerificationForFieldOfficer(officer != null ? officer.getState() : null, officer != null ? officer.getDistrict() : null) : List.of();
+
         model.addAttribute("officer", officer);
         model.addAttribute("pendingApplications", pendingApps);
         model.addAttribute("initialApplications", initialAssignedApps);
         model.addAttribute("reverificationApplications", reverificationApps);
+        model.addAttribute("pendingTermDocumentMilestones", pendingTermDocumentMilestones);
         model.addAttribute("foReverificationDetailsMap", foReverificationDetailsMap);
         model.addAttribute("breakdownMap", breakdownMap);
         model.addAttribute("selectedPriorityLevel", priorityLevel);
@@ -185,6 +195,12 @@ public class VerificationController {
                     if (!officer.getState().equalsIgnoreCase(app.getBeneficiary().getState())) {
                         redirectAttributes.addFlashAttribute("errorMessage", "Access Denied: You are not authorized for state " + app.getBeneficiary().getState());
                         return "redirect:/field-officer/dashboard";
+                    }
+                    if (officer.getDistrict() != null && !officer.getDistrict().isBlank() && app.getBeneficiary().getDistrict() != null) {
+                        if (!officer.getDistrict().equalsIgnoreCase(app.getBeneficiary().getDistrict())) {
+                            redirectAttributes.addFlashAttribute("errorMessage", "Access Denied: You are not authorized for district " + app.getBeneficiary().getDistrict());
+                            return "redirect:/field-officer/dashboard";
+                        }
                     }
                 }
             }
@@ -362,12 +378,15 @@ public class VerificationController {
 
         Map<String, Object> metrics = populateDistrictMetrics(state);
 
+        List<Milestone> termComplianceReviews = disbursementService.getTermComplianceReviewsForDistrictOfficer(state, officer != null ? officer.getDistrict() : null);
+
         model.addAttribute("officer", officer);
         model.addAttribute("districtName", districtName);
         model.addAttribute("metrics", metrics);
         model.addAttribute("pendingApplications", pendingApps);
         model.addAttribute("initialApplications", initialReviewApps);
         model.addAttribute("reverificationApplications", reverificationReviewApps);
+        model.addAttribute("termComplianceReviews", termComplianceReviews);
         model.addAttribute("reverificationDetailsMap", reverificationDetailsMap);
         model.addAttribute("breakdownMap", breakdownMap);
         model.addAttribute("selectedPriorityLevel", priorityLevel);
@@ -377,6 +396,11 @@ public class VerificationController {
         model.addAttribute("anomalies", anomalies);
         model.addAttribute("grievances", grievances);
         model.addAttribute("budgetSummary", budgetSummary);
+        if (fundUtilizationService != null) {
+            model.addAttribute("regionalUtilizationSummary", fundUtilizationService.getSystemFundUtilizationSummary(null, state, districtName));
+            model.addAttribute("regionalSchemeUtilizations", fundUtilizationService.getSchemeWiseFundUtilization(null, state));
+            model.addAttribute("regionalDistrictUtilizations", fundUtilizationService.getDistrictWiseFundUtilization(state));
+        }
         model.addAttribute("actionDto", new VerificationActionDto());
         return "district-officer/dashboard";
     }
@@ -433,6 +457,12 @@ public class VerificationController {
                 if (!officer.getState().equalsIgnoreCase(beneficiary.getState())) {
                     redirectAttributes.addFlashAttribute("errorMessage", "Access Denied: Authorized only for state " + officer.getState());
                     return "redirect:/district-officer/dashboard";
+                }
+                if (officer.getDistrict() != null && !officer.getDistrict().isBlank() && beneficiary.getDistrict() != null) {
+                    if (!officer.getDistrict().equalsIgnoreCase(beneficiary.getDistrict())) {
+                        redirectAttributes.addFlashAttribute("errorMessage", "Access Denied: Authorized only for district " + officer.getDistrict());
+                        return "redirect:/district-officer/dashboard";
+                    }
                 }
             }
 

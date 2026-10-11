@@ -40,6 +40,66 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
+        <!-- PENDING TERM DOCUMENT VERIFICATION -->
+        <div class="card gov-card shadow-sm border-0 mb-4 border-start border-4 border-primary">
+            <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fs-6"><i class="fa-solid fa-file-signature text-warning me-2"></i> Pending Term Document Verification</span>
+                    <span class="badge bg-light text-navy fw-bold" th:text="${pendingTermDocumentMilestones != null ? #lists.size(pendingTermDocumentMilestones) : 0} + ' Pending'">0 Pending</span>
+                </div>
+                <small class="text-white-50 d-none d-md-inline">Review actual uploaded milestone compliance documents</small>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Application ID</th>
+                                <th>Beneficiary</th>
+                                <th>Scheme</th>
+                                <th>Term</th>
+                                <th>Document Type</th>
+                                <th>Uploaded Date</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(pendingTermDocumentMilestones)}">
+                                <td colspan="8" class="text-center text-muted py-4">
+                                    <i class="fa-solid fa-folder-open fa-2x mb-2 d-block text-secondary"></i>
+                                    No term compliance documents awaiting field verification.
+                                </td>
+                            </tr>
+                            <tr th:each="m : ${pendingTermDocumentMilestones}">
+                                <td class="fw-bold text-navy" th:text="${m.disbursement.application.applicationNumber}">APP-243</td>
+                                <td>
+                                    <strong th:text="${m.disbursement.application.beneficiary != null and m.disbursement.application.beneficiary.user != null ? m.disbursement.application.beneficiary.user.fullName : 'Beneficiary'}">Beneficiary</strong><br>
+                                    <small class="text-muted" th:text="${m.disbursement.application.beneficiary != null ? m.disbursement.application.beneficiary.district : ''}">District</small>
+                                </td>
+                                <td th:text="${m.disbursement.application.scheme != null ? m.disbursement.application.scheme.name : ''}">Scheme Name</td>
+                                <td class="fw-bold text-primary" th:text="${m.milestoneName}">Term 2</td>
+                                <td th:text="${T(com.example.digital_subsidy.service.DisbursementService).getDocumentTypeDisplayName(m.requiredDocumentType)}">Required Document</td>
+                                <td class="small text-muted" th:text="${m.submittedDate != null ? #temporals.format(m.submittedDate, 'dd-MMM-yyyy') : 'N/A'}">Uploaded Date</td>
+                                <td>
+                                    <span th:if="${m.complianceVerificationStatus == 'SUBMITTED' or m.complianceVerificationStatus == 'UNDER_REVIEW'}" class="badge bg-warning text-dark">SUBMITTED</span>
+                                    <span th:if="${m.complianceVerificationStatus == 'REUPLOAD_REQUIRED'}" class="badge bg-danger">REUPLOAD REQUIRED</span>
+                                </td>
+                                <td class="text-nowrap">
+                                    <a th:if="${m.submittedDocument != null}" th:href="@{'/documents/view/' + ${m.submittedDocument.id}}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold me-1">
+                                        <i class="fa-solid fa-eye me-1"></i> View Document
+                                    </a>
+                                    <a th:href="@{'/disbursements/schedule/' + ${m.disbursement.application.id}}" class="btn btn-sm btn-success fw-bold me-1">
+                                        <i class="fa-solid fa-check me-1"></i> Verify / Review
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
         <!-- SECTION 1: Regular Assigned Applications -->
         <div class="card gov-card shadow-sm border-0 mb-4">
             <div class="card-header gov-card-header bg-navy text-white fw-bold py-3 d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2">

@@ -47,6 +47,9 @@ public class Scheme {
     @Column(name = "rejection_cooldown_days", nullable = false)
     private Integer rejectionCooldownDays = 30; // Reapplication restriction cooldown period in days
 
+    @Column(name = "single_release_threshold", nullable = false)
+    private BigDecimal singleReleaseThreshold = com.example.digital_subsidy.service.DisbursementService.DISBURSEMENT_SINGLE_RELEASE_THRESHOLD;
+
     @Column(name = "priority_queue_enabled", nullable = false)
     private Boolean priorityQueueEnabled = true;
 
@@ -188,6 +191,14 @@ public class Scheme {
 
     public void setRejectionCooldownDays(Integer rejectionCooldownDays) {
         this.rejectionCooldownDays = rejectionCooldownDays;
+    }
+
+    public BigDecimal getSingleReleaseThreshold() {
+        return singleReleaseThreshold != null ? singleReleaseThreshold : com.example.digital_subsidy.service.DisbursementService.DISBURSEMENT_SINGLE_RELEASE_THRESHOLD;
+    }
+
+    public void setSingleReleaseThreshold(BigDecimal singleReleaseThreshold) {
+        this.singleReleaseThreshold = singleReleaseThreshold;
     }
 
     public String getStatus() {

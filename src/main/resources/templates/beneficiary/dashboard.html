@@ -47,7 +47,52 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
 
-    <!-- QUICK ACTIONS -->
+    <!-- ACTION REQUIRED - NEXT TERM DOCUMENTS -->
+    <div th:if="${actionRequiredTermMilestones != null and not #lists.isEmpty(actionRequiredTermMilestones)}" class="card gov-card border-0 shadow-sm mb-4 border-start border-4 border-warning">
+        <div class="card-header bg-warning text-dark py-3 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold mb-0"><i class="fa-solid fa-triangle-exclamation me-2"></i> Action Required — Next Term Documents</h5>
+            <span class="badge bg-navy text-white fw-bold">Active Requirement</span>
+        </div>
+        <div class="card-body p-4">
+            <div th:each="m : ${actionRequiredTermMilestones}" class="p-3 mb-3 border rounded bg-white shadow-xs">
+                <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                    <div>
+                        <h6 class="fw-bold text-navy mb-1" th:text="${m.disbursement.application.scheme.name}">Scheme Name</h6>
+                        <div class="small text-muted mb-2">
+                            <span>Application ID: <strong class="text-dark" th:text="${m.disbursement.application.applicationNumber}">APP-243</strong></span>
+                            <span class="mx-2">|</span>
+                            <span>Term: <strong class="text-dark" th:text="${m.milestoneName}">Term 2</strong></span>
+                            <span class="mx-2">|</span>
+                            <span>Term Amount: <strong class="text-success" th:text="'₹' + ${#numbers.formatDecimal(m.milestoneAmount, 0, 'COMMA', 0, 'POINT')}">₹24,000</strong></span>
+                        </div>
+                        <div class="small mb-1">
+                            <span>Required Document: <strong class="text-primary" th:text="${T(com.example.digital_subsidy.service.DisbursementService).getDocumentTypeDisplayName(m.requiredDocumentType)}">Required Document</strong></span>
+                            <span class="mx-2">|</span>
+                            <span>Due Date: <strong class="text-danger" th:text="${m.dueDate != null ? #temporals.format(m.dueDate, 'dd-MMM-yyyy') : 'N/A'}">25-Oct-2026</strong></span>
+                        </div>
+                        <div class="small">
+                            <span>Status: </span>
+                            <span th:if="${m.complianceVerificationStatus == 'PENDING'}" class="badge bg-danger">DOCUMENT REQUIRED</span>
+                            <span th:if="${m.complianceVerificationStatus == 'SUBMITTED' || m.complianceVerificationStatus == 'UNDER_REVIEW'}" class="badge bg-warning text-dark">SUBMITTED / UNDER REVIEW</span>
+                            <span th:if="${m.complianceVerificationStatus == 'REUPLOAD_REQUIRED'}" class="badge bg-danger">REUPLOAD REQUIRED</span>
+                            <span th:if="${m.complianceVerificationStatus == 'VERIFIED'}" class="badge bg-success">DOCUMENT VERIFIED ✓ READY FOR FINANCE RELEASE</span>
+                        </div>
+                    </div>
+                    <div>
+                        <a th:if="${m.complianceVerificationStatus == 'PENDING' || m.complianceVerificationStatus == 'REUPLOAD_REQUIRED'}"
+                           th:href="@{'/beneficiary/disbursements/upload-compliance?applicationId=' + ${m.disbursement.application.id} + '&milestoneId=' + ${m.id}}"
+                           class="btn btn-warning text-dark fw-bold btn-md shadow-sm">
+                            <i class="fa-solid fa-upload me-1"></i> <span th:text="${'Upload Term ' + (m.stageNumber != null ? m.stageNumber : '') + ' Document'}">Upload Required Document</span>
+                        </a>
+                        <a th:href="@{'/disbursements/schedule/' + ${m.disbursement.application.id}}"
+                           class="btn btn-outline-navy btn-md fw-bold ms-2">
+                            <i class="fa-solid fa-calendar-alt me-1"></i> View Schedule
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="mb-4">
         <div class="d-flex justify-content-between align-items-center mb-3">
             <h5 class="fw-bold text-navy mb-0"><i class="fa-solid fa-bolt text-warning me-2"></i> Quick Actions</h5>

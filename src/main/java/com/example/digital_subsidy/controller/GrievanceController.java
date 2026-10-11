@@ -236,10 +236,12 @@ public class GrievanceController {
 
         Grievance grievance = grievanceService.getGrievanceById(id);
 
-        if (officer != null && officer.getDistrict() != null) {
-            if (grievance.getBeneficiary() != null && !officer.getDistrict().equalsIgnoreCase(grievance.getBeneficiary().getDistrict())) {
-                org.slf4j.LoggerFactory.getLogger(GrievanceController.class).warn("DO {} from {} attempted access to grievance {} in {}",
+        if (officer != null && officer.getDistrict() != null && !officer.getDistrict().isBlank()) {
+            if (grievance.getBeneficiary() != null && grievance.getBeneficiary().getDistrict() != null &&
+                !officer.getDistrict().equalsIgnoreCase(grievance.getBeneficiary().getDistrict())) {
+                org.slf4j.LoggerFactory.getLogger(GrievanceController.class).warn("DO {} from {} attempted unauthorized access to grievance {} in {}",
                         email, officer.getDistrict(), id, grievance.getBeneficiary().getDistrict());
+                throw new AccessDeniedException("Access Denied: Authorized only for district " + officer.getDistrict());
             }
         }
 
@@ -264,6 +266,13 @@ public class GrievanceController {
 
             String email = authentication.getName();
             Officer officer = officerService.getOfficerByEmail(email).orElse(null);
+            if (officer != null && officer.getDistrict() != null && !officer.getDistrict().isBlank()) {
+                Grievance targetGrievance = grievanceService.getGrievanceById(grievanceId);
+                if (targetGrievance.getBeneficiary() != null && targetGrievance.getBeneficiary().getDistrict() != null &&
+                    !officer.getDistrict().equalsIgnoreCase(targetGrievance.getBeneficiary().getDistrict())) {
+                    throw new AccessDeniedException("Access Denied: Authorized only for district " + officer.getDistrict());
+                }
+            }
             Long officerId = officer != null ? officer.getId() : null;
 
             grievanceService.updateGrievanceStatus(grievanceId, status, remarks, officerId, email);

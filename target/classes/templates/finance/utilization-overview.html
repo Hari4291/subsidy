@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container-fluid py-4 bg-light">
+    <div class="container">
+        <!-- Top Header -->
+        <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
+            <div>
+                <h4 class="mb-1 fw-bold"><i class="fa-solid fa-chart-line text-warning me-2"></i> Fund Utilization &amp; Regional Visual Analytics Dashboard</h4>
+                <p class="mb-0 text-light small">Real-time DB-backed Financial Analytics, Scheme Metrics &amp; Geographic Distribution Charts</p>
+            </div>
+            <div>
+                <a th:href="@{/finance/dashboard}" class="btn btn-outline-light btn-sm fw-bold"><i class="fa-solid fa-arrow-left me-1"></i> Back to Finance Dashboard</a>
+            </div>
+        </div>
+
+        <!-- Filter Controls -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-white fw-bold py-2 border-bottom">
+                <i class="fa-solid fa-filter text-navy me-2"></i> Analytics Filter Controls
+            </div>
+            <div class="card-body p-3">
+                <form th:action="@{/finance/utilization}" method="get" class="row g-2 align-items-center" id="analyticsFilterForm">
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted mb-1">Scheme Category</label>
+                        <select name="category" class="form-select form-select-sm">
+                            <option value="">All Categories</option>
+                            <option value="Agriculture" th:selected="${categoryFilter == 'Agriculture'}">Agriculture</option>
+                            <option value="Solar" th:selected="${categoryFilter == 'Solar'}">Solar / Energy</option>
+                            <option value="MSME" th:selected="${categoryFilter == 'MSME'}">MSME / Business</option>
+                            <option value="Education" th:selected="${categoryFilter == 'Education'}">Education</option>
+                            <option value="General" th:selected="${categoryFilter == 'General'}">General</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted mb-1">State</label>
+                        <input type="text" name="state" th:value="${stateFilter}" placeholder="e.g. Telangana" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted mb-1">District</label>
+                        <input type="text" name="district" th:value="${districtFilter}" placeholder="e.g. Hyderabad" class="form-control form-control-sm">
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-navy btn-sm fw-bold w-100 mt-4"><i class="fa-solid fa-magnifying-glass me-1"></i> Apply Filters</button>
+                        <a th:href="@{/finance/utilization}" class="btn btn-outline-secondary btn-sm fw-bold w-50 mt-4">Reset</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- SECTION A: Financial KPI Cards -->
+        <div class="row g-3 mb-4" id="kpiContainer">
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-primary h-100 p-2 text-center">
+                    <small class="text-muted fw-bold d-block mb-1">Allocated Budget</small>
+                    <h5 class="fw-bold text-navy mb-0" th:text="'₹' + ${#numbers.formatDecimal(summary.totalAllocatedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</h5>
+                    <small class="text-muted" style="font-size: 0.75rem;">Total Scheme Budget</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-info h-100 p-2 text-center">
+                    <small class="text-muted fw-bold d-block mb-1">Sanctioned Amount</small>
+                    <h5 class="fw-bold text-info mb-0" th:text="'₹' + ${#numbers.formatDecimal(summary.totalSanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</h5>
+                    <small class="text-muted" style="font-size: 0.75rem;">Approved Grants</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-success h-100 p-2 text-center">
+                    <small class="text-muted fw-bold d-block mb-1">Released Amount</small>
+                    <h5 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(summary.totalReleasedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</h5>
+                    <small class="text-muted" style="font-size: 0.75rem;">Disbursed to Bank</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 h-100 p-2 text-center" style="border-left-color: #20c997 !important;">
+                    <small class="text-muted fw-bold d-block mb-1">Utilized Amount</small>
+                    <h5 class="fw-bold text-dark mb-0" th:text="'₹' + ${#numbers.formatDecimal(summary.totalUtilizedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</h5>
+                    <small class="text-muted" style="font-size: 0.75rem;">Verified Utilization</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-warning h-100 p-2 text-center">
+                    <small class="text-muted fw-bold d-block mb-1">Remaining Funds</small>
+                    <h5 class="fw-bold text-warning text-dark mb-0" th:text="'₹' + ${#numbers.formatDecimal(summary.totalRemainingAllocation, 0, 'COMMA', 0, 'POINT')}">₹0</h5>
+                    <small class="text-muted" style="font-size: 0.75rem;">Allocated - Released</small>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-dark h-100 p-2 text-center">
+                    <small class="text-muted fw-bold d-block mb-1">Utilization %</small>
+                    <h4 class="fw-bold text-primary mb-0" th:text="${summary.formattedUtilizationPercentage}">0%</h4>
+                    <small class="text-muted" style="font-size: 0.75rem;">Utilized / Allocated</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- VISUAL CHARTS SECTION -->
+
+        <!-- SECTION B: Chart 1 - Overall Fund Utilization -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <span><i class="fa-solid fa-chart-column text-warning me-2"></i> Overall Fund Utilization Financial Breakdown</span>
+                <span class="badge bg-light text-dark font-weight-normal">Financial Comparison (Allocated vs Sanctioned vs Released vs Utilized vs Remaining)</span>
+            </div>
+            <div class="card-body p-4">
+                <div style="height: 320px; position: relative;">
+                    <canvas id="overallChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Chart 2 & Chart 3 -->
+        <div class="row g-4 mb-4">
+            <!-- SECTION C: Chart 2 - Scheme-wise Financial Comparison -->
+            <div class="col-lg-7">
+                <div class="card gov-card shadow-sm border-0 h-100">
+                    <div class="card-header bg-navy text-white fw-bold py-3">
+                        <i class="fa-solid fa-chart-bar text-warning me-2"></i> Scheme-wise Financial Comparison
+                    </div>
+                    <div class="card-body p-3">
+                        <div th:if="${#lists.isEmpty(schemeWise)}" class="alert alert-info text-center py-4 my-auto">
+                            <i class="fa-solid fa-circle-info me-2 text-primary"></i> No scheme utilization data available for the selected filters.
+                        </div>
+                        <div th:unless="${#lists.isEmpty(schemeWise)}" style="height: 380px; position: relative;">
+                            <canvas id="schemeComparisonChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION D: Chart 3 - Scheme Utilization Percentage -->
+            <div class="col-lg-5">
+                <div class="card gov-card shadow-sm border-0 h-100">
+                    <div class="card-header bg-navy text-white fw-bold py-3">
+                        <i class="fa-solid fa-percent text-warning me-2"></i> Scheme-wise Utilization Percentage
+                    </div>
+                    <div class="card-body p-3">
+                        <div th:if="${#lists.isEmpty(schemeWise)}" class="alert alert-info text-center py-4 my-auto">
+                            <i class="fa-solid fa-circle-info me-2 text-primary"></i> No data available.
+                        </div>
+                        <div th:unless="${#lists.isEmpty(schemeWise)}" style="height: 380px; position: relative;">
+                            <canvas id="schemePercentageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 3: Chart 4 & Chart 5 -->
+        <div class="row g-4 mb-4">
+            <!-- SECTION E: Chart 4 - Regional Fund Utilization -->
+            <div class="col-lg-7">
+                <div class="card gov-card shadow-sm border-0 h-100">
+                    <div class="card-header bg-navy text-white fw-bold py-3">
+                        <i class="fa-solid fa-map-location-dot text-warning me-2"></i> Regional Fund Utilization by District
+                    </div>
+                    <div class="card-body p-3">
+                        <div th:if="${#lists.isEmpty(districtWise)}" class="alert alert-info text-center py-4 my-auto">
+                            <i class="fa-solid fa-circle-info me-2 text-primary"></i> No regional utilization data available.
+                        </div>
+                        <div th:unless="${#lists.isEmpty(districtWise)}" style="height: 360px; position: relative;">
+                            <canvas id="regionalChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SECTION F: Chart 5 - Regional Utilization Percentage -->
+            <div class="col-lg-5">
+                <div class="card gov-card shadow-sm border-0 h-100">
+                    <div class="card-header bg-navy text-white fw-bold py-3">
+                        <i class="fa-solid fa-chart-pie text-warning me-2"></i> Regional Utilization Percentage
+                    </div>
+                    <div class="card-body p-3">
+                        <div th:if="${#lists.isEmpty(districtWise)}" class="alert alert-info text-center py-4 my-auto">
+                            <i class="fa-solid fa-circle-info me-2 text-primary"></i> No regional data available.
+                        </div>
+                        <div th:unless="${#lists.isEmpty(districtWise)}" style="height: 360px; position: relative;">
+                            <canvas id="regionalPercentageChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 4: Chart 6 & Chart 7 -->
+        <div class="row g-4 mb-4">
+            <!-- SECTION G: Chart 6 - Released vs Utilized Funds -->
+            <div class="col-lg-7">
+                <div class="card gov-card shadow-sm border-0 h-100">
+                    <div class="card-header bg-navy text-white fw-bold py-3">
+                        <i class="fa-solid fa-code-compare text-warning me-2"></i> Released vs Utilized Funds Analysis
+                    </div>
+                    <div class="card-body p-3">
+                        <div th:if="${#lists.isEmpty(schemeWise)}" class="alert alert-info text-center py-4 my-auto">
+                            <i class="fa-solid fa-circle-info me-2 text-primary"></i> No data available.
+                        </div>
+                        <div th:unless="${#lists.isEmpty(schemeWise)}" style="height: 320px; position: relative;">
+                            <canvas id="releasedVsUtilizedChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Budget Allocation Composition Chart -->
+            <div class="col-lg-5">
+                <div class="card gov-card shadow-sm border-0 h-100">
+                    <div class="card-header bg-navy text-white fw-bold py-3">
+                        <i class="fa-solid fa-chart-pie text-warning me-2"></i> Budget Allocation by Scheme
+                    </div>
+                    <div class="card-body p-3">
+                        <div th:if="${#lists.isEmpty(schemeWise)}" class="alert alert-info text-center py-4 my-auto">
+                            <i class="fa-solid fa-circle-info me-2 text-primary"></i> No data available.
+                        </div>
+                        <div th:unless="${#lists.isEmpty(schemeWise)}" style="height: 320px; position: relative;">
+                            <canvas id="budgetAllocationChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECTION H: Detailed Data Tables (Positioned below charts for exact financial values) -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-table me-2 text-warning"></i> Detailed Scheme-wise Fund Utilization Table
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Scheme Name</th>
+                                <th>Category</th>
+                                <th>Allocated (₹)</th>
+                                <th>Sanctioned (₹)</th>
+                                <th>Released (₹)</th>
+                                <th>Utilized (₹)</th>
+                                <th>Remaining (₹)</th>
+                                <th>Applications</th>
+                                <th>Utilization %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(schemeWise)}">
+                                <td colspan="9" class="text-center text-muted py-4">No scheme utilization data available.</td>
+                            </tr>
+                            <tr th:each="s : ${schemeWise}">
+                                <td class="fw-bold text-navy" th:text="${s.schemeName}">Scheme Name</td>
+                                <td><span class="badge bg-secondary" th:text="${s.category}">General</span></td>
+                                <td class="fw-bold" th:text="'₹' + ${#numbers.formatDecimal(s.allocatedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="text-info fw-bold" th:text="'₹' + ${#numbers.formatDecimal(s.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="text-success fw-bold" th:text="'₹' + ${#numbers.formatDecimal(s.releasedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(s.utilizedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="text-warning text-dark fw-bold" th:text="'₹' + ${#numbers.formatDecimal(s.remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td th:text="${s.applicationCount}">0</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 10px;">
+                                            <div class="progress-bar bg-success" role="progressbar" th:style="'width: ' + (${s.allocatedAmount > 0 ? s.utilizationPercentage : 0}) + '%'"></div>
+                                        </div>
+                                        <span class="fw-bold small" th:text="${s.allocatedAmount > 0 ? s.formattedUtilizationPercentage : 'N/A'}">0%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header bg-navy text-white fw-bold py-3">
+                <i class="fa-solid fa-table me-2 text-warning"></i> Detailed Regional &amp; District Fund Utilization Table
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>District</th>
+                                <th>State</th>
+                                <th>Sanctioned Amount (₹)</th>
+                                <th>Released Amount (₹)</th>
+                                <th>Utilized Amount (₹)</th>
+                                <th>Remaining Amount (₹)</th>
+                                <th>Applications</th>
+                                <th>Utilization %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(districtWise)}">
+                                <td colspan="8" class="text-center text-muted py-4">No regional fund utilization data available.</td>
+                            </tr>
+                            <tr th:each="d : ${districtWise}">
+                                <td class="fw-bold text-navy" th:text="${d.district}">District</td>
+                                <td class="text-muted" th:text="${d.state}">State</td>
+                                <td class="fw-bold text-info" th:text="'₹' + ${#numbers.formatDecimal(d.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(d.releasedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(d.utilizedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="fw-bold text-warning text-dark" th:text="'₹' + ${#numbers.formatDecimal(d.remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td th:text="${d.applicationCount}">0</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 10px;">
+                                            <div class="progress-bar bg-info" role="progressbar" th:style="'width: ' + (${d.sanctionedAmount > 0 ? d.utilizationPercentage : 0}) + '%'"></div>
+                                        </div>
+                                        <span class="fw-bold small" th:text="${d.sanctionedAmount > 0 ? d.formattedUtilizationPercentage : 'N/A'}">0%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+
+<!-- JavaScript to Render Chart.js Dashboards -->
+<script th:inline="javascript">
+/*<![CDATA[*/
+document.addEventListener("DOMContentLoaded", function() {
+    const summary = /*[[${summary}]]*/ {};
+    const schemeWise = /*[[${schemeWise}]]*/ [];
+    const districtWise = /*[[${districtWise}]]*/ [];
+
+    function formatINR(val) {
+        if (val === null || val === undefined || isNaN(val)) return '₹0';
+        return '₹' + new Intl.NumberFormat('en-IN').format(Math.round(Number(val)));
+    }
+
+    function formatPct(val) {
+        if (val === null || val === undefined || isNaN(val)) return '0%';
+        const num = Number(val);
+        if (num === 0) return '0%';
+        if (num >= 100) return num.toFixed(0) + '%';
+        if (num < 1 && num > 0) return num.toFixed(3).replace(/\.?0+$/, '') + '%';
+        return num.toFixed(2).replace(/\.?0+$/, '') + '%';
+    }
+
+    // 1. Overall Fund Utilization Bar Chart
+    const ctxOverall = document.getElementById('overallChart');
+    if (ctxOverall && summary) {
+        new Chart(ctxOverall, {
+            type: 'bar',
+            data: {
+                labels: ['Allocated Budget', 'Sanctioned Amount', 'Released Amount', 'Utilized Amount', 'Remaining Funds'],
+                datasets: [{
+                    label: 'Amount (₹)',
+                    data: [
+                        summary.totalAllocatedAmount || 0,
+                        summary.totalSanctionedAmount || 0,
+                        summary.totalReleasedAmount || 0,
+                        summary.totalUtilizedAmount || 0,
+                        summary.totalRemainingAllocation || 0
+                    ],
+                    backgroundColor: ['#0f2b48', '#0dcaf0', '#198754', '#20c997', '#ffc107'],
+                    borderColor: ['#0b1f34', '#0baccc', '#146c43', '#1baa80', '#d3a007'],
+                    borderWidth: 1,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const val = context.raw;
+                                const totalAlloc = summary.totalAllocatedAmount || 1;
+                                const pct = (val / totalAlloc * 100).toFixed(3).replace(/\.?0+$/, '');
+                                return ` ${context.label}: ${formatINR(val)} (${pct}% of Total Allocated Budget)`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(val) {
+                                if (val >= 10000007) return '₹' + (val/10000000).toFixed(1) + ' Cr';
+                                if (val >= 100000) return '₹' + (val/100000).toFixed(1) + ' L';
+                                return '₹' + val;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Scheme-wise Financial Comparison Chart
+    const ctxSchemeComp = document.getElementById('schemeComparisonChart');
+    if (ctxSchemeComp && schemeWise && schemeWise.length > 0) {
+        new Chart(ctxSchemeComp, {
+            type: 'bar',
+            data: {
+                labels: schemeWise.map(s => s.schemeName),
+                datasets: [
+                    { label: 'Allocated', data: schemeWise.map(s => s.allocatedAmount), backgroundColor: '#0f2b48' },
+                    { label: 'Sanctioned', data: schemeWise.map(s => s.sanctionedAmount), backgroundColor: '#0dcaf0' },
+                    { label: 'Released', data: schemeWise.map(s => s.releasedAmount), backgroundColor: '#198754' },
+                    { label: 'Utilized', data: schemeWise.map(s => s.utilizedAmount), backgroundColor: '#20c997' },
+                    { label: 'Remaining', data: schemeWise.map(s => s.remainingAmount), backgroundColor: '#ffc107' }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(items) {
+                                return 'Scheme: ' + items[0].label;
+                            },
+                            label: function(context) {
+                                return ` ${context.dataset.label}: ${formatINR(context.raw)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. Scheme-wise Utilization Percentage Chart
+    const ctxSchemePct = document.getElementById('schemePercentageChart');
+    if (ctxSchemePct && schemeWise && schemeWise.length > 0) {
+        new Chart(ctxSchemePct, {
+            type: 'bar',
+            data: {
+                labels: schemeWise.map(s => s.schemeName),
+                datasets: [{
+                    label: 'Utilization %',
+                    data: schemeWise.map(s => s.allocatedAmount > 0 ? s.utilizationPercentage : 0),
+                    backgroundColor: schemeWise.map(s => s.utilizationPercentage >= 80 ? '#dc3545' : '#198754'),
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function(items) {
+                                return 'Scheme: ' + items[0].label;
+                            },
+                            label: function(context) {
+                                const item = schemeWise[context.dataIndex];
+                                if (!item || item.allocatedAmount === 0) return ' Utilization: N/A (Allocated: ₹0)';
+                                return ` Utilization: ${formatPct(item.utilizationPercentage)} (Utilized: ${formatINR(item.utilizedAmount)} / Allocated: ${formatINR(item.allocatedAmount)})`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Utilization Percentage (%)' }
+                    }
+                }
+            }
+        });
+    }
+
+    // 4. Regional Fund Utilization Chart
+    const ctxRegional = document.getElementById('regionalChart');
+    if (ctxRegional && districtWise && districtWise.length > 0) {
+        new Chart(ctxRegional, {
+            type: 'bar',
+            data: {
+                labels: districtWise.map(d => `${d.district} - ${d.state}`),
+                datasets: [
+                    { label: 'Sanctioned', data: districtWise.map(d => d.sanctionedAmount), backgroundColor: '#0dcaf0' },
+                    { label: 'Released', data: districtWise.map(d => d.releasedAmount), backgroundColor: '#198754' },
+                    { label: 'Utilized', data: districtWise.map(d => d.utilizedAmount), backgroundColor: '#20c997' },
+                    { label: 'Remaining', data: districtWise.map(d => d.remainingAmount), backgroundColor: '#ffc107' }
+                ]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            title: function(items) {
+                                const item = districtWise[items[0].dataIndex];
+                                return `District: ${item.district} | State: ${item.state}`;
+                            },
+                            label: function(context) {
+                                return ` ${context.dataset.label}: ${formatINR(context.raw)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 5. Regional Utilization Percentage Chart
+    const ctxRegionalPct = document.getElementById('regionalPercentageChart');
+    if (ctxRegionalPct && districtWise && districtWise.length > 0) {
+        new Chart(ctxRegionalPct, {
+            type: 'bar',
+            data: {
+                labels: districtWise.map(d => `${d.district} - ${d.state}`),
+                datasets: [{
+                    label: 'Utilization %',
+                    data: districtWise.map(d => d.sanctionedAmount > 0 ? d.utilizationPercentage : 0),
+                    backgroundColor: '#0d6efd',
+                    borderRadius: 4
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            title: function(items) {
+                                const item = districtWise[items[0].dataIndex];
+                                return `District: ${item.district} | State: ${item.state}`;
+                            },
+                            label: function(context) {
+                                const item = districtWise[context.dataIndex];
+                                if (!item || item.sanctionedAmount === 0) return ' Utilization: N/A (Sanctioned Basis: ₹0)';
+                                return ` Utilization: ${formatPct(item.utilizationPercentage)} (Utilized: ${formatINR(item.utilizedAmount)} / Regional Basis: ${formatINR(item.sanctionedAmount)})`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        beginAtZero: true,
+                        title: { display: true, text: 'Utilization % (Utilized / Regional Basis Amount)' }
+                    }
+                }
+            }
+        });
+    }
+
+    // 6. Released vs Utilized Funds Analysis Chart
+    const ctxRelUtil = document.getElementById('releasedVsUtilizedChart');
+    if (ctxRelUtil && schemeWise && schemeWise.length > 0) {
+        new Chart(ctxRelUtil, {
+            type: 'bar',
+            data: {
+                labels: schemeWise.map(s => s.schemeName),
+                datasets: [
+                    { label: 'Released Funds', data: schemeWise.map(s => s.releasedAmount), backgroundColor: '#198754' },
+                    { label: 'Utilized Funds', data: schemeWise.map(s => s.utilizedAmount), backgroundColor: '#20c997' }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return ` ${context.dataset.label}: ${formatINR(context.raw)}`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 7. Budget Allocation Composition Chart
+    const ctxBudgetAlloc = document.getElementById('budgetAllocationChart');
+    if (ctxBudgetAlloc && schemeWise && schemeWise.length > 0) {
+        const useDoughnut = schemeWise.length <= 6;
+        new Chart(ctxBudgetAlloc, {
+            type: useDoughnut ? 'doughnut' : 'bar',
+            data: {
+                labels: schemeWise.map(s => s.schemeName),
+                datasets: [{
+                    label: 'Allocated Budget',
+                    data: schemeWise.map(s => s.allocatedAmount),
+                    backgroundColor: ['#0f2b48', '#0d6efd', '#198754', '#ffc107', '#0dcaf0', '#6f42c1', '#fd7e14', '#20c997']
+                }]
+            },
+            options: {
+                indexAxis: useDoughnut ? 'x' : 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const val = context.raw;
+                                const total = summary.totalAllocatedAmount || 1;
+                                const pct = (val / total * 100).toFixed(2);
+                                return ` Allocated: ${formatINR(val)} (${pct}% of Total Budget)`;
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+});
+/*]]>*/
+</script>
+</body>
+</html>

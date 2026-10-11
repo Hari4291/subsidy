@@ -105,7 +105,7 @@ public class RoleDifferenceWorkflowTest {
         doAction.setAction("APPROVE");
         doAction.setRemarks("District sanction granted.");
 
-        verificationService.processVerification("district.officer@gmail.com", "ROLE_DISTRICT_OFFICER", doAction);
+        verificationService.processVerification("kalyanramvase377@gmail.com", "ROLE_DISTRICT_OFFICER", doAction);
 
         Application afterDoApp = applicationService.getApplicationById(app.getId());
         assertEquals("FINANCE_APPROVAL", afterDoApp.getCurrentStage(), "DO approval must advance stage to FINANCE_APPROVAL");
@@ -129,7 +129,7 @@ public class RoleDifferenceWorkflowTest {
         assertTrue(escList.stream().anyMatch(e -> e.getId().equals(escalation.getId())));
 
         // Resolve Escalation by District Officer
-        ApplicationEscalation resolved = escalationService.resolveEscalation(escalation.getId(), "District verified document with Tehsildar office.", "district.officer@gmail.com");
+        ApplicationEscalation resolved = escalationService.resolveEscalation(escalation.getId(), "District verified document with Tehsildar office.", "kalyanramvase377@gmail.com");
         assertEquals("RESOLVED", resolved.getStatus());
         assertNotNull(resolved.getResolvedAt());
     }
@@ -155,7 +155,7 @@ public class RoleDifferenceWorkflowTest {
         assertEquals("OPEN", flag.getStatus());
 
         // District Officer clears flag as FALSE_POSITIVE
-        AnomalyFlag updatedFlag = anomalyDetectionService.resolveFlag(flag.getId(), "FALSE_POSITIVE", "Verified applicant possesses genuine high capital requirements.", "district.officer@gmail.com");
+        AnomalyFlag updatedFlag = anomalyDetectionService.resolveFlag(flag.getId(), "FALSE_POSITIVE", "Verified applicant possesses genuine high capital requirements.", "kalyanramvase377@gmail.com");
         assertEquals("FALSE_POSITIVE", updatedFlag.getStatus());
     }
 
@@ -198,10 +198,10 @@ public class RoleDifferenceWorkflowTest {
         assertTrue(districtGrievances.stream().anyMatch(g -> g.getId().equals(grievance.getId())));
 
         // DO updates grievance status to IN_PROGRESS then RESOLVED
-        Grievance inProg = grievanceService.updateGrievanceStatus(grievance.getId(), "IN_PROGRESS", "Assigned senior field officer for priority check.", null, "district.officer@gmail.com");
+        Grievance inProg = grievanceService.updateGrievanceStatus(grievance.getId(), "IN_PROGRESS", "Assigned senior field officer for priority check.", null, "kalyanramvase377@gmail.com");
         assertEquals("IN_PROGRESS", inProg.getStatus());
 
-        Grievance resolved = grievanceService.updateGrievanceStatus(grievance.getId(), "RESOLVED", "Ground inspection completed and application approved.", null, "district.officer@gmail.com");
+        Grievance resolved = grievanceService.updateGrievanceStatus(grievance.getId(), "RESOLVED", "Ground inspection completed and application approved.", null, "kalyanramvase377@gmail.com");
         assertEquals("RESOLVED", resolved.getStatus());
     }
 
@@ -220,7 +220,7 @@ public class RoleDifferenceWorkflowTest {
         Officer fo = fieldOfficers.get(0);
 
         // Reassign application to Officer
-        officerService.assignApplicationToOfficer(app, fo, "district.officer@gmail.com");
+        officerService.assignApplicationToOfficer(app, fo, "kalyanramvase377@gmail.com");
 
         Application reassignedApp = applicationService.getApplicationById(app.getId());
         assertNotNull(reassignedApp.getAssignedOfficer());

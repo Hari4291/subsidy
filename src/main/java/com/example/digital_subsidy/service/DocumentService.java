@@ -44,7 +44,7 @@ public class DocumentService {
             } else if ("BANK_PASSBOOK".equalsIgnoreCase(expectedDocType)) {
                 return "Bank Passbook is required.";
             } else {
-                return "Uploaded file is empty.";
+                return "Uploaded file is empty or missing.";
             }
         }
 
@@ -56,11 +56,11 @@ public class DocumentService {
 
         // 3. Supported File Format / Extension & MIME Check
         String originalFilename = file.getOriginalFilename();
-        String extension = "";
-        if (originalFilename != null && originalFilename.contains(".")) {
-            extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+        if (originalFilename == null || !originalFilename.contains(".")) {
+            return "Unsupported file format. Please upload PDF, JPG, JPEG, or PNG.";
         }
 
+        String extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
         List<String> allowedExtensions = List.of(".pdf", ".jpg", ".jpeg", ".png");
         if (!allowedExtensions.contains(extension)) {
             return "Unsupported file format. Please upload PDF, JPG, JPEG, or PNG.";
@@ -69,10 +69,21 @@ public class DocumentService {
         String contentType = file.getContentType();
         if (contentType != null && !contentType.isBlank()) {
             String lowerContentType = contentType.toLowerCase();
-            if (!lowerContentType.contains("pdf") &&
-                !lowerContentType.contains("jpeg") &&
-                !lowerContentType.contains("jpg") &&
-                !lowerContentType.contains("png")) {
+            List<String> allowedMimeTypes = List.of(
+                "application/pdf",
+                "image/jpeg",
+                "image/jpg",
+                "image/pjpeg",
+                "image/png",
+                "image/x-png",
+                "application/octet-stream"
+            );
+            boolean mimeAllowed = allowedMimeTypes.stream().anyMatch(lowerContentType::contains) ||
+                                  lowerContentType.contains("pdf") ||
+                                  lowerContentType.contains("jpeg") ||
+                                  lowerContentType.contains("jpg") ||
+                                  lowerContentType.contains("png");
+            if (!mimeAllowed) {
                 return "Unsupported file format. Please upload PDF, JPG, JPEG, or PNG.";
             }
         }
@@ -145,6 +156,50 @@ public class DocumentService {
         return saveDocument(beneficiary, application, documentType, file);
     }
 
+    @Transactional
+    public Document saveComplianceDocument(Beneficiary beneficiary, Application application, com.example.digital_subsidy.model.Milestone milestone, String documentType, MultipartFile file) throws IOException {
+        if (file == null || file.isEmpty()) {
+            return null;
+        }
+
+        // Preserve history: Archive old active compliance documents for this milestone
+        if (milestone != null && milestone.getId() != null) {
+            List<Document> oldMilestoneDocs = documentRepository.findByMilestoneIdOrderByIdDesc(milestone.getId());
+            for (Document oldDoc : oldMilestoneDocs) {
+                if ("ACTIVE".equalsIgnoreCase(oldDoc.getStatus())) {
+                    oldDoc.setStatus("ARCHIVED");
+                    documentRepository.save(oldDoc);
+                }
+            }
+        }
+
+        String originalFilename = file.getOriginalFilename();
+        String fileExtension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+        }
+
+        String docType = documentType != null ? documentType : "COMPLIANCE_PROOF";
+        String storedFileName = UUID.randomUUID().toString() + "_" + docType + fileExtension;
+        Path targetPath = Paths.get(uploadDir + storedFileName);
+        Files.copy(file.getInputStream(), targetPath, java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+
+        Document document = new Document();
+        document.setBeneficiary(beneficiary);
+        document.setApplication(application);
+        document.setMilestone(milestone);
+        document.setDocumentType(docType);
+        document.setFileName(originalFilename != null ? originalFilename : storedFileName);
+        document.setFilePath(targetPath.toString());
+        document.setContentType(file.getContentType());
+        document.setFileSize(file.getSize());
+        document.setUploadedDate(LocalDateTime.now());
+        document.setVerificationStatus("PENDING");
+        document.setStatus("ACTIVE");
+
+        return documentRepository.save(document);
+    }
+
     public Document getDocumentById(Long id) {
         return documentRepository.findById(id).orElse(null);
     }
@@ -185,5 +240,9 @@ public class DocumentService {
             }
         }
         return new java.util.ArrayList<>(latestMap.values());
+    }
+
+    public List<Document> getDocumentsByMilestone(Long milestoneId) {
+        return documentRepository.findByMilestoneIdOrderByIdDesc(milestoneId);
     }
 }

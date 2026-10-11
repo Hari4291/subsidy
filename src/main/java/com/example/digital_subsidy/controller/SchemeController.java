@@ -61,7 +61,7 @@ public class SchemeController {
     public String saveBasicDetails(@ModelAttribute("schemeDto") SchemeConfigDto schemeDto,
                                    Authentication authentication,
                                    RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         try {
             Scheme savedScheme = schemeService.saveSchemeConfig(schemeDto, adminEmail);
             redirectAttributes.addFlashAttribute("successMessage", "Scheme basic details saved successfully.");
@@ -133,7 +133,7 @@ public class SchemeController {
                                 @ModelAttribute("newCriteriaDto") EligibilityCriteriaDto criteriaDto,
                                 Authentication authentication,
                                 RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         try {
             schemeService.saveOrUpdateCriterion(schemeId, criteriaDto, adminEmail);
             redirectAttributes.addFlashAttribute("successMessage", "Eligibility question/criterion saved successfully.");
@@ -148,7 +148,7 @@ public class SchemeController {
                                   @PathVariable("critId") Long critId,
                                   Authentication authentication,
                                   RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         schemeService.toggleCriterionStatus(critId, adminEmail);
         redirectAttributes.addFlashAttribute("successMessage", "Criterion status updated.");
         return "redirect:/admin/schemes/" + schemeId + "/config?step=3";
@@ -159,7 +159,7 @@ public class SchemeController {
                                @ModelAttribute("newDocDto") RequiredDocumentDto docDto,
                                Authentication authentication,
                                RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         try {
             schemeService.saveOrUpdateDocument(schemeId, docDto, adminEmail);
             redirectAttributes.addFlashAttribute("successMessage", "Required supporting document saved successfully.");
@@ -174,7 +174,7 @@ public class SchemeController {
                                  @PathVariable("docId") Long docId,
                                  Authentication authentication,
                                  RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         schemeService.toggleDocumentStatus(docId, adminEmail);
         redirectAttributes.addFlashAttribute("successMessage", "Document status updated.");
         return "redirect:/admin/schemes/" + schemeId + "/config?step=4";
@@ -185,7 +185,7 @@ public class SchemeController {
                                 @ModelAttribute("newMilestoneDto") DisbursementMilestoneDto milestoneDto,
                                 Authentication authentication,
                                 RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         try {
             schemeService.saveOrUpdateMilestone(schemeId, milestoneDto, adminEmail);
             redirectAttributes.addFlashAttribute("successMessage", "Disbursement milestone saved successfully.");
@@ -200,7 +200,7 @@ public class SchemeController {
                                   @PathVariable("milestoneId") Long milestoneId,
                                   Authentication authentication,
                                   RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         schemeService.toggleMilestoneStatus(milestoneId, adminEmail);
         redirectAttributes.addFlashAttribute("successMessage", "Milestone status updated.");
         return "redirect:/admin/schemes/" + schemeId + "/config?step=5";
@@ -211,7 +211,7 @@ public class SchemeController {
                                   @PathVariable("milestoneId") Long milestoneId,
                                   Authentication authentication,
                                   RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         schemeService.deleteMilestone(milestoneId, adminEmail);
         redirectAttributes.addFlashAttribute("successMessage", "Milestone deleted.");
         return "redirect:/admin/schemes/" + schemeId + "/config?step=5";
@@ -222,7 +222,7 @@ public class SchemeController {
                                           @RequestParam("targetStatus") String targetStatus,
                                           Authentication authentication,
                                           RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         try {
             Scheme updated = schemeService.activateOrDeactivateScheme(schemeId, targetStatus, adminEmail);
             redirectAttributes.addFlashAttribute("successMessage", "Scheme status updated to " + updated.getStatus() + ".");
@@ -252,7 +252,7 @@ public class SchemeController {
                                      @RequestParam("escalationWaitingDays") Integer escalationWaitingDays,
                                      Authentication authentication,
                                      RedirectAttributes redirectAttributes) {
-        String adminEmail = authentication != null ? authentication.getName() : "admin@gov.in";
+        String adminEmail = authentication != null ? authentication.getName() : "johnmekala4277@gmail.com";
         try {
             schemeService.updatePriorityConfig(
                     schemeId, priorityQueueEnabled, eligibilityWeight, waitingWeight, vulnerabilityWeight,

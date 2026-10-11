@@ -192,7 +192,7 @@ public class EndToEndSampleBeneficiaryTest {
         districtAction.setAction("APPROVE");
         districtAction.setRemarks("District Collectorate sanction approved.");
 
-        verificationService.processVerification("district.officer@gmail.com", "ROLE_DISTRICT_OFFICER", districtAction);
+        verificationService.processVerification("kalyanramvase377@gmail.com", "ROLE_DISTRICT_OFFICER", districtAction);
 
         Application districtApp = applicationService.getApplicationById(application.getId());
         assertEquals("FINANCE_APPROVAL", districtApp.getCurrentStage());
@@ -204,7 +204,7 @@ public class EndToEndSampleBeneficiaryTest {
         financeAction.setAction("APPROVE");
         financeAction.setRemarks("Treasury fund sanction authorized.");
 
-        verificationService.processVerification("finance.approver@gmail.com", "ROLE_FINANCE_APPROVER", financeAction);
+        verificationService.processVerification("pabbuletihari0@gmail.com", "ROLE_FINANCE_APPROVER", financeAction);
 
         Application approvedApp = applicationService.getApplicationById(application.getId());
         assertEquals("DISBURSEMENT", approvedApp.getCurrentStage());
@@ -220,6 +220,8 @@ public class EndToEndSampleBeneficiaryTest {
 
         // 8. RELEASE MILESTONE 1
         Milestone m1 = milestones.get(0);
+        m1.setComplianceVerificationStatus("VERIFIED");
+        milestoneRepository.save(m1);
         disbursementService.releaseMilestone(m1.getId());
 
         Milestone releasedM1 = milestoneRepository.findById(m1.getId()).orElseThrow();

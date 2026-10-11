@@ -4,6 +4,7 @@ import com.example.digital_subsidy.model.Application;
 import com.example.digital_subsidy.model.Beneficiary;
 import com.example.digital_subsidy.model.Disbursement;
 import com.example.digital_subsidy.model.EligibilityScore;
+import com.example.digital_subsidy.model.Milestone;
 import com.example.digital_subsidy.model.Verification;
 import com.example.digital_subsidy.repository.EligibilityScoreRepository;
 import com.example.digital_subsidy.repository.VerificationRepository;
@@ -78,10 +79,13 @@ public class BeneficiaryController {
 
         Application latestApplication = applications.isEmpty() ? null : applications.get(0);
 
+        List<Milestone> actionRequiredTermMilestones = disbursementService.getActionRequiredTermMilestonesForBeneficiary(beneficiary.getId());
+
         model.addAttribute("beneficiary", beneficiary);
         model.addAttribute("applications", applications);
         model.addAttribute("myGrievances", myGrievances);
         model.addAttribute("latestApplication", latestApplication);
+        model.addAttribute("actionRequiredTermMilestones", actionRequiredTermMilestones);
         model.addAttribute("totalApps", totalApps);
         model.addAttribute("approvedApps", approvedApps);
         model.addAttribute("pendingApps", pendingApps);

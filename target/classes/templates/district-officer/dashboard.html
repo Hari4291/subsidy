@@ -128,8 +128,74 @@
                     <div class="d-flex gap-2">
                         <span class="badge bg-danger"><i class="fa-solid fa-fire me-1"></i> HIGH (&ge;75)</span>
                         <span class="badge bg-warning text-dark"><i class="fa-solid fa-bolt me-1"></i> MEDIUM (&ge;50)</span>
-                        <span class="badge bg-secondary"><i class="fa-solid fa-list me-1"></i> STANDARD (&lt;50)</span>
-                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TERM DOCUMENTS / COMPLIANCE REVIEW SECTION -->
+        <div class="card gov-card shadow-sm border-0 mb-4 border-start border-4 border-info">
+            <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <div class="d-flex align-items-center gap-2">
+                    <span class="fs-6"><i class="fa-solid fa-file-check text-warning me-2"></i> Term Documents / Compliance Review</span>
+                    <span class="badge bg-light text-navy fw-bold" th:text="${termComplianceReviews != null ? #lists.size(termComplianceReviews) : 0} + ' Pending'">0 Pending</span>
+                </div>
+                <small class="text-white-50 d-none d-md-inline">Review Field Officer verified milestone documents (All Financial Amounts are READ-ONLY)</small>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-dark">
+                            <tr>
+                                <th>Application ID</th>
+                                <th>Beneficiary</th>
+                                <th>Scheme</th>
+                                <th>Term</th>
+                                <th>Sanctioned Amount</th>
+                                <th>Term Amount</th>
+                                <th>Required Document</th>
+                                <th>Field Verification</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(termComplianceReviews)}">
+                                <td colspan="9" class="text-center text-muted py-4">
+                                    <i class="fa-solid fa-folder-open fa-2x mb-2 d-block text-secondary"></i>
+                                    No term compliance reviews pending District Officer approval.
+                                </td>
+                            </tr>
+                            <tr th:each="m : ${termComplianceReviews}">
+                                <td class="fw-bold text-navy" th:text="${m.disbursement.application.applicationNumber}">APP-243</td>
+                                <td>
+                                    <strong th:text="${m.disbursement.application.beneficiary != null and m.disbursement.application.beneficiary.user != null ? m.disbursement.application.beneficiary.user.fullName : 'Beneficiary'}">Beneficiary</strong><br>
+                                    <small class="text-muted" th:text="${m.disbursement.application.beneficiary != null ? m.disbursement.application.beneficiary.district : ''}">District</small>
+                                </td>
+                                <td th:text="${m.disbursement.application.scheme != null ? m.disbursement.application.scheme.name : ''}">Scheme Name</td>
+                                <td class="fw-bold text-primary" th:text="${m.milestoneName}">Term 2</td>
+                                <td>
+                                    <span class="fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(m.disbursement.application.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹60,000</span>
+                                    <span class="badge bg-secondary ms-1">READ ONLY</span>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(m.milestoneAmount, 0, 'COMMA', 0, 'POINT')}">₹24,000</span>
+                                    <span class="badge bg-secondary ms-1">READ ONLY</span>
+                                </td>
+                                <td th:text="${T(com.example.digital_subsidy.service.DisbursementService).getDocumentTypeDisplayName(m.requiredDocumentType)}">Required Document</td>
+                                <td>
+                                    <span th:if="${m.complianceVerificationStatus == 'VERIFIED' or m.complianceVerificationStatus == 'FIELD_VERIFIED' or m.complianceVerificationStatus == 'PENDING_DISTRICT_APPROVAL'}" class="badge bg-success"><i class="fa-solid fa-check-double me-1"></i> VERIFIED BY FO</span>
+                                    <span th:if="${m.complianceVerificationStatus == 'SUBMITTED' or m.complianceVerificationStatus == 'UNDER_REVIEW'}" class="badge bg-warning text-dark">UNDER REVIEW</span>
+                                </td>
+                                <td class="text-nowrap">
+                                    <a th:if="${m.submittedDocument != null}" th:href="@{'/documents/view/' + ${m.submittedDocument.id}}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold me-1">
+                                        <i class="fa-solid fa-eye me-1"></i> View Document
+                                    </a>
+                                    <a th:href="@{'/disbursements/schedule/' + ${m.disbursement.application.id}}" class="btn btn-sm btn-navy fw-bold text-white me-1">
+                                        <i class="fa-solid fa-gavel me-1"></i> Review &amp; Verify
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>

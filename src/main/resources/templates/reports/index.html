@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/header :: header-head}"></head>
+<body>
+<div th:replace="~{fragments/header :: header-banner}"></div>
+<div th:replace="~{fragments/navbar :: navbar}"></div>
+
+<div class="container-fluid py-4 bg-light">
+    <div class="container">
+        <!-- Title Banner -->
+        <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
+            <div>
+                <h4 class="mb-1 fw-bold"><i class="fa-solid fa-file-invoice-dollar text-warning me-2"></i> Reports &amp; Analytics Desk</h4>
+                <p class="mb-0 text-light small">Official Government Financial Aggregations, Regional Audit &amp; Compliance Reporting</p>
+            </div>
+            <div class="d-flex align-items-center gap-2">
+                <a th:href="@{/reports/export(reportType=${reportType}, format='csv', schemeId=${selectedSchemeId}, category=${selectedCategory}, state=${selectedState}, district=${selectedDistrict}, status=${selectedStatus}, complianceStatus=${selectedComplianceStatus})}" 
+                   class="btn btn-sm btn-success fw-bold shadow-sm" id="exportCsvBtn">
+                    <i class="fa-solid fa-file-csv me-1"></i> Export CSV
+                </a>
+                <a th:href="@{/reports/export(reportType=${reportType}, format='pdf', schemeId=${selectedSchemeId}, category=${selectedCategory}, state=${selectedState}, district=${selectedDistrict}, status=${selectedStatus}, complianceStatus=${selectedComplianceStatus})}" 
+                   class="btn btn-sm btn-danger fw-bold shadow-sm" id="exportPdfBtn">
+                    <i class="fa-solid fa-file-pdf me-1"></i> Export PDF
+                </a>
+            </div>
+        </div>
+
+        <!-- Report Tabs -->
+        <ul class="nav nav-pills mb-4 bg-white p-2 rounded shadow-sm">
+            <li class="nav-item">
+                <a class="nav-link fw-bold" th:classappend="${reportType == 'FUND_UTILIZATION' ? 'active' : 'text-secondary'}" 
+                   th:href="@{/reports(reportType='FUND_UTILIZATION')}">
+                    <i class="fa-solid fa-pie-chart me-1"></i> Fund Utilization
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold" th:classappend="${reportType == 'REGIONAL_FUND' ? 'active' : 'text-secondary'}" 
+                   th:href="@{/reports(reportType='REGIONAL_FUND')}">
+                    <i class="fa-solid fa-map-location-dot me-1"></i> Regional Fund
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold" th:classappend="${reportType == 'DISBURSEMENT' ? 'active' : 'text-secondary'}" 
+                   th:href="@{/reports(reportType='DISBURSEMENT')}">
+                    <i class="fa-solid fa-building-columns me-1"></i> Disbursement Queue
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold" th:classappend="${reportType == 'COMPLIANCE' ? 'active' : 'text-secondary'}" 
+                   th:href="@{/reports(reportType='COMPLIANCE')}">
+                    <i class="fa-solid fa-clipboard-check me-1"></i> Compliance Audit
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link fw-bold" th:classappend="${reportType == 'LIFECYCLE' ? 'active' : 'text-secondary'}" 
+                   th:href="@{/reports(reportType='LIFECYCLE')}">
+                    <i class="fa-solid fa-diagram-project me-1"></i> Application Lifecycle
+                </a>
+            </li>
+        </ul>
+
+        <!-- Filter Bar -->
+        <div class="card border-0 shadow-sm mb-4">
+            <div class="card-header bg-white fw-bold py-2">
+                <i class="fa-solid fa-filter text-navy me-2"></i> Report Filter Controls
+            </div>
+            <div class="card-body">
+                <form th:action="@{/reports}" method="get" class="row g-3">
+                    <input type="hidden" name="reportType" th:value="${reportType}"/>
+                    
+                    <div class="col-md-3">
+                        <label class="form-label small fw-bold text-muted">Scheme Filter</label>
+                        <select name="schemeId" class="form-select form-select-sm">
+                            <option value="">-- All Schemes --</option>
+                            <option th:each="s : ${schemes}" th:value="${s.id}" th:text="${s.name}" th:selected="${s.id == selectedSchemeId}"></option>
+                        </select>
+                    </div>
+                    
+                    <div class="col-md-2" th:if="${reportType == 'FUND_UTILIZATION'}">
+                        <label class="form-label small fw-bold text-muted">Category</label>
+                        <select name="category" class="form-select form-select-sm">
+                            <option value="">-- All Categories --</option>
+                            <option value="AGRICULTURE" th:selected="${selectedCategory == 'AGRICULTURE'}">Agriculture</option>
+                            <option value="EDUCATION" th:selected="${selectedCategory == 'EDUCATION'}">Education</option>
+                            <option value="HEALTHCARE" th:selected="${selectedCategory == 'HEALTHCARE'}">Healthcare</option>
+                            <option value="ENERGY" th:selected="${selectedCategory == 'ENERGY'}">Energy</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted">State</label>
+                        <input type="text" name="state" class="form-control form-control-sm" placeholder="e.g. Telangana" th:value="${selectedState}"/>
+                    </div>
+
+                    <div class="col-md-2">
+                        <label class="form-label small fw-bold text-muted">District</label>
+                        <input type="text" name="district" class="form-control form-control-sm" placeholder="e.g. Medak" th:value="${selectedDistrict}"/>
+                    </div>
+
+                    <div class="col-md-2" th:if="${reportType == 'DISBURSEMENT'}">
+                        <label class="form-label small fw-bold text-muted">Disbursement Status</label>
+                        <select name="status" class="form-select form-select-sm">
+                            <option value="">-- All Statuses --</option>
+                            <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">PENDING</option>
+                            <option value="PARTIALLY_RELEASED" th:selected="${selectedStatus == 'PARTIALLY_RELEASED'}">PARTIALLY_RELEASED</option>
+                            <option value="COMPLETED" th:selected="${selectedStatus == 'COMPLETED'}">COMPLETED</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2" th:if="${reportType == 'COMPLIANCE'}">
+                        <label class="form-label small fw-bold text-muted">Compliance Status</label>
+                        <select name="complianceStatus" class="form-select form-select-sm">
+                            <option value="">-- All Statuses --</option>
+                            <option value="PENDING" th:selected="${selectedComplianceStatus == 'PENDING'}">PENDING</option>
+                            <option value="SUBMITTED" th:selected="${selectedComplianceStatus == 'SUBMITTED'}">SUBMITTED</option>
+                            <option value="VERIFIED" th:selected="${selectedComplianceStatus == 'VERIFIED'}">VERIFIED</option>
+                            <option value="REJECTED" th:selected="${selectedComplianceStatus == 'REJECTED'}">REJECTED</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-3 d-flex align-items-end gap-2">
+                        <button type="submit" class="btn btn-sm btn-navy fw-bold w-50" id="applyFilterBtn">
+                            <i class="fa-solid fa-magnifying-glass me-1"></i> Apply
+                        </button>
+                        <a th:href="@{/reports(reportType=${reportType})}" class="btn btn-sm btn-outline-secondary fw-bold w-50">
+                            Reset
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- REPORT DATA TABLE -->
+        <!-- 1. FUND UTILIZATION REPORT -->
+        <div class="card border-0 shadow-sm mb-4" th:if="${reportType == 'FUND_UTILIZATION'}">
+            <div class="card-header bg-white fw-bold py-3 text-navy">
+                <i class="fa-solid fa-chart-column me-2 text-primary"></i> Fund Utilization Report Summary
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0" id="fundUtilizationReportTable">
+                        <thead class="bg-navy text-white">
+                            <tr>
+                                <th>Scheme Name</th>
+                                <th>Category</th>
+                                <th>Allocated (₹)</th>
+                                <th>Sanctioned (₹)</th>
+                                <th>Released (₹)</th>
+                                <th>Utilized (₹)</th>
+                                <th>Remaining (₹)</th>
+                                <th>Apps</th>
+                                <th>Utilization %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="row : ${reportData}">
+                                <td class="fw-bold text-navy" th:text="${row.schemeName}">Scheme A</td>
+                                <td><span class="badge bg-secondary" th:text="${row.category}">Category</span></td>
+                                <td class="fw-bold" th:text="'₹' + ${#numbers.formatDecimal(row.allocatedAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="text-success fw-bold" th:text="'₹' + ${#numbers.formatDecimal(row.sanctionedAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="text-primary fw-bold" th:text="'₹' + ${#numbers.formatDecimal(row.releasedAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="text-info fw-bold" th:text="'₹' + ${#numbers.formatDecimal(row.utilizedAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="text-secondary" th:text="'₹' + ${#numbers.formatDecimal(row.remainingAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td><span class="badge bg-light text-dark fw-bold" th:text="${row.applicationCount}">0</span></td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 10px;">
+                                            <div class="progress-bar bg-success" role="progressbar" th:style="'width: ' + ${row.utilizationPercentage} + '%'"></div>
+                                        </div>
+                                        <span class="fw-bold small" th:text="${row.utilizationPercentage} + '%'">0%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(reportData)}">
+                                <td colspan="9" class="text-center py-4 text-muted fw-bold">
+                                    <i class="fa-solid fa-inbox fa-2x mb-2 d-block text-secondary"></i>
+                                    No fund utilization records found for the selected criteria.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. REGIONAL FUND REPORT -->
+        <div class="card border-0 shadow-sm mb-4" th:if="${reportType == 'REGIONAL_FUND'}">
+            <div class="card-header bg-white fw-bold py-3 text-navy">
+                <i class="fa-solid fa-sitemap me-2 text-primary"></i> Regional Fund Allocation &amp; Utilization Hierarchy
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0" id="regionalFundReportTable">
+                        <thead class="bg-navy text-white">
+                            <tr>
+                                <th>State</th>
+                                <th>District</th>
+                                <th>Scheme</th>
+                                <th>Applications</th>
+                                <th>Sanctioned (₹)</th>
+                                <th>Released (₹)</th>
+                                <th>Utilized (₹)</th>
+                                <th>Remaining (₹)</th>
+                                <th>Utilization %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="row : ${reportData}">
+                                <td class="fw-bold text-navy" th:text="${row.state}">State</td>
+                                <td class="fw-bold text-secondary" th:text="${row.district}">District</td>
+                                <td class="fw-bold text-primary" th:text="${row.schemeName}">Scheme</td>
+                                <td><span class="badge bg-info text-dark" th:text="${row.applicationCount}">0</span></td>
+                                <td class="text-success fw-bold" th:text="'₹' + ${#numbers.formatDecimal(row.sanctionedAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="text-primary fw-bold" th:text="'₹' + ${#numbers.formatDecimal(row.releasedAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="text-info fw-bold" th:text="'₹' + ${#numbers.formatDecimal(row.utilizedAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="text-secondary" th:text="'₹' + ${#numbers.formatDecimal(row.remainingAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="fw-bold text-success" th:text="${row.utilizationPercentage} + '%'">0%</td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(reportData)}">
+                                <td colspan="9" class="text-center py-4 text-muted fw-bold">
+                                    <i class="fa-solid fa-inbox fa-2x mb-2 d-block text-secondary"></i>
+                                    No regional fund records found matching the specified parameters.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. DISBURSEMENT REPORT -->
+        <div class="card border-0 shadow-sm mb-4" th:if="${reportType == 'DISBURSEMENT'}">
+            <div class="card-header bg-white fw-bold py-3 text-navy">
+                <i class="fa-solid fa-money-bill-transfer me-2 text-primary"></i> Staged Disbursement &amp; Term Tracking Report
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0" id="disbursementReportTable">
+                        <thead class="bg-navy text-white">
+                            <tr>
+                                <th>App #</th>
+                                <th>Beneficiary</th>
+                                <th>Scheme</th>
+                                <th>Sanctioned (₹)</th>
+                                <th>Released (₹)</th>
+                                <th>Remaining (₹)</th>
+                                <th>Terms (Tot/Rel/Pend)</th>
+                                <th>Current Pending Term</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="row : ${reportData}">
+                                <td class="fw-bold text-navy" th:text="${row.applicationNumber}">APP-0000</td>
+                                <td th:text="${row.beneficiaryName}">John Doe</td>
+                                <td class="small text-muted" th:text="${row.schemeName}">Scheme Name</td>
+                                <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(row.sanctionedAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="fw-bold text-primary" th:text="'₹' + ${#numbers.formatDecimal(row.releasedAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td class="text-secondary" th:text="'₹' + ${#numbers.formatDecimal(row.remainingAmount, 0, 'COMMA', 2, 'POINT')}">0.00</td>
+                                <td>
+                                    <span class="badge bg-light text-dark fw-bold" th:text="${row.totalTerms}">0</span> /
+                                    <span class="badge bg-success" th:text="${row.releasedTerms}">0</span> /
+                                    <span class="badge bg-warning text-dark" th:text="${row.pendingTerms}">0</span>
+                                </td>
+                                <td class="small fw-bold text-navy" th:text="${row.nextPendingTerm}">Term 1</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${row.disbursementStatus == 'COMPLETED' ? 'bg-success' : (row.disbursementStatus == 'PARTIALLY_RELEASED' ? 'bg-warning text-dark' : 'bg-primary')}"
+                                          th:text="${row.disbursementStatus}">PENDING</span>
+                                </td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(reportData)}">
+                                <td colspan="9" class="text-center py-4 text-muted fw-bold">
+                                    <i class="fa-solid fa-inbox fa-2x mb-2 d-block text-secondary"></i>
+                                    No disbursement plan records match the requested criteria.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4. COMPLIANCE REPORT -->
+        <div class="card border-0 shadow-sm mb-4" th:if="${reportType == 'COMPLIANCE'}">
+            <div class="card-header bg-white fw-bold py-3 text-navy">
+                <i class="fa-solid fa-shield-check me-2 text-primary"></i> Beneficiary Milestone &amp; Compliance Audit Report
+            </div>
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover table-striped align-middle mb-0" id="complianceReportTable">
+                        <thead class="bg-navy text-white">
+                            <tr>
+                                <th>App #</th>
+                                <th>Beneficiary</th>
+                                <th>Scheme</th>
+                                <th>Milestone Term</th>
+                                <th>Due Date</th>
+                                <th>Compliance</th>
+                                <th>Verification</th>
+                                <th>Overdue</th>
+                                <th>Verified By</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:each="row : ${reportData}">
+                                <td class="fw-bold text-navy" th:text="${row.applicationNumber}">APP-0000</td>
+                                <td th:text="${row.beneficiaryName}">Jane Doe</td>
+                                <td class="small text-muted" th:text="${row.schemeName}">Scheme</td>
+                                <td class="fw-bold" th:text="${row.milestoneName}">Milestone 1</td>
+                                <td class="small" th:text="${row.dueDate}">2026-10-01</td>
+                                <td>
+                                    <span class="badge" 
+                                          th:classappend="${row.complianceStatus == 'VERIFIED' ? 'bg-success' : (row.complianceStatus == 'SUBMITTED' ? 'bg-info text-dark' : 'bg-warning text-dark')}"
+                                          th:text="${row.complianceStatus}">PENDING</span>
+                                </td>
+                                <td><span class="badge bg-light text-dark fw-bold" th:text="${row.verificationStatus}">PENDING</span></td>
+                                <td>
+                                    <span class="badge bg-danger" th:if="${row.overdueFlag}">OVERDUE</span>
+                                    <span class="badge bg-light text-muted" th:unless="${row.overdueFlag}">On Time</span>
+                                </td>
+                                <td class="small text-navy" th:text="${row.verifiedBy}">N/A</td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(reportData)}">
+                                <td colspan="9" class="text-center py-4 text-muted fw-bold">
+                                    <i class="fa-solid fa-inbox fa-2x mb-2 d-block text-secondary"></i>
+                                    No compliance milestone records match the requested filter parameters.
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. APPLICATION LIFECYCLE REPORT -->
+        <div class="card border-0 shadow-sm mb-4" th:if="${reportType == 'LIFECYCLE'}">
+            <div class="card-header bg-white fw-bold py-3 text-navy">
+                <i class="fa-solid fa-timeline me-2 text-primary"></i> Application Lifecycle Stage Breakdown
+            </div>
+            <div class="card-body" th:if="${lifecycleData}">
+                <div class="row g-3 text-center mb-4">
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-white shadow-sm">
+                            <span class="text-muted small fw-bold">Total Applications</span>
+                            <h2 class="fw-bold text-navy mb-0" th:text="${lifecycleData.totalApplications}">0</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-white shadow-sm">
+                            <span class="text-muted small fw-bold">Approved Applications</span>
+                            <h2 class="fw-bold text-success mb-0" th:text="${lifecycleData.approvedCount}">0</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-white shadow-sm">
+                            <span class="text-muted small fw-bold">Completed Lifecycle</span>
+                            <h2 class="fw-bold text-primary mb-0" th:text="${lifecycleData.completedCount}">0</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="p-3 border rounded bg-white shadow-sm">
+                            <span class="text-muted small fw-bold">Rejected Applications</span>
+                            <h2 class="fw-bold text-danger mb-0" th:text="${lifecycleData.rejectedCount}">0</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-layer-group me-2"></i> Stage Breakdown (Database Aggregation)</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-striped align-middle" id="lifecycleReportTable">
+                        <thead class="bg-navy text-white">
+                            <tr>
+                                <th>Lifecycle Stage Name</th>
+                                <th>Count</th>
+                                <th>Percentage of Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>SUBMITTED</strong></td>
+                                <td class="fw-bold" th:text="${lifecycleData.submittedCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.submittedCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ELIGIBILITY_CHECK</strong></td>
+                                <td class="fw-bold" th:text="${lifecycleData.eligibilityCheckCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.eligibilityCheckCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>ELIGIBLE</strong></td>
+                                <td class="fw-bold" th:text="${lifecycleData.eligibleCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.eligibleCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>FIELD_VERIFICATION</strong></td>
+                                <td class="fw-bold" th:text="${lifecycleData.fieldVerificationCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.fieldVerificationCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DISTRICT_REVIEW</strong></td>
+                                <td class="fw-bold" th:text="${lifecycleData.districtReviewCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.districtReviewCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>FINANCE_APPROVAL</strong></td>
+                                <td class="fw-bold" th:text="${lifecycleData.financeApprovalCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.financeApprovalCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>APPROVED</strong></td>
+                                <td class="fw-bold text-success" th:text="${lifecycleData.approvedCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.approvedCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>DISBURSEMENT</strong></td>
+                                <td class="fw-bold text-primary" th:text="${lifecycleData.disbursementCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.disbursementCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>COMPLIANCE</strong></td>
+                                <td class="fw-bold text-info" th:text="${lifecycleData.complianceCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.complianceCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>COMPLETED</strong></td>
+                                <td class="fw-bold text-success" th:text="${lifecycleData.completedCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.completedCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>REJECTED</strong></td>
+                                <td class="fw-bold text-danger" th:text="${lifecycleData.rejectedCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.rejectedCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                            <tr>
+                                <td><strong>RE_VERIFICATION_REQUIRED</strong></td>
+                                <td class="fw-bold text-warning" th:text="${lifecycleData.reVerificationRequiredCount}">0</td>
+                                <td th:text="${lifecycleData.totalApplications > 0 ? (lifecycleData.reVerificationRequiredCount * 100 / lifecycleData.totalApplications) + '%' : '0%'}">0%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<footer th:replace="~{fragments/footer :: footer}"></footer>
+</body>
+</html>

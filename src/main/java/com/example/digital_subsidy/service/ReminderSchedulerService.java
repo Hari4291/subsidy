@@ -23,6 +23,7 @@ public class ReminderSchedulerService {
     private final MilestoneRepository milestoneRepository;
     private final NotificationService notificationService;
     private final PriorityService priorityService;
+    private final com.example.digital_subsidy.util.AuditLogger auditLogger;
 
     @Value("${subsidy.reminder.pending-hours:24}")
     private int pendingHoursThreshold = 24;
@@ -30,11 +31,13 @@ public class ReminderSchedulerService {
     public ReminderSchedulerService(ApplicationRepository applicationRepository,
                                    MilestoneRepository milestoneRepository,
                                    NotificationService notificationService,
-                                   PriorityService priorityService) {
+                                   PriorityService priorityService,
+                                   com.example.digital_subsidy.util.AuditLogger auditLogger) {
         this.applicationRepository = applicationRepository;
         this.milestoneRepository = milestoneRepository;
         this.notificationService = notificationService;
         this.priorityService = priorityService;
+        this.auditLogger = auditLogger;
     }
 
     // Run scheduled reminders every 1 hour (cron or fixedDelay)
@@ -111,25 +114,104 @@ public class ReminderSchedulerService {
             }
         }
 
-        // 4. Overdue Compliance Milestones Check
+        // Process compliance reminders & overdue detection
+        processComplianceReminders();
+        processOverdueCompliance();
+
+        logger.info("[REMINDER SCHEDULER COMPLETED]");
+    }
+
+    @Transactional
+    public int processComplianceReminders() {
         List<Milestone> milestones = milestoneRepository.findAll();
         LocalDate today = LocalDate.now();
-        for (Milestone m : milestones) {
-            if (!"COMPLETED".equalsIgnoreCase(m.getCompletionStatus()) && m.getDueDate() != null && m.getDueDate().isBefore(today)) {
-                if (m.getDisbursement() != null && m.getDisbursement().getApplication() != null) {
-                    Application app = m.getDisbursement().getApplication();
-                    String eventKey = "REMINDER_OVERDUE_MILESTONE_" + m.getId() + "_" + todayStr;
+        String todayStr = today.format(DateTimeFormatter.ISO_DATE);
+        int reminderCount = 0;
 
-                    if (app.getBeneficiary() != null && app.getBeneficiary().getUser() != null) {
-                        notificationService.createNotification(
-                                app.getBeneficiary().getUser(), app, "COMPLIANCE_OVERDUE",
-                                "OVERDUE: Compliance Milestone Due",
-                                "Compliance milestone '" + m.getMilestoneName() + "' for Application #" + app.getApplicationNumber() + " was due on " + m.getDueDate() + ". Please submit required proof.",
-                                "HIGH", "/disbursements/schedule/" + app.getId(), eventKey);
-                    }
+        for (Milestone m : milestones) {
+            if ("VERIFIED".equalsIgnoreCase(m.getComplianceVerificationStatus()) ||
+                "SUBMITTED".equalsIgnoreCase(m.getComplianceVerificationStatus()) ||
+                "UNDER_REVIEW".equalsIgnoreCase(m.getComplianceVerificationStatus()) ||
+                "RELEASED".equalsIgnoreCase(m.getCompletionStatus()) ||
+                "COMPLETED".equalsIgnoreCase(m.getCompletionStatus())) {
+                continue;
+            }
+
+            if (m.getDueDate() == null) continue;
+
+            long daysUntilDue = java.time.temporal.ChronoUnit.DAYS.between(today, m.getDueDate());
+            Application app = m.getDisbursement() != null ? m.getDisbursement().getApplication() : null;
+            if (app == null || app.getBeneficiary() == null || app.getBeneficiary().getUser() == null) continue;
+
+            String window = null;
+            if (daysUntilDue == 7) window = "7_DAYS";
+            else if (daysUntilDue == 3) window = "3_DAYS";
+            else if (daysUntilDue == 1) window = "1_DAY";
+            else if (daysUntilDue == 0) window = "DUE_TODAY";
+
+            if (window != null) {
+                String eventKey = "REMINDER_COMPLIANCE_MS_" + m.getId() + "_" + window + "_" + todayStr;
+                String docName = DisbursementService.getDocumentTypeDisplayName(m.getRequiredDocumentType());
+                String title = daysUntilDue == 0 ? "URGENT: " + docName + " Due Today" : "REMINDER: Please Upload " + docName + " for Term " + m.getStageNumber();
+                String msg = "Reminder: Please upload your " + docName + " for Term " + m.getStageNumber() + " (" + (app.getScheme() != null ? app.getScheme().getName() : "Subsidy") + ") before " + m.getDueDate() + ".";
+
+                var createdNotif = notificationService.createNotification(
+                        app.getBeneficiary().getUser(), app, "COMPLIANCE_REMINDER",
+                        title, msg, daysUntilDue <= 1 ? "HIGH" : "MEDIUM",
+                        "/disbursements/schedule/" + app.getId(), eventKey
+                );
+
+                if (createdNotif != null) {
+                    m.setReminderStatus(window + "_SENT");
+                    m.setLastReminderDate(LocalDateTime.now());
+                    milestoneRepository.save(m);
+                    reminderCount++;
+
+                    auditLogger.log("COMPLIANCE_REMINDER_SENT", "Milestone", m.getId(),
+                            "Generated compliance reminder (" + window + ") for " + m.getMilestoneName());
                 }
             }
         }
-        logger.info("[REMINDER SCHEDULER COMPLETED]");
+        return reminderCount;
+    }
+
+    @Transactional
+    public int processOverdueCompliance() {
+        List<Milestone> milestones = milestoneRepository.findAll();
+        LocalDate today = LocalDate.now();
+        String todayStr = today.format(DateTimeFormatter.ISO_DATE);
+        int overdueCount = 0;
+
+        for (Milestone m : milestones) {
+            if ("VERIFIED".equalsIgnoreCase(m.getComplianceVerificationStatus()) || "RELEASED".equalsIgnoreCase(m.getCompletionStatus()) || "COMPLETED".equalsIgnoreCase(m.getCompletionStatus())) {
+                continue;
+            }
+
+            if (m.getDueDate() != null && m.getDueDate().isBefore(today)) {
+                boolean wasOverdue = Boolean.TRUE.equals(m.getOverdueFlag()) || "OVERDUE".equalsIgnoreCase(m.getComplianceVerificationStatus());
+                
+                m.setComplianceVerificationStatus("OVERDUE");
+                m.setComplianceStatus("NON_COMPLIANT");
+                m.setOverdueFlag(Boolean.TRUE);
+                milestoneRepository.save(m);
+
+                Application app = m.getDisbursement() != null ? m.getDisbursement().getApplication() : null;
+                if (app != null && app.getBeneficiary() != null && app.getBeneficiary().getUser() != null) {
+                    String eventKey = "OVERDUE_COMPLIANCE_MS_" + m.getId() + "_" + todayStr;
+                    notificationService.createNotification(
+                            app.getBeneficiary().getUser(), app, "COMPLIANCE_OVERDUE",
+                            "OVERDUE: Compliance Milestone Overdue",
+                            "Compliance milestone '" + m.getMilestoneName() + "' for Application #" + app.getApplicationNumber() + " was due on " + m.getDueDate() + ". Release is blocked until compliance is verified.",
+                            "HIGH", "/disbursements/schedule/" + app.getId(), eventKey);
+                }
+
+                if (!wasOverdue) {
+                    auditLogger.log("COMPLIANCE_OVERDUE_FLAGGED", "Milestone", m.getId(),
+                            "Milestone '" + m.getMilestoneName() + "' flagged OVERDUE / NON_COMPLIANT");
+                }
+                overdueCount++;
+            }
+        }
+        return overdueCount;
     }
 }

@@ -33,11 +33,25 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+            .csrf(csrf -> csrf.ignoringRequestMatchers(
+                "/field-officer-login/**",
+                "/district-officer-login/**",
+                "/finance-login/**",
+                "/admin-login/**"
+            ))
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/",
                     "/register",
                     "/login",
+                    "/field-officer-login",
+                    "/field-officer-login/**",
+                    "/district-officer-login",
+                    "/district-officer-login/**",
+                    "/finance-login",
+                    "/finance-login/**",
+                    "/admin-login",
+                    "/admin-login/**",
                     "/schemes",
                     "/schemes/**",
                     "/how-it-works",
@@ -50,7 +64,12 @@ public class SecurityConfig {
                     "/images/**",
                     "/webjars/**"
                 ).permitAll()
-                .requestMatchers("/disbursements/schedule/**").hasAnyRole("FINANCE_APPROVER", "ADMIN", "BENEFICIARY")
+                .requestMatchers("/disbursements/schedule/**").hasAnyRole("FINANCE_APPROVER", "ADMIN", "BENEFICIARY", "FIELD_OFFICER", "DISTRICT_OFFICER")
+                .requestMatchers("/compliance/submit").hasRole("BENEFICIARY")
+                .requestMatchers("/compliance/verify").hasAnyRole("FIELD_OFFICER", "DISTRICT_OFFICER", "FINANCE_APPROVER", "ADMIN")
+                .requestMatchers("/api/analytics/fund-utilization").hasAnyRole("FINANCE_APPROVER", "DISTRICT_OFFICER", "ADMIN")
+                .requestMatchers("/reports", "/reports/**").hasAnyRole("ADMIN", "FINANCE_APPROVER", "DISTRICT_OFFICER")
+                .requestMatchers("/finance/utilization/**").hasAnyRole("FINANCE_APPROVER", "ADMIN")
                 .requestMatchers("/admin/**").hasRole("ADMIN")
                 .requestMatchers("/field-officer/**").hasRole("FIELD_OFFICER")
                 .requestMatchers("/district-officer/**", "/district_officer/**").hasRole("DISTRICT_OFFICER")

@@ -1,6 +1,8 @@
 package com.example.digital_subsidy.controller;
 
 import com.example.digital_subsidy.model.Document;
+import com.example.digital_subsidy.model.Officer;
+import com.example.digital_subsidy.repository.OfficerRepository;
 import com.example.digital_subsidy.service.DocumentService;
 import com.example.digital_subsidy.util.AuditLogger;
 import org.springframework.core.io.FileSystemResource;
@@ -13,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.File;
 
@@ -20,10 +23,12 @@ import java.io.File;
 public class DocumentViewController {
 
     private final DocumentService documentService;
+    private final OfficerRepository officerRepository;
     private final AuditLogger auditLogger;
 
-    public DocumentViewController(DocumentService documentService, AuditLogger auditLogger) {
+    public DocumentViewController(DocumentService documentService, OfficerRepository officerRepository, AuditLogger auditLogger) {
         this.documentService = documentService;
+        this.officerRepository = officerRepository;
         this.auditLogger = auditLogger;
     }
 
@@ -34,6 +39,7 @@ public class DocumentViewController {
         "/documents/{documentId}/view"
     })
     public ResponseEntity<Resource> viewDocument(@PathVariable("documentId") Long documentId,
+                                                @RequestParam(value = "applicationId", required = false) Long applicationId,
                                                 Authentication authentication) {
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
@@ -42,6 +48,14 @@ public class DocumentViewController {
         Document doc = documentService.getDocumentById(documentId);
         if (doc == null || "ARCHIVED".equalsIgnoreCase(doc.getStatus())) {
             return ResponseEntity.notFound().build();
+        }
+
+        // Strict Application-Context IDOR Check:
+        // If an explicit applicationId parameter is provided in request context, document must belong to that application.
+        if (applicationId != null) {
+            if (doc.getApplication() == null || !doc.getApplication().getId().equals(applicationId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
         }
 
         String userEmail = authentication.getName();
@@ -58,11 +72,30 @@ public class DocumentViewController {
 
         // IDOR Authorization Check
         if (isBeneficiary) {
-            String ownerEmail = doc.getBeneficiary().getUser().getEmail();
-            if (!ownerEmail.equalsIgnoreCase(userEmail)) {
+            String ownerEmail = doc.getBeneficiary() != null && doc.getBeneficiary().getUser() != null
+                    ? doc.getBeneficiary().getUser().getEmail() : null;
+            if (ownerEmail == null || !ownerEmail.equalsIgnoreCase(userEmail)) {
                 return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
             }
-        } else if (!isFieldOfficer && !isDistrictOfficer && !isFinance && !isAdmin) {
+            if (doc.getApplication() != null && doc.getApplication().getBeneficiary() != null && doc.getApplication().getBeneficiary().getUser() != null) {
+                String appOwnerEmail = doc.getApplication().getBeneficiary().getUser().getEmail();
+                if (!appOwnerEmail.equalsIgnoreCase(userEmail)) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                }
+            }
+        } else if (isFieldOfficer || isDistrictOfficer) {
+            Officer officer = officerRepository.findByUserEmail(userEmail).orElse(null);
+            if (officer != null && officer.getState() != null && !officer.getState().isBlank()) {
+                if (doc.getBeneficiary() == null || doc.getBeneficiary().getState() == null ||
+                    !officer.getState().equalsIgnoreCase(doc.getBeneficiary().getState())) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                }
+                if (isDistrictOfficer && officer.getDistrict() != null && !officer.getDistrict().isBlank() &&
+                    doc.getBeneficiary().getDistrict() != null && !officer.getDistrict().equalsIgnoreCase(doc.getBeneficiary().getDistrict())) {
+                    return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+                }
+            }
+        } else if (!isFinance && !isAdmin) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
         }
 
@@ -77,11 +110,11 @@ public class DocumentViewController {
         String contentType = doc.getContentType();
         String fileNameLower = doc.getFileName() != null ? doc.getFileName().toLowerCase() : "";
 
-        if (contentType != null && contentType.toLowerCase().contains("pdf") || fileNameLower.endsWith(".pdf")) {
+        if ((contentType != null && contentType.toLowerCase().contains("pdf")) || fileNameLower.endsWith(".pdf")) {
             mediaType = MediaType.APPLICATION_PDF;
-        } else if (contentType != null && contentType.toLowerCase().contains("png") || fileNameLower.endsWith(".png")) {
+        } else if ((contentType != null && contentType.toLowerCase().contains("png")) || fileNameLower.endsWith(".png")) {
             mediaType = MediaType.IMAGE_PNG;
-        } else if (contentType != null && (contentType.toLowerCase().contains("jpg") || contentType.toLowerCase().contains("jpeg")) ||
+        } else if ((contentType != null && (contentType.toLowerCase().contains("jpg") || contentType.toLowerCase().contains("jpeg"))) ||
                 fileNameLower.endsWith(".jpg") || fileNameLower.endsWith(".jpeg")) {
             mediaType = MediaType.IMAGE_JPEG;
         }

@@ -18,14 +18,34 @@ public interface DisbursementRepository extends JpaRepository<Disbursement, Long
     @Query("""
         SELECT DISTINCT d
         FROM Disbursement d
-        LEFT JOIN FETCH d.milestones
+        LEFT JOIN FETCH d.milestones m
+        LEFT JOIN FETCH m.submittedDocument
         WHERE d.application.id = :applicationId
     """)
     Optional<Disbursement> findByApplicationIdWithMilestones(@Param("applicationId") Long applicationId);
+
+    @Query("""
+        SELECT DISTINCT d
+        FROM Disbursement d
+        JOIN FETCH d.application a
+        JOIN FETCH a.beneficiary b
+        JOIN FETCH b.user u
+        JOIN FETCH a.scheme s
+        LEFT JOIN FETCH d.milestones m
+        ORDER BY d.createdAt DESC
+    """)
+    java.util.List<Disbursement> findAllWithDetails();
+
+    @Query("SELECT SUM(d.totalSanctionedAmount) FROM Disbursement d")
+    BigDecimal sumTotalSanctionedAmount();
 
     @Query("SELECT SUM(d.disbursedAmount) FROM Disbursement d")
     BigDecimal sumTotalDisbursedAmount();
 
     @Query("SELECT SUM(d.disbursedAmount) FROM Disbursement d WHERE d.application.beneficiary.state = :state")
     BigDecimal sumTotalDisbursedAmountByState(@Param("state") String state);
+
+    long countByStatus(String status);
+
+    java.util.List<Disbursement> findByStatus(String status);
 }

@@ -128,13 +128,40 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- H2 in-memory database for tests (avoids real MySQL in CI/test) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <!-- =====================================================
-             PDFBOX DOCUMENT CONTENT VALIDATION
+             SPRING MAIL (SMTP / OTP EMAIL)
+             ===================================================== -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-mail</artifactId>
+        </dependency>
+
+        <!-- =====================================================
+             PDFBOX DOCUMENT CONTENT VALIDATION & EXCEL POI
              ===================================================== -->
         <dependency>
             <groupId>org.apache.pdfbox</groupId>
             <artifactId>pdfbox</artifactId>
             <version>3.0.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.4.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.4.1</version>
         </dependency>
 
     </dependencies>

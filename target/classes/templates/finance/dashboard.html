@@ -7,6 +7,7 @@
 
 <div class="container-fluid py-4 bg-light">
     <div class="container">
+        <!-- Dashboard Top Header -->
         <div class="p-3 bg-navy text-white rounded mb-4 d-flex justify-content-between align-items-center shadow-sm">
             <div>
                 <h4 class="mb-1 fw-bold"><i class="fa-solid fa-sack-dollar text-warning me-2"></i> Treasury Finance &amp; Disbursement Portal</h4>
@@ -14,21 +15,143 @@
             </div>
             <div class="d-flex align-items-center gap-2">
                 <span class="badge bg-warning text-dark font-weight-bold me-2">Role: FINANCE_APPROVER</span>
-                <span class="badge bg-success font-weight-bold" th:text="'Total Disbursed: ₹' + ${#numbers.formatDecimal(totalDisbursed, 0, 'COMMA', 0, 'POINT')}">Total Disbursed</span>
+                <span class="badge bg-success font-weight-bold" th:text="'Total Disbursed: ₹' + ${#numbers.formatDecimal(metrics.totalReleasedAmount, 0, 'COMMA', 0, 'POINT')}">Total Disbursed</span>
                 <form th:action="@{/logout}" method="post" class="d-inline ms-2">
                     <button type="submit" class="btn btn-danger fw-bold"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</button>
                 </form>
             </div>
         </div>
 
-        <div th:if="${param.sanctioned}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <!-- System Alerts -->
+        <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show mb-4" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i> <span th:text="${successMessage}">Success</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
+            <i class="fa-solid fa-triangle-exclamation me-2"></i> <span th:text="${errorMessage}">Error</span>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <div th:if="${param.sanctioned}" class="alert alert-success alert-dismissible fade show mb-4" role="alert">
             <i class="fa-solid fa-circle-check me-2"></i> Finance authorization approved. Staged milestone disbursement schedule initialized!
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
 
-        <div th:if="${param.released}" class="alert alert-success alert-dismissible fade show" role="alert">
+        <div th:if="${param.released}" class="alert alert-success alert-dismissible fade show mb-4" role="alert">
             <i class="fa-solid fa-money-bill-transfer me-2"></i> Milestone grant installment released successfully into beneficiary bank record.
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+
+        <!-- KPI Metrics Summary Cards (All values directly from database queries) -->
+        <div class="row g-3 mb-3">
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-primary h-100">
+                    <div class="card-body p-3 text-center">
+                        <small class="text-muted fw-bold d-block mb-1">Approved Applications</small>
+                        <h4 class="fw-bold text-primary mb-0" th:text="${metrics.approvedAppsCount}">0</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-info h-100">
+                    <div class="card-body p-3 text-center">
+                        <small class="text-muted fw-bold d-block mb-1">Total Sanctioned</small>
+                        <h5 class="fw-bold text-navy mb-0" th:text="'₹' + ${#numbers.formatDecimal(metrics.totalSanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-success h-100">
+                    <div class="card-body p-3 text-center">
+                        <small class="text-muted fw-bold d-block mb-1">Total Released</small>
+                        <h5 class="fw-bold text-success mb-0" th:text="'₹' + ${#numbers.formatDecimal(metrics.totalReleasedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-warning h-100">
+                    <div class="card-body p-3 text-center">
+                        <small class="text-muted fw-bold d-block mb-1">Remaining Balance</small>
+                        <h5 class="fw-bold text-warning text-dark mb-0" th:text="'₹' + ${#numbers.formatDecimal(metrics.remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹0</h5>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-secondary h-100">
+                    <div class="card-body p-3 text-center">
+                        <small class="text-muted fw-bold d-block mb-1">Active Plans</small>
+                        <h4 class="fw-bold text-dark mb-0" th:text="${metrics.activePlansCount}">0</h4>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 border-start border-4 border-dark h-100">
+                    <div class="card-body p-3 text-center">
+                        <small class="text-muted fw-bold d-block mb-1">Completed</small>
+                        <h4 class="fw-bold text-success mb-0" th:text="${metrics.completedDisbursementsCount}">0</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real Compliance Metrics Summary Row -->
+        <div class="row g-3 mb-4">
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 bg-white p-2 text-center">
+                    <small class="text-secondary fw-bold"><i class="fa-solid fa-hourglass-start me-1"></i> Compliance Pending</small>
+                    <h5 class="fw-bold text-secondary mb-0" th:text="${metrics.compliancePendingCount != null ? metrics.compliancePendingCount : 0}">0</h5>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 bg-white p-2 text-center">
+                    <small class="text-info fw-bold"><i class="fa-solid fa-file-arrow-up me-1"></i> Under Review</small>
+                    <h5 class="fw-bold text-info mb-0" th:text="${metrics.complianceUnderReviewCount != null ? metrics.complianceUnderReviewCount : 0}">0</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card gov-card shadow-sm border-0 bg-white p-2 text-center">
+                    <small class="text-success fw-bold"><i class="fa-solid fa-circle-check me-1"></i> Compliance Verified</small>
+                    <h5 class="fw-bold text-success mb-0" th:text="${metrics.complianceVerifiedCount != null ? metrics.complianceVerifiedCount : 0}">0</h5>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="card gov-card shadow-sm border-0 bg-white p-2 text-center">
+                    <small class="text-danger fw-bold"><i class="fa-solid fa-clock me-1"></i> Overdue Compliance</small>
+                    <h5 class="fw-bold text-danger mb-0" th:text="${metrics.overdueComplianceCount != null ? metrics.overdueComplianceCount : 0}">0</h5>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card gov-card shadow-sm border-0 bg-white p-2 text-center">
+                    <small class="text-danger fw-bold"><i class="fa-solid fa-ban me-1"></i> Releases Blocked by Compliance</small>
+                    <h5 class="fw-bold text-danger mb-0" th:text="${metrics.releasesBlockedCount != null ? metrics.releasesBlockedCount : 0}">0</h5>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- CLICKABLE BENEFICIARY DETAILS MODAL -->
+        <div class="modal fade" id="beneficiaryFinancialModal" tabindex="-1" aria-labelledby="beneficiaryFinancialModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg">
+                    <div class="modal-header bg-navy text-white">
+                        <h5 class="modal-title fw-bold" id="beneficiaryFinancialModalLabel">
+                            <i class="fa-solid fa-file-invoice-dollar text-warning me-2"></i> Beneficiary Financial Details
+                        </h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4" id="beneficiaryModalBody">
+                        <div class="text-center py-4">
+                            <div class="spinner-border text-navy" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary fw-bold" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Section 1: Pending Finance Approvals -->
@@ -76,7 +199,7 @@
                                     <small class="d-block text-dark fw-bold" th:text="${app.amountAdjustmentReason != null and !app.amountAdjustmentReason.isBlank() ? app.amountAdjustmentReason : 'Full requested amount approved.'}">Reason</small>
                                     <small class="text-muted" th:text="${app.sanctionedBy != null ? 'DO: ' + app.sanctionedBy : ''}">DO: officer@gov.in</small>
                                 </td>
-                                <td><span class="badge bg-info text-dark" th:text="${app.eligibilityScore} + '%'">85%</span></td>
+                                <td><span class="badge bg-info text-dark" th:text="${app.eligibilityScore != null ? app.eligibilityScore + '%' : 'N/A'}">85%</span></td>
                                 <td>
                                     <form th:action="@{/finance/approve}" method="post" class="d-inline">
                                         <input type="hidden" name="applicationId" th:value="${app.id}">
@@ -98,35 +221,70 @@
             </div>
         </div>
 
-        <!-- Section 2: Approved Applications Staged Milestone Release Queue -->
-        <div class="card gov-card shadow-sm border-0">
-            <div class="card-header gov-card-header bg-navy text-white fw-bold py-3">
-                <i class="fa-solid fa-hand-holding-dollar text-warning me-2"></i> Staged Milestone Disbursement Schedule Queue
+        <!-- NEW SECTION: Verified Terms Pending Release (CRITICAL RULE #17) -->
+        <div class="card gov-card shadow-sm border-0 mb-4 border-start border-4 border-success">
+            <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="fs-5"><i class="fa-solid fa-circle-check text-success me-2"></i> Verified Terms Pending Release</span>
+                    <small class="d-block text-light font-weight-normal opacity-75 mt-1">Terms with verified compliance documents awaiting financial release</small>
+                </div>
+                <span class="badge bg-success text-white fw-bold px-3 py-2 fs-6" th:text="${verifiedTermsPendingRelease != null ? #lists.size(verifiedTermsPendingRelease) : 0} + ' Ready for Release'">0 Ready</span>
             </div>
             <div class="card-body p-4">
                 <div class="table-responsive">
-                    <table class="table table-bordered align-middle">
-                        <thead class="table-light">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-dark">
                             <tr>
                                 <th>App ID</th>
                                 <th>Beneficiary</th>
-                                <th>Scheme Name</th>
-                                <th>Total Grant</th>
-                                <th>Staged Milestone Release Management</th>
+                                <th>Scheme</th>
+                                <th>Sanctioned Amount</th>
+                                <th>Released Amount</th>
+                                <th>Remaining Amount</th>
+                                <th>Current Term</th>
+                                <th>Term Amount</th>
+                                <th>Document</th>
+                                <th>Verification Status</th>
+                                <th>Verified By</th>
+                                <th>Verified Date</th>
+                                <th>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr th:if="${#lists.isEmpty(approvedApplications)}">
-                                <td colspan="5" class="text-center text-muted py-4">No active approved disbursement schedules in queue.</td>
+                            <tr th:if="${#lists.isEmpty(verifiedTermsPendingRelease)}">
+                                <td colspan="13" class="text-center text-muted py-4">
+                                    <i class="fa-solid fa-circle-info me-2 text-primary"></i> No verified term compliance documents pending financial release.
+                                </td>
                             </tr>
-                            <tr th:each="app : ${approvedApplications}">
-                                <td class="fw-bold text-navy" th:text="${app.applicationNumber}">APP-123456</td>
-                                <td th:text="${app.beneficiary.user.fullName}">Beneficiary</td>
-                                <td th:text="${app.scheme.name}">Scheme Name</td>
-                                <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</td>
+                            <tr th:each="m : ${verifiedTermsPendingRelease}">
+                                <td class="fw-bold text-navy" th:text="${m.disbursement.application.applicationNumber}">APP-243</td>
                                 <td>
-                                    <!-- Embedded Milestone Release Controls -->
-                                    <a th:href="@{'/disbursements/schedule/' + ${app.id}}" class="btn btn-sm btn-outline-primary mb-2"><i class="fa-solid fa-eye me-1"></i> View Milestone Schedule</a>
+                                    <strong th:text="${m.disbursement.application.beneficiary != null and m.disbursement.application.beneficiary.user != null ? m.disbursement.application.beneficiary.user.fullName : 'Beneficiary'}">Beneficiary</strong><br>
+                                    <small class="text-muted" th:text="${m.disbursement.application.beneficiary != null ? m.disbursement.application.beneficiary.district : ''}">District</small>
+                                </td>
+                                <td th:text="${m.disbursement.application.scheme != null ? m.disbursement.application.scheme.name : ''}">Scheme Name</td>
+                                <td class="fw-bold text-navy" th:text="'₹' + ${#numbers.formatDecimal(m.disbursement.application.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹60,000</td>
+                                <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(m.disbursement.disbursedAmount != null ? m.disbursement.disbursedAmount : 0, 0, 'COMMA', 0, 'POINT')}">₹18,000</td>
+                                <td class="fw-bold text-warning text-dark" th:text="'₹' + ${#numbers.formatDecimal(m.disbursement.remainingAmount != null ? m.disbursement.remainingAmount : 0, 0, 'COMMA', 0, 'POINT')}">₹42,000</td>
+                                <td class="fw-bold text-primary" th:text="${m.milestoneName}">Term 2</td>
+                                <td class="fw-bold text-success fs-6" th:text="'₹' + ${#numbers.formatDecimal(m.milestoneAmount, 0, 'COMMA', 0, 'POINT')}">₹24,000</td>
+                                <td th:text="${T(com.example.digital_subsidy.service.DisbursementService).getDocumentTypeDisplayName(m.requiredDocumentType)}">Required Document</td>
+                                <td><span class="badge bg-success"><i class="fa-solid fa-check-double me-1"></i> VERIFIED</span></td>
+                                <td class="small text-muted" th:text="${m.verifiedBy != null ? m.verifiedBy : 'System'}">Officer</td>
+                                <td class="small text-muted" th:text="${m.verifiedDate != null ? #temporals.format(m.verifiedDate, 'dd-MMM-yyyy') : 'N/A'}">Date</td>
+                                <td class="text-nowrap">
+                                    <a th:if="${m.submittedDocument != null}" th:href="@{'/documents/view/' + ${m.submittedDocument.id}}" target="_blank" class="btn btn-sm btn-outline-primary fw-bold me-1 mb-1">
+                                        <i class="fa-solid fa-eye me-1"></i> View Document
+                                    </a>
+                                    <a th:href="@{'/disbursements/schedule/' + ${m.disbursement.application.id}}" class="btn btn-sm btn-outline-navy fw-bold me-1 mb-1">
+                                        <i class="fa-solid fa-calendar me-1"></i> View Schedule
+                                    </a>
+                                    <form th:action="@{/disbursements/release}" method="post" class="d-inline">
+                                        <input type="hidden" name="milestoneId" th:value="${m.id}">
+                                        <button type="submit" onclick="return confirm('Release funds for this verified term?');" class="btn btn-sm btn-success fw-bold mb-1">
+                                            <i class="fa-solid fa-money-bill-wave me-1"></i> Release Fixed Term Amount
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         </tbody>
@@ -134,6 +292,841 @@
                 </div>
             </div>
         </div>
+
+        <!-- Section 2: Approved Applications Staged Milestone Release Queue -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header gov-card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <span><i class="fa-solid fa-hand-holding-dollar text-warning me-2"></i> Active Disbursement Plans &amp; Staged Release Queue</span>
+                <span class="badge bg-light text-navy fw-bold" th:text="${#lists.size(approvedApplications)} + ' Approved Applications'">Queue Count</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>App ID</th>
+                                <th>Beneficiary</th>
+                                <th>Scheme Name</th>
+                                <th>Sanctioned Amount</th>
+                                <th>Requested Amount</th>
+                                <th>Stage Management</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(approvedApplications)}">
+                                <td colspan="7" class="text-center text-muted py-4">No active approved disbursement schedules in queue.</td>
+                            </tr>
+                            <tr th:each="app : ${approvedApplications}">
+                                <td class="fw-bold text-navy" th:text="${app.applicationNumber}">APP-123456</td>
+                                <td>
+                                    <strong th:text="${app.beneficiary != null and app.beneficiary.user != null ? app.beneficiary.user.fullName : 'Beneficiary'}">Beneficiary</strong><br>
+                                    <small class="text-muted" th:text="${app.beneficiary != null ? app.beneficiary.identityNumber : ''}">Aadhaar</small>
+                                </td>
+                                <td th:text="${app.scheme != null ? app.scheme.name : 'N/A'}">Scheme Name</td>
+                                <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(app.sanctionedAmount != null ? app.sanctionedAmount : app.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</td>
+                                <td class="text-muted" th:text="'₹' + ${#numbers.formatDecimal(app.requestedAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</td>
+                                <td>
+                                    <span class="badge bg-primary"><i class="fa-solid fa-list-check me-1"></i> Staged Milestones</span>
+                                </td>
+                                <td>
+                                    <a th:href="@{'/disbursements/schedule/' + ${app.id}}" class="btn btn-sm btn-outline-navy fw-bold"><i class="fa-solid fa-sliders me-1"></i> View &amp; Manage Schedule</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: Partially Released Applications & Pending Terms -->
+        <div class="card gov-card shadow-sm border-0 mb-4">
+            <div class="card-header gov-card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <span class="fs-5"><i class="fa-solid fa-clock-rotate-left text-warning me-2"></i> Partially Released Applications &amp; Pending Terms</span>
+                    <small class="d-block text-light font-weight-normal opacity-75 mt-1">Applications with released grant terms and remaining scheduled releases</small>
+                </div>
+                <span class="badge bg-warning text-dark fw-bold px-3 py-2 fs-6" th:text="${#lists.size(partiallyReleasedApplications)} + ' Partially Released'">0 Partially Released</span>
+            </div>
+            <div class="card-body p-4">
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>App ID</th>
+                                <th>Beneficiary</th>
+                                <th>Scheme</th>
+                                <th>Sanctioned Amount</th>
+                                <th>Released Amount</th>
+                                <th>Remaining Amount</th>
+                                <th>Terms Progress</th>
+                                <th>Next Pending Term</th>
+                                <th>Next Release Amount</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(partiallyReleasedApplications)}">
+                                <td colspan="10" class="text-center text-muted py-4">
+                                    <i class="fa-solid fa-circle-info me-2 text-primary"></i> No partially released applications are currently awaiting further scheduled term releases.
+                                </td>
+                            </tr>
+                            <tr th:each="pApp : ${partiallyReleasedApplications}">
+                                <td class="fw-bold text-navy" th:text="${pApp.applicationNumber}">APP-109</td>
+                                <td>
+                                    <strong th:text="${pApp.beneficiaryName}">Beneficiary Name</strong><br>
+                                    <small class="text-muted" th:text="${pApp.beneficiaryIdentity}">Aadhaar: 1234</small>
+                                </td>
+                                <td th:text="${pApp.schemeName}">Scheme Name</td>
+                                <td class="fw-bold text-navy" th:text="'₹' + ${#numbers.formatDecimal(pApp.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</td>
+                                <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(pApp.releasedAmount, 0, 'COMMA', 0, 'POINT')}">₹30,000</td>
+                                <td class="fw-bold text-warning text-dark" th:text="'₹' + ${#numbers.formatDecimal(pApp.remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹70,000</td>
+                                <td>
+                                    <div class="mb-1">
+                                        <span class="badge bg-success" th:text="${pApp.releasedTerms} + ' / ' + ${pApp.totalTerms} + ' Released'">1 / 3 Released</span>
+                                        <span class="badge bg-warning text-dark" th:text="${pApp.pendingTerms} + ' Pending'">2 Pending</span>
+                                    </div>
+                                    <div class="d-flex flex-wrap gap-1 mt-1">
+                                        <th:block th:each="m : ${pApp.milestones}">
+                                            <span th:if="${m.completionStatus == 'RELEASED' or m.completionStatus == 'COMPLETED'}" 
+                                                  class="badge bg-success-subtle text-success border border-success me-1" 
+                                                  th:title="${m.milestoneName}">
+                                                <i class="fa-solid fa-check me-1"></i><span th:text="'T' + ${m.stageNumber}">T1</span>
+                                            </span>
+                                            <span th:if="${m.completionStatus == 'ON_HOLD'}" 
+                                                  class="badge bg-warning-subtle text-dark border border-warning me-1" 
+                                                  th:title="${m.milestoneName}">
+                                                <i class="fa-solid fa-pause me-1 text-warning"></i><span th:text="'T' + ${m.stageNumber}">T2</span>
+                                            </span>
+                                            <span th:if="${m.completionStatus != 'RELEASED' and m.completionStatus != 'COMPLETED' and m.completionStatus != 'ON_HOLD'}" 
+                                                  class="badge bg-light text-dark border me-1" 
+                                                  th:title="${m.milestoneName}">
+                                                <i class="fa-solid fa-circle me-1 text-warning" style="font-size: 0.5rem;"></i><span th:text="'T' + ${m.stageNumber}">T3</span>
+                                            </span>
+                                        </th:block>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="fw-bold text-navy d-block" th:text="${pApp.nextMilestoneName != null ? pApp.nextMilestoneName : ('Term ' + pApp.nextStageNumber)}">Term 2</span>
+                                    <small class="text-muted" th:if="${pApp.nextDueDate != null}" th:text="'Due: ' + ${pApp.nextDueDate}">Due Date</small>
+                                </td>
+                                <td class="fw-bold text-primary" th:text="'₹' + ${#numbers.formatDecimal(pApp.nextReleaseAmount, 0, 'COMMA', 0, 'POINT')}">₹40,000</td>
+                                <td>
+                                    <a th:href="@{'/disbursements/schedule/' + ${pApp.applicationId}}" class="btn btn-sm btn-success fw-bold">
+                                        <i class="fa-solid fa-hand-holding-dollar me-1"></i> Continue Release
+                                    </a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+        <!-- Section 4: Fund Utilization Overview & Analytics -->
+        <div class="card gov-card shadow-sm border-0 mb-4" th:if="${utilizationSummary != null}">
+            <div class="card-header gov-card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <span><i class="fa-solid fa-chart-line text-warning me-2"></i> Fund Utilization Overview &amp; Regional Visual Analytics</span>
+                <a th:href="@{/finance/utilization}" class="btn btn-sm btn-outline-light fw-bold"><i class="fa-solid fa-up-right-from-square me-1"></i> Full Analytics Dashboard</a>
+            </div>
+            <div class="card-body p-4">
+                <!-- KPI Cards -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-2">
+                        <div class="p-2 border rounded bg-white text-center">
+                            <small class="text-muted fw-bold d-block">Allocated Budget</small>
+                            <span class="fw-bold text-navy fs-6" th:text="'₹' + ${#numbers.formatDecimal(utilizationSummary.totalAllocatedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="p-2 border rounded bg-white text-center">
+                            <small class="text-muted fw-bold d-block">Sanctioned Amount</small>
+                            <span class="fw-bold text-info fs-6" th:text="'₹' + ${#numbers.formatDecimal(utilizationSummary.totalSanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="p-2 border rounded bg-white text-center">
+                            <small class="text-muted fw-bold d-block">Released Amount</small>
+                            <span class="fw-bold text-success fs-6" th:text="'₹' + ${#numbers.formatDecimal(utilizationSummary.totalReleasedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="p-2 border rounded bg-white text-center">
+                            <small class="text-muted fw-bold d-block">Utilized Amount</small>
+                            <span class="fw-bold text-dark fs-6" th:text="'₹' + ${#numbers.formatDecimal(utilizationSummary.totalUtilizedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="p-2 border rounded bg-white text-center">
+                            <small class="text-muted fw-bold d-block">Remaining Funds</small>
+                            <span class="fw-bold text-warning text-dark fs-6" th:text="'₹' + ${#numbers.formatDecimal(utilizationSummary.totalRemainingAllocation, 0, 'COMMA', 0, 'POINT')}">₹0</span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="p-2 border rounded bg-white text-center">
+                            <small class="text-muted fw-bold d-block">Utilization %</small>
+                            <span class="fw-bold text-primary fs-5" th:text="${utilizationSummary.formattedUtilizationPercentage}">0%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interactive Visual Charts Row -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 bg-white">
+                            <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-chart-column me-2 text-warning"></i> Overall Budget vs Financial Utilization</h6>
+                            <div style="height: 250px; position: relative;">
+                                <canvas id="dashOverallChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="border rounded p-3 bg-white">
+                            <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-chart-bar me-2 text-warning"></i> Scheme-wise Utilization Percentage</h6>
+                            <div style="height: 250px; position: relative;">
+                                <canvas id="dashSchemePctChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Scheme-wise Fund Utilization Table -->
+                <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-list-check me-2 text-warning"></i> Scheme-wise Fund Utilization</h6>
+                <div class="table-responsive mb-4">
+                    <table class="table table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Scheme</th>
+                                <th>Category</th>
+                                <th>Allocated</th>
+                                <th>Sanctioned</th>
+                                <th>Released</th>
+                                <th>Utilized</th>
+                                <th>Remaining</th>
+                                <th>Utilization %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(schemeUtilizations)}">
+                                <td colspan="8" class="text-center text-muted py-3">No scheme utilization data available.</td>
+                            </tr>
+                            <tr th:each="s : ${schemeUtilizations}">
+                                <td class="fw-bold text-navy" th:text="${s.schemeName}">Scheme Name</td>
+                                <td><span class="badge bg-secondary" th:text="${s.category}">Category</span></td>
+                                <td class="fw-bold" th:text="'₹' + ${#numbers.formatDecimal(s.allocatedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="text-info fw-bold" th:text="'₹' + ${#numbers.formatDecimal(s.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="text-success fw-bold" th:text="'₹' + ${#numbers.formatDecimal(s.releasedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(s.utilizedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="text-warning text-dark fw-bold" th:text="'₹' + ${#numbers.formatDecimal(s.remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" th:style="'width: ' + (${s.allocatedAmount > 0 ? s.utilizationPercentage : 0}) + '%'"></div>
+                                        </div>
+                                        <span class="fw-bold small" th:text="${s.allocatedAmount > 0 ? s.formattedUtilizationPercentage : 'N/A'}">0%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Regional Fund Utilization Table -->
+                <h6 class="fw-bold text-navy mb-2"><i class="fa-solid fa-map-location-dot me-2 text-warning"></i> Regional Fund Utilization</h6>
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover align-middle mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>District</th>
+                                <th>State</th>
+                                <th>Sanctioned Amount</th>
+                                <th>Released Amount</th>
+                                <th>Utilized Amount</th>
+                                <th>Remaining Amount</th>
+                                <th>Utilization %</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr th:if="${#lists.isEmpty(regionalUtilizations)}">
+                                <td colspan="7" class="text-center text-muted py-3">No regional utilization data available.</td>
+                            </tr>
+                            <tr th:each="r : ${regionalUtilizations}">
+                                <td class="fw-bold text-navy" th:text="${r.district}">District</td>
+                                <td class="text-muted" th:text="${r.state}">State</td>
+                                <td class="fw-bold text-info" th:text="'₹' + ${#numbers.formatDecimal(r.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(r.releasedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="fw-bold text-dark" th:text="'₹' + ${#numbers.formatDecimal(r.utilizedAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td class="fw-bold text-warning text-dark" th:text="'₹' + ${#numbers.formatDecimal(r.remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹0</td>
+                                <td>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-info" role="progressbar" th:style="'width: ' + (${r.sanctionedAmount > 0 ? r.utilizationPercentage : 0}) + '%'"></div>
+                                        </div>
+                                        <span class="fw-bold small" th:text="${r.sanctionedAmount > 0 ? r.formattedUtilizationPercentage : 'N/A'}">0%</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- REGIONAL FUND UTILIZATION MAIN CONTAINER -->
+        <div class="card gov-card shadow-sm border-0 mb-4 border-top border-4 border-navy">
+            <div class="card-header bg-navy text-white fw-bold py-3 d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="mb-0 fw-bold"><i class="fa-solid fa-earth-asia text-warning me-2"></i> Regional Fund Utilization</h5>
+                    <small class="text-light opacity-75">Comprehensive Regional Financial Position, Treasury Utilization Progress, Beneficiary Tracking &amp; Term Summaries</small>
+                </div>
+                <div class="d-flex gap-2">
+                    <a id="btnExportExcel" th:href="@{/finance/fund-tracking/export/excel}" class="btn btn-sm btn-success fw-bold">
+                        <i class="fa-solid fa-file-excel me-1"></i> Download Excel
+                    </a>
+                    <a id="btnExportPdf" th:href="@{/finance/fund-tracking/export/pdf}" class="btn btn-sm btn-danger fw-bold">
+                        <i class="fa-solid fa-file-pdf me-1"></i> Download Report
+                    </a>
+                </div>
+            </div>
+            <div class="card-body p-4">
+                <!-- 1. FUND TRACKING & FINANCIAL OVERVIEW -->
+                <div class="border rounded p-4 bg-white mb-4 shadow-sm">
+                    <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-chart-pie text-warning me-2"></i> Fund Tracking &amp; Financial Overview</h6>
+                    <div class="row g-3" th:if="${fundTrackingSummary != null}">
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-primary-subtle text-primary p-3 h-100 shadow-sm">
+                                <small class="fw-bold text-uppercase opacity-75">1. Total Sanctioned</small>
+                                <h4 class="fw-bold mb-0 text-navy" th:text="'₹' + ${#numbers.formatDecimal(fundTrackingSummary.totalSanctioned, 0, 'COMMA', 0, 'POINT')}">₹0</h4>
+                                <small class="text-muted">Total sanctioned budget</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-success-subtle text-success p-3 h-100 shadow-sm">
+                                <small class="fw-bold text-uppercase opacity-75">2. Total Released</small>
+                                <h4 class="fw-bold mb-0 text-success" th:text="'₹' + ${#numbers.formatDecimal(fundTrackingSummary.totalReleased, 0, 'COMMA', 0, 'POINT')}">₹0</h4>
+                                <small class="text-muted" th:text="${fundTrackingSummary.releasedPercentage} + '% of sanctioned funds'">0% released</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-warning-subtle text-dark p-3 h-100 shadow-sm">
+                                <small class="fw-bold text-uppercase opacity-75">3. Total Remaining</small>
+                                <h4 class="fw-bold mb-0 text-warning text-dark" th:text="'₹' + ${#numbers.formatDecimal(fundTrackingSummary.totalRemaining, 0, 'COMMA', 0, 'POINT')}">₹0</h4>
+                                <small class="text-muted" th:text="${fundTrackingSummary.remainingPercentage} + '% unreleased balance'">0% remaining</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-info-subtle text-info p-3 h-100 shadow-sm">
+                                <small class="fw-bold text-uppercase opacity-75">4. Total Beneficiaries</small>
+                                <h4 class="fw-bold mb-0 text-navy" th:text="${fundTrackingSummary.totalBeneficiaries}">0</h4>
+                                <small class="text-muted">Unique financial beneficiaries</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-light border p-3 h-100 shadow-sm">
+                                <small class="fw-bold text-uppercase text-secondary">5. Terms Completed</small>
+                                <h4 class="fw-bold mb-0 text-success" th:text="${fundTrackingSummary.termsCompleted}">0</h4>
+                                <small class="text-muted">Disbursed terms</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-light border p-3 h-100 shadow-sm">
+                                <small class="fw-bold text-uppercase text-secondary">6. Terms Remaining</small>
+                                <h4 class="fw-bold mb-0 text-primary" th:text="${fundTrackingSummary.termsRemaining}">0</h4>
+                                <small class="text-muted">Upcoming pending terms</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-light border p-3 h-100 shadow-sm">
+                                <small class="fw-bold text-uppercase text-secondary">7. Active Applications</small>
+                                <h4 class="fw-bold mb-0 text-navy" th:text="${fundTrackingSummary.activeApplications}">0</h4>
+                                <small class="text-muted">Approved active plans</small>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card border-0 bg-danger-subtle text-danger p-3 h-100 shadow-sm">
+                                <small class="fw-bold text-uppercase opacity-75">8. Pending Release</small>
+                                <h4 class="fw-bold mb-0 text-danger" th:text="'₹' + ${#numbers.formatDecimal(fundTrackingSummary.pendingRelease, 0, 'COMMA', 0, 'POINT')}">₹0</h4>
+                                <small class="text-muted">Approved &amp; awaiting release</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. FINANCIAL FLOW & UTILIZATION PROGRESS -->
+                <div class="border rounded p-4 bg-white mb-4 shadow-sm">
+                    <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-arrows-split-up-and-left text-primary me-2"></i> Financial Flow &amp; Utilization Progress</h6>
+                    <div class="row align-items-center">
+                        <div class="col-md-7">
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between font-weight-bold mb-1">
+                                    <span>Fund Disbursement Balance</span>
+                                    <span th:text="${fundTrackingSummary != null ? fundTrackingSummary.releasedPercentage + '% Disbursed' : '0%'}">0%</span>
+                                </div>
+                                <div class="progress" style="height: 24px; font-size: 0.85rem; font-weight: bold;">
+                                    <div class="progress-bar bg-success" role="progressbar" 
+                                         th:style="'width: ' + (${fundTrackingSummary != null ? fundTrackingSummary.releasedPercentage : 0}) + '%'"
+                                         th:text="${fundTrackingSummary != null ? 'Released: ₹' + #numbers.formatDecimal(fundTrackingSummary.totalReleased, 0, 'COMMA', 0, 'POINT') : '₹0'}">
+                                    </div>
+                                    <div class="progress-bar bg-warning text-dark" role="progressbar" 
+                                         th:style="'width: ' + (${fundTrackingSummary != null ? fundTrackingSummary.remainingPercentage : 0}) + '%'"
+                                         th:text="${fundTrackingSummary != null ? 'Remaining: ₹' + #numbers.formatDecimal(fundTrackingSummary.totalRemaining, 0, 'COMMA', 0, 'POINT') : '₹0'}">
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="d-flex justify-content-around text-center mt-3 pt-2 border-top">
+                                <div>
+                                    <small class="text-muted d-block fw-bold">TOTAL SANCTIONED</small>
+                                    <span class="fs-5 fw-bold text-navy" th:text="${fundTrackingSummary != null ? '₹' + #numbers.formatDecimal(fundTrackingSummary.totalSanctioned, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹0</span>
+                                </div>
+                                <div class="fs-4 text-muted align-self-center">↓</div>
+                                <div>
+                                    <small class="text-muted d-block fw-bold">TOTAL RELEASED</small>
+                                    <span class="fs-5 fw-bold text-success" th:text="${fundTrackingSummary != null ? '₹' + #numbers.formatDecimal(fundTrackingSummary.totalReleased, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹0</span>
+                                </div>
+                                <div class="fs-4 text-muted align-self-center">↓</div>
+                                <div>
+                                    <small class="text-muted d-block fw-bold">TOTAL REMAINING</small>
+                                    <span class="fs-5 fw-bold text-warning text-dark" th:text="${fundTrackingSummary != null ? '₹' + #numbers.formatDecimal(fundTrackingSummary.totalRemaining, 0, 'COMMA', 0, 'POINT') : '₹0'}">₹0</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div style="height: 180px; position: relative;">
+                                <canvas id="fundSummaryDoughnutChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. BENEFICIARY-WISE FUND TRACKING -->
+                <div class="border rounded p-4 bg-white mb-4 shadow-sm">
+                    <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-users-viewfinder text-warning me-2"></i> Beneficiary-wise Fund Tracking</h6>
+                    
+                    <!-- Filters & Search Bar -->
+                    <div class="row g-2 mb-3 align-items-center bg-light p-3 rounded border">
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-secondary mb-1">Search</label>
+                            <div class="input-group input-group-sm">
+                                <span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                                <input type="text" id="fundSearchInput" onkeyup="applyFundFilters()" class="form-control" placeholder="Search beneficiary / app ID / scheme...">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small fw-bold text-secondary mb-1">Scheme</label>
+                            <select id="fundSchemeSelect" onchange="applyFundFilters()" class="form-select form-select-sm">
+                                <option value="">All Schemes</option>
+                                <option th:each="s : ${allSchemes}" th:value="${s.id}" th:text="${s.name}">Scheme</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold text-secondary mb-1">Term</label>
+                            <select id="fundTermSelect" onchange="applyFundFilters()" class="form-select form-select-sm">
+                                <option value="">All Terms</option>
+                                <option value="Term 1">Term 1</option>
+                                <option value="Term 2">Term 2</option>
+                                <option value="Term 3">Term 3</option>
+                                <option value="Term 4">Term 4</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2">
+                            <label class="form-label small fw-bold text-secondary mb-1">Financial Status</label>
+                            <select id="fundStatusSelect" onchange="applyFundFilters()" class="form-select form-select-sm">
+                                <option value="All">All Statuses</option>
+                                <option value="COMPLETED">Completed</option>
+                                <option value="IN_PROGRESS">In Progress</option>
+                                <option value="SANCTIONED">Sanctioned</option>
+                                <option value="RELEASED">Released</option>
+                                <option value="PARTIALLY_RELEASED">Partially Released</option>
+                                <option value="PENDING_RELEASE">Pending Release</option>
+                            </select>
+                        </div>
+                        <div class="col-md-2 text-end align-self-end">
+                            <button type="button" onclick="resetFundFilters()" class="btn btn-sm btn-outline-secondary w-100 fw-bold">
+                                <i class="fa-solid fa-rotate-left me-1"></i> Reset Filters
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-hover align-middle mb-0">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>App ID</th>
+                                    <th>Beneficiary Name</th>
+                                    <th>Scheme Name</th>
+                                    <th>Total Sanctioned</th>
+                                    <th>Total Released</th>
+                                    <th>Remaining Amount</th>
+                                    <th>Total Terms</th>
+                                    <th>Completed</th>
+                                    <th>Current Term</th>
+                                    <th>Remaining</th>
+                                    <th>Term Status</th>
+                                    <th>Next Due Date</th>
+                                    <th>Overall Status</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="beneficiaryFundTableBody">
+                                <tr th:if="${#lists.isEmpty(beneficiaryFundTrackings)}" id="noFundDataRow">
+                                    <td colspan="14" class="text-center text-muted py-4">No financial records available.</td>
+                                </tr>
+                                <tr th:each="b : ${beneficiaryFundTrackings}" class="fund-beneficiary-row"
+                                    th:data-search-text="${b.applicationNumber + ' ' + b.beneficiaryName + ' ' + b.schemeName}"
+                                    th:data-scheme-id="${b.schemeId}"
+                                    th:data-current-term="${b.currentTerm}"
+                                    th:data-status="${b.overallStatus}">
+                                    <td class="fw-bold text-navy" th:text="${b.applicationNumber}">APP-190166</td>
+                                    <td>
+                                        <strong th:text="${b.beneficiaryName}">Vamsi Bhai</strong><br>
+                                        <small class="text-muted" th:text="${b.beneficiaryIdentity}">Aadhaar</small>
+                                    </td>
+                                    <td th:text="${b.schemeName}">Scheme</td>
+                                    <td class="fw-bold text-navy" th:text="'₹' + ${#numbers.formatDecimal(b.sanctionedAmount, 0, 'COMMA', 0, 'POINT')}">₹1,00,000</td>
+                                    <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(b.releasedAmount, 0, 'COMMA', 0, 'POINT')}">₹50,000</td>
+                                    <td class="fw-bold text-warning text-dark" th:text="'₹' + ${#numbers.formatDecimal(b.remainingAmount, 0, 'COMMA', 0, 'POINT')}">₹50,000</td>
+                                    <td class="text-center fw-bold" th:text="${b.totalTerms}">4</td>
+                                    <td class="text-center text-success fw-bold" th:text="${b.completedTerms}">2</td>
+                                    <td class="fw-bold text-primary" th:text="${b.currentTerm}">Term 3</td>
+                                    <td class="text-center text-muted fw-bold" th:text="${b.remainingTerms}">2</td>
+                                    <td>
+                                        <span th:class="'badge ' + (${b.currentTermStatus == 'RELEASED' or b.currentTermStatus == 'VERIFIED'} ? 'bg-success' : (${b.currentTermStatus == 'PENDING_VERIFICATION' or b.currentTermStatus == 'PENDING_RELEASE'} ? 'bg-warning text-dark' : 'bg-secondary'))"
+                                              th:text="${b.currentTermStatus}">Upcoming</span>
+                                    </td>
+                                    <td class="small" th:text="${b.nextTermDueDate != null ? b.nextTermDueDate : 'N/A'}">15-10-2026</td>
+                                    <td>
+                                        <span th:class="'badge ' + (${b.overallStatus == 'COMPLETED'} ? 'bg-success' : (${b.overallStatus == 'IN_PROGRESS' or b.overallStatus == 'PARTIALLY_RELEASED'} ? 'bg-info text-dark' : 'bg-primary'))"
+                                              th:text="${b.overallStatus}">In Progress</span>
+                                    </td>
+                                    <td>
+                                        <button type="button" class="btn btn-sm btn-navy fw-bold text-white text-nowrap"
+                                                th:onclick="'openBeneficiaryDetailsModal(' + ${b.applicationId} + ')'">
+                                            <i class="fa-solid fa-eye me-1"></i> View Details
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 4. OVERALL TERM SUMMARY -->
+                <div class="border rounded p-4 bg-white shadow-sm">
+                    <h6 class="fw-bold text-navy mb-3"><i class="fa-solid fa-layer-group text-primary me-2"></i> Overall Term Summary</h6>
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Term</th>
+                                    <th>Applications</th>
+                                    <th>Sanctioned Amount</th>
+                                    <th>Released Amount</th>
+                                    <th>Pending Amount</th>
+                                    <th>Completed Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:if="${#lists.isEmpty(termLevelSummaries)}">
+                                    <td colspan="6" class="text-center text-muted py-3">No term-level summary data available.</td>
+                                </tr>
+                                <tr th:each="t : ${termLevelSummaries}">
+                                    <td class="fw-bold text-navy" th:text="${t.termName}">Term 1</td>
+                                    <td class="fw-bold" th:text="${t.totalApplications}">50</td>
+                                    <td class="fw-bold text-navy" th:text="'₹' + ${#numbers.formatDecimal(t.totalSanctioned, 0, 'COMMA', 0, 'POINT')}">₹50,00,000</td>
+                                    <td class="fw-bold text-success" th:text="'₹' + ${#numbers.formatDecimal(t.totalReleased, 0, 'COMMA', 0, 'POINT')}">₹45,00,000</td>
+                                    <td class="fw-bold text-warning text-dark" th:text="'₹' + ${#numbers.formatDecimal(t.totalPending, 0, 'COMMA', 0, 'POINT')}">₹5,00,000</td>
+                                    <td class="fw-bold text-success" th:text="${t.completedCount}">45</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script th:inline="javascript" th:if="${utilizationSummary != null}">
+        /*<![CDATA[*/
+        document.addEventListener("DOMContentLoaded", function() {
+            const summary = /*[[${utilizationSummary}]]*/ {};
+            const schemeWise = /*[[${schemeUtilizations}]]*/ [];
+
+            function formatINR(val) {
+                if (val === null || val === undefined || isNaN(val)) return '₹0';
+                return '₹' + new Intl.NumberFormat('en-IN').format(Math.round(Number(val)));
+            }
+
+            const ctx1 = document.getElementById('dashOverallChart');
+            if (ctx1 && summary) {
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Allocated', 'Sanctioned', 'Released', 'Utilized', 'Remaining'],
+                        datasets: [{
+                            data: [
+                                summary.totalAllocatedAmount || 0,
+                                summary.totalSanctionedAmount || 0,
+                                summary.totalReleasedAmount || 0,
+                                summary.totalUtilizedAmount || 0,
+                                summary.totalRemainingAllocation || 0
+                            ],
+                            backgroundColor: ['#0f2b48', '#0dcaf0', '#198754', '#20c997', '#ffc107']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(c) { return ` ${c.label}: ${formatINR(c.raw)}`; }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            const ctx2 = document.getElementById('dashSchemePctChart');
+            if (ctx2 && schemeWise && schemeWise.length > 0) {
+                new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: schemeWise.map(s => s.schemeName),
+                        datasets: [{
+                            label: 'Utilization %',
+                            data: schemeWise.map(s => s.allocatedAmount > 0 ? s.utilizationPercentage : 0),
+                            backgroundColor: '#198754'
+                        }]
+                    },
+                    options: {
+                        indexAxis: 'y',
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(c) {
+                                        const s = schemeWise[c.dataIndex];
+                                        return ` Utilization: ${s ? s.formattedUtilizationPercentage : '0%'}`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        /*]]>*/
+        </script>
+
+        <script th:inline="javascript">
+        /*<![CDATA[*/
+        function applyFundFilters() {
+            const searchVal = (document.getElementById('fundSearchInput').value || '').toLowerCase().trim();
+            const schemeVal = document.getElementById('fundSchemeSelect').value;
+            const termVal = (document.getElementById('fundTermSelect').value || '').toLowerCase();
+            const statusVal = document.getElementById('fundStatusSelect').value;
+
+            const rows = document.querySelectorAll('.fund-beneficiary-row');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const text = (row.getAttribute('data-search-text') || '').toLowerCase();
+                const schemeId = row.getAttribute('data-scheme-id') || '';
+                const currentTerm = (row.getAttribute('data-current-term') || '').toLowerCase();
+                const status = row.getAttribute('data-status') || '';
+
+                let match = true;
+                if (searchVal && !text.includes(searchVal)) match = false;
+                if (schemeVal && schemeId !== schemeVal) match = false;
+                if (termVal && !currentTerm.includes(termVal)) match = false;
+                if (statusVal && statusVal !== 'All' && status !== statusVal) match = false;
+
+                if (match) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            const noDataRow = document.getElementById('noFundDataRow');
+            if (noDataRow) {
+                noDataRow.style.display = (visibleCount === 0) ? '' : 'none';
+            }
+
+            const params = new URLSearchParams();
+            if (searchVal) params.set('search', searchVal);
+            if (schemeVal) params.set('schemeId', schemeVal);
+            if (termVal) params.set('term', termVal);
+            if (statusVal && statusVal !== 'All') params.set('status', statusVal);
+
+            const queryString = params.toString() ? '?' + params.toString() : '';
+            document.getElementById('btnExportExcel').href = '/finance/fund-tracking/export/excel' + queryString;
+            document.getElementById('btnExportPdf').href = '/finance/fund-tracking/export/pdf' + queryString;
+        }
+
+        function resetFundFilters() {
+            document.getElementById('fundSearchInput').value = '';
+            document.getElementById('fundSchemeSelect').value = '';
+            document.getElementById('fundTermSelect').value = '';
+            document.getElementById('fundStatusSelect').value = 'All';
+            applyFundFilters();
+        }
+
+        function openBeneficiaryDetailsModal(applicationId) {
+            const modalElement = document.getElementById('beneficiaryFinancialModal');
+            const modalBody = document.getElementById('beneficiaryModalBody');
+            const bsModal = new bootstrap.Modal(modalElement);
+            
+            modalBody.innerHTML = `
+                <div class="text-center py-4">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>`;
+            bsModal.show();
+
+            fetch('/finance/api/fund-tracking/' + applicationId)
+                .then(response => {
+                    if (!response.ok) throw new Error('Failed to load beneficiary details');
+                    return response.json();
+                })
+                .then(data => {
+                    function formatINR(val) {
+                        if (val === null || val === undefined) return '₹0';
+                        return '₹' + new Intl.NumberFormat('en-IN').format(val);
+                    }
+                    
+                    let termRowsHtml = '';
+                    if (data.terms && data.terms.length > 0) {
+                        data.terms.forEach(t => {
+                            const statusBadge = (t.status === 'RELEASED' || t.status === 'COMPLETED') ? 'bg-success' :
+                                                (t.status === 'PENDING_RELEASE' || t.status === 'VERIFIED') ? 'bg-warning text-dark' : 'bg-secondary';
+                            const relDate = t.releaseDate ? t.releaseDate.substring(0, 10) : 'N/A';
+                            const dueDate = t.dueDate ? t.dueDate : 'N/A';
+                            
+                            termRowsHtml += `
+                                <tr>
+                                    <td class="fw-bold text-navy">${t.termName || ('Term ' + t.termNumber)}</td>
+                                    <td class="fw-bold text-success">${formatINR(t.amount)}</td>
+                                    <td><span class="badge ${statusBadge}">${t.status}</span></td>
+                                    <td class="small">${dueDate}</td>
+                                    <td class="small">${relDate}</td>
+                                </tr>`;
+                        });
+                    } else {
+                        termRowsHtml = '<tr><td colspan="5" class="text-center text-muted">No term details recorded.</td></tr>';
+                    }
+
+                    modalBody.innerHTML = `
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted d-block fw-bold">APPLICATION ID</small>
+                                    <h5 class="fw-bold text-navy">${data.applicationNumber || 'APP-' + data.applicationId}</h5>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <small class="text-muted d-block fw-bold">OVERALL STATUS</small>
+                                    <span class="badge bg-success fs-6">${data.overallStatus || 'ACTIVE'}</span>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <div class="col-md-6">
+                                    <strong>Beneficiary:</strong> ${data.beneficiaryName || 'N/A'} <small class="text-muted">(${data.beneficiaryIdentity || ''})</small>
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Scheme:</strong> ${data.schemeName || 'N/A'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded bg-light text-center">
+                                    <small class="text-muted fw-bold d-block">Total Sanctioned</small>
+                                    <span class="fs-5 fw-bold text-navy">${formatINR(data.sanctionedAmount)}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded bg-success-subtle text-center">
+                                    <small class="text-success fw-bold d-block">Total Released</small>
+                                    <span class="fs-5 fw-bold text-success">${formatINR(data.releasedAmount)}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="p-3 border rounded bg-warning-subtle text-center">
+                                    <small class="text-warning text-dark fw-bold d-block">Remaining</small>
+                                    <span class="fs-5 fw-bold text-warning text-dark">${formatINR(data.remainingAmount)}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row g-2 mb-3 text-center">
+                            <div class="col-4">
+                                <span class="badge bg-light text-dark border p-2 w-100">Total Terms: <strong>${data.totalTerms}</strong></span>
+                            </div>
+                            <div class="col-4">
+                                <span class="badge bg-success-subtle text-success border border-success p-2 w-100">Completed Terms: <strong>${data.completedTerms}</strong></span>
+                            </div>
+                            <div class="col-4">
+                                <span class="badge bg-light text-secondary border p-2 w-100">Remaining Terms: <strong>${data.remainingTerms}</strong></span>
+                            </div>
+                        </div>
+
+                        <h6 class="fw-bold text-navy mt-4 mb-2"><i class="fa-solid fa-list-ol me-2 text-warning"></i> Term Breakdown History</h6>
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover align-middle mb-0">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>Term</th>
+                                        <th>Term Amount</th>
+                                        <th>Status</th>
+                                        <th>Due Date</th>
+                                        <th>Release Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${termRowsHtml}
+                                </tbody>
+                            </table>
+                        </div>
+                    `;
+                })
+                .catch(err => {
+                    modalBody.innerHTML = `
+                        <div class="alert alert-danger mb-0">
+                            <i class="fa-solid fa-triangle-exclamation me-2"></i> Error loading financial details: ${err.message}
+                        </div>`;
+                });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const ctxSummary = document.getElementById('fundSummaryDoughnutChart');
+            const relVal = /*[[${fundTrackingSummary != null ? fundTrackingSummary.totalReleased : 0}]]*/ 0;
+            const remVal = /*[[${fundTrackingSummary != null ? fundTrackingSummary.totalRemaining : 0}]]*/ 0;
+
+            if (ctxSummary && (relVal > 0 || remVal > 0)) {
+                new Chart(ctxSummary, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Released', 'Remaining'],
+                        datasets: [{
+                            data: [relVal, remVal],
+                            backgroundColor: ['#198754', '#ffc107']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom' }
+                        }
+                    }
+                });
+            }
+        });
+        /*]]>*/
+        </script>
 
     </div>
 </div>

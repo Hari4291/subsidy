@@ -240,21 +240,6 @@
                     <i class="fa-solid fa-triangle-exclamation me-2"></i>
                     No documents have been uploaded for this application.
                 </div>
-
-                <!-- Missing required documents -->
-                <div th:if="${requiredDocs != null and !#lists.isEmpty(requiredDocs)}">
-                    <div th:each="reqDoc : ${requiredDocs}"
-                         th:unless="${applicationDocs != null and #lists.contains(applicationDocs.![documentType], reqDoc.documentType)}">
-                        <div class="alert alert-danger mb-2 d-flex align-items-center gap-3 py-2">
-                            <i class="fa-solid fa-circle-xmark fs-5"></i>
-                            <div>
-                                <strong th:text="${reqDoc.documentName}">Required Document</strong>
-                                <span class="badge bg-danger ms-2">NOT UPLOADED</span>
-                                <div th:if="${reqDoc.required}" class="small text-danger">⚠ Required document not submitted by beneficiary.</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 

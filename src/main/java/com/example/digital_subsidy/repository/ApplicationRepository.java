@@ -26,6 +26,7 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
     List<Application> findByBeneficiaryStateAndBeneficiaryDistrict(String state, String district);
 
     long countByStatus(String status);
+    long countByCurrentStage(String currentStage);
     long countByBeneficiaryStateAndStatus(String state, String status);
     long countByBeneficiaryStateAndCurrentStage(String state, String stage);
 
@@ -37,4 +38,6 @@ public interface ApplicationRepository extends JpaRepository<Application, Long> 
 
     @Query("SELECT SUM(a.requestedAmount) FROM Application a WHERE a.status = 'PENDING' AND a.beneficiary.state = :state")
     BigDecimal sumTotalPendingGrantAmountByState(String state);
+
+    List<Application> findBySchemeId(Long schemeId);
 }
